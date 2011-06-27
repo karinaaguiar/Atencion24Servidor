@@ -1,0 +1,5 @@
+C:\Users\Karina\Desktop\Atencion24Servidor\Otro\Atencion24WebServices\Atencion24WebServices\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Karina\Desktop\Atencion24Servidor\Otro\Atencion24WebServices\Atencion24WebServices\bin\Atencion24WebServices.dll
+C:\Users\Karina\Desktop\Atencion24Servidor\Otro\Atencion24WebServices\Atencion24WebServices\bin\Atencion24WebServices.pdb
+C:\Users\Karina\Desktop\Atencion24Servidor\Otro\Atencion24WebServices\Atencion24WebServices\obj\Debug\Atencion24WebServices.dll
+C:\Users\Karina\Desktop\Atencion24Servidor\Otro\Atencion24WebServices\Atencion24WebServices\obj\Debug\Atencion24WebServices.pdb
