@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://localhost/Atencion24Servidor" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="http://localhost/Atencion24Servidor" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://localhost/Atencion24Servidor">
+      <s:element name="InicioSesion">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="usuario_tb" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="clave_tb" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="InicioSesionResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="InicioSesionResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="InicioSesionSoapIn">
+    <wsdl:part name="parameters" element="tns:InicioSesion" />
+  </wsdl:message>
+  <wsdl:message name="InicioSesionSoapOut">
+    <wsdl:part name="parameters" element="tns:InicioSesionResponse" />
+  </wsdl:message>
+  <wsdl:portType name="OperacionesWebServicesAtencion24Soap">
+    <wsdl:operation name="InicioSesion">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Inicio de sesión en la aplicación Atencion 24</wsdl:documentation>
+      <wsdl:input message="tns:InicioSesionSoapIn" />
+      <wsdl:output message="tns:InicioSesionSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="OperacionesWebServicesAtencion24Soap" type="tns:OperacionesWebServicesAtencion24Soap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="InicioSesion">
+      <soap:operation soapAction="http://localhost/Atencion24Servidor/InicioSesion" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="OperacionesWebServicesAtencion24Soap12" type="tns:OperacionesWebServicesAtencion24Soap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="InicioSesion">
+      <soap12:operation soapAction="http://localhost/Atencion24Servidor/InicioSesion" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="OperacionesWebServicesAtencion24">
+    <wsdl:port name="OperacionesWebServicesAtencion24Soap" binding="tns:OperacionesWebServicesAtencion24Soap">
+      <soap:address location="http://localhost/Atencion24WebServices/WebServices.asmx" />
+    </wsdl:port>
+    <wsdl:port name="OperacionesWebServicesAtencion24Soap12" binding="tns:OperacionesWebServicesAtencion24Soap12">
+      <soap12:address location="http://localhost/Atencion24WebServices/WebServices.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
