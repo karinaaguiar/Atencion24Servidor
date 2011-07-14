@@ -49,9 +49,19 @@ namespace Atencion24WebServices.Atencion24DAO
 
         //**ESTADO DE CUENTA**//
         //**MONTOS TOTALES**//
+
+        //Consultar TOTAL Monto a Pagar.
+        public string EdoCtaMontoFacturadoTotal(string medico)
+        {
+            Query = "SELECT SUM(MONTOAPAGAR)FROM TBL_CUENTASPORPAGAR " + 
+                    "WHERE PROVEEDOR= '" +medico+ "' AND PAGADO = 0";
+            return Query;
+        }
+
+
         //Consultar TOTAL Estado de cuenta . Consultar TOTAL Monto a Pagar.
         //String o int codMedico?
-        public string ConsultarTotalMontoAPagar(string codMedico)
+        /*public string ConsultarTotalMontoAPagar(string codMedico)
         {
             Query = "select sum(MONTOAPAGAR)from CUENTA_POR_PAGAR " + 
                     "where PROVEEDOR= '" + codMedico + "' and PAGADO = 0";
@@ -94,7 +104,7 @@ namespace Atencion24WebServices.Atencion24DAO
         //**POR UNIDAD DE NEGOCIO**//
         //Consultar POR UNIDAD DE NEGOCIO Estado de cuenta . Consultar TOTAL Monto a Pagar.
         //String o int codMedico?
-        public string ConsultarTotalMontoAPagarUDN(string codMedico)
+        /*public string ConsultarTotalMontoAPagarUDN(string codMedico)
         {
             Query = "select UDN, sum(MONTOAPAGAR) from CUENTA_POR_PAGAR " +
                     "where PROVEEDOR= '" + codMedico + "' and PAGADO = 0" +
@@ -141,7 +151,7 @@ namespace Atencion24WebServices.Atencion24DAO
         //**POR ANTIGUEDAD DE SALDO**//
         //Consultar POR ANTIGUEDAD DE SALDO Estado de cuenta . Consultar TOTAL Monto a Pagar.
         //String o int codMedico?
-        public string antiguedadSaldo(string Query, int antiguedad)
+        /*public string antiguedadSaldo(string Query, int antiguedad)
         {
             if (antiguedad == 30)
                 Query = Query + "B.FECHAEMISION >= DATEADD(day, -30, GETDATE()) and B.FECHAEMISION <= GETDATE()";
@@ -213,7 +223,7 @@ namespace Atencion24WebServices.Atencion24DAO
         //Estoy segura que asi consulto el NRO NOMINA mas reciente ¿TOP1?
         //Que hay de la fecha de pago? Es la misma para todos los pagos que entran en 
         //una nómina?
-        public string ConsultarUltimoPagoHonorariosMontoLiberado(string codMedico)
+        /*public string ConsultarUltimoPagoHonorariosMontoLiberado(string codMedico)
         {
             Query = "select top 1 NRONOMINA, sum(MONTOPAGO) from PAGO " +
                     "where PROVEEDOR= '" + codMedico + "' " +
@@ -224,7 +234,7 @@ namespace Atencion24WebServices.Atencion24DAO
 
         //**HONORARIOS PAGADOS**//
         //PAGO POR RANGO DE FECHAS
-        public string ConsultarHistoricoPagoHonorariosMontoLiberado(string codMedico, DateTime fecha_inicio, DateTime fecha_fin)
+        /*public string ConsultarHistoricoPagoHonorariosMontoLiberado(string codMedico, DateTime fecha_inicio, DateTime fecha_fin)
         {
             Query = "select NRONOMINA, sum(MONTOPAGO) from PAGO" +
                     "where PROVEEDOR= '" + codMedico + "' and " +
@@ -246,7 +256,7 @@ namespace Atencion24WebServices.Atencion24DAO
         //**HONORARIOS FACTURADOS**//
         //Consultar honorarios Facturados. MONTO TOTAL
         //String o int codMedico?
-        public string ConsultarTotalMontoFacturado(string codMedico, DateTime fecha_inicio, DateTime fecha_fin)
+        /*public string ConsultarTotalMontoFacturado(string codMedico, DateTime fecha_inicio, DateTime fecha_fin)
         {
             Query = "select sum(A.MONTOAPAGAR)from CUENTA_POR_PAGAR A " +
                     "inner join CASO B on A.CASO = B.NROCASO " +
@@ -281,7 +291,7 @@ namespace Atencion24WebServices.Atencion24DAO
 		//POR NUMERO DE CASO 
         //HONORARIOS PRESTADOS POR EL MEDICO EN ESE CASO Y TOTAL FACTURADO POR CADA SUMINISTRO PRESTADO
 		//ME PERMITE VERIFICAR DE IGUAL MANERA SI SE TRATA DE UN CASO VÁLIDO
-		public string ConsultarHonorariosPrestadosCaso(string Codmedico, string codCaso)
+		/*public string ConsultarHonorariosPrestadosCaso(string Codmedico, string codCaso)
         {
             Query = "select B.NOMBRESUMINISTRO, A.UDN, A.SUMINISTRO, A.MONTOAPAGAR from CUENTA_POR_PAGAR A " +
                     "inner join SUMINISTRO B on A.SUMINISTRO = B.CODIGOSUMINISTRO " +
@@ -356,7 +366,7 @@ namespace Atencion24WebServices.Atencion24DAO
                     "where B.RESPONSABLE= '" + Codmedico + "'";
 
             return Query;
-        }
+        }*/
         
         //AL MOMENTO DE INICIAR SESION. FALTA UN QUERY DONDE PREGUNTE SI EL MÉDICO PERTENECE A UN POOL 
         //EN CASO DE SER ASI DEBO DEVOLVER EL CODIGO DE ESE PROVEEDOR (POOL). LA IMPLICACIÓN ES QUE AL CONSULTAR 

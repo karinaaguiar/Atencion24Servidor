@@ -59,6 +59,21 @@ namespace Atencion24WebServices
                 return manej.codificarXmlAEnviar(manej.creacionRespuestaInicioSesion(nombre, apellido, codigo, nombreUsuario));
             }
         }
+
+        [WebMethod(Description = "Consultar Estado de Cuenta por antiguedad de saldo")]
+        public String edoCtaAntiguedadSaldo(string medico_tb)
+        {
+            ManejadorXML manej = new ManejadorXML();
+
+            medico_tb = medico_tb.Trim();
+          
+            //Creamos una instancia de EstadoDeCuenta con los datos de entrada (medico_tb)
+            EstadoDeCuenta edoCta = new EstadoDeCuenta(medico_tb);
+
+            //Consultamos el estado de cuenta por antiguedad de saldo
+            edoCta.ConsultarEstadoDeCuentaAS();
+            return manej.codificarXmlAEnviar(manej.creacionRespuestaEdoCta(edoCta));
+        }
     }
 }
 

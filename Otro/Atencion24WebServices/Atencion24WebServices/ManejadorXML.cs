@@ -99,5 +99,43 @@ namespace Atencion24WebServices
 
             return XMLtoString(documento);
         }
+
+        public String creacionRespuestaEdoCta(EstadoDeCuenta edoCta) 
+        {
+            XmlDocument documento;
+            XmlElement elemento;
+            XmlElement elemento1;
+            XmlText texto;
+
+            documento = newDocument();
+            elemento = documento.CreateElement("estadoCuenta");
+            //MontoTotal
+            elemento1 = documento.CreateElement("montoTotal");
+            //texto = documento.CreateTextNode(edoCta.MontoTotal);
+            elemento1.AppendChild(documento.CreateTextNode(edoCta.MontoTotal));
+            elemento.AppendChild(elemento1);
+            /*
+            //Apellido del proveedor
+            elemento1 = documento.CreateElement("apellido");
+            texto = documento.CreateTextNode(apellido);
+            elemento1.AppendChild(texto);
+            elemento.AppendChild(elemento1);
+
+            //Codigo del médico
+            elemento1 = documento.CreateElement("CodigoMedico");
+            texto = documento.CreateTextNode(codigo);
+            elemento1.AppendChild(texto);
+            elemento.AppendChild(elemento1);
+
+            //Nombre de usuario
+            elemento1 = documento.CreateElement("nombreUsuario");
+            texto = documento.CreateTextNode(nombreUsuario);
+            elemento1.AppendChild(texto);
+            elemento.AppendChild(elemento1);*/
+
+            documento.AppendChild(elemento);
+
+            return XMLtoString(documento);
+        }
     }
 }

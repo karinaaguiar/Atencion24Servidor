@@ -7,10 +7,10 @@ using Atencion24WebServices.Atencion24DAO;
 
 namespace Atencion24WebServices.Atencion24Negocio
 {
-    public class EstadoDeCuentaPorAntiguedadSaldo
+    public class EstadoDeCuenta
     {
         private string medico;
-		private float montoTotal;
+		private float montoTotal; 
         private float montoA30Dias;
         private float montoA60Dias;
         private float montoA90Dias;
@@ -18,14 +18,43 @@ namespace Atencion24WebServices.Atencion24Negocio
 		private float montoAMas180Dias;		
 
         ///Constructor
-        public void resumenPorUDN(string codMedico)
+        public EstadoDeCuenta(string codMedico)
         {
             medico = codMedico;
         }
-		
+        
+        public float MontoTotal
+        {
+            get { return montoTotal; }
+            set { montoTotal = value; }
+        }
+
 		//Consultar Estado de cuenta por Antiguedad saldo
         public void ConsultarEstadoDeCuentaAS()
         {
+            DataSet ds = new DataSet();
+            EstadoDeCuentaDAO ud = new EstadoDeCuentaDAO();
+            float monto_facturado = 0;
+            int monto_notas_Cd = 0;
+            int monto_notas_Deb = 0;
+            int monto_pagado = 0;
+            bool sindeuda = false;
+
+            //Se calcula el monto TOTAL de la DEUDA
+            ds = ud.EdoCtaMontoFacturadoTotal(medico);
+
+            //Este médico no tiene cuentas por pagar que estén pendientes por pagar
+            if (ds.Tables[0].Rows.Count == 0)  sindeuda = true;
+            else
+            { 
+                String montoFact = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
+                monto_facturado = float.Parse(montoFact, System.Globalization.NumberStyles.Float, new System.Globalization.CultureInfo("en-ES")); 
+            }
+            montoTotal = monto_facturado;
+
+               
+            
+            
             /*DataSet ds = new DataSet();
             float montoAPagar30;
 			float montoAPagar60;
