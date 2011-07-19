@@ -172,7 +172,36 @@ namespace Atencion24WebServices.Atencion24DAO
             return Query;
         }
 
+        //**HONORARIOS PAGADOS**//
+        //**PRÓXIMO PAGO**
 
+        //Monto liberado
+        public string ProximoPagoMontoLiberado(string medico)
+        {
+            Query = "SELECT SUM(MONTO) "+
+                    "FROM TBL_PAGOSHONORARIOS "+
+                    "WHERE MEDICO = '" + medico + "' AND CONCEPTO = 1 AND TIPO = 1 ";
+            return Query;
+        }
+
+        //Deducciones
+        public string ProximoPagoDeducciones(string medico)
+        {
+            Query = "SELECT CONCEPTO,SUM(MONTO) "+
+                    "FROM TBL_PAGOSHONORARIOS "+
+                    "WHERE MEDICO = '" + medico + "' AND TIPO = -1 " +
+                    "GROUP BY CONCEPTO";
+            return Query;
+        }
+    
+        //Nombre del Concepto por Deducción 
+        public string NombreConcepto(string codigoConcepto)
+        {
+            Query = "SELECT NOMBRE "+
+                    "FROM TBL_CONCEPTODEPAGOS "+
+                    "WHERE CODIGO = '"+codigoConcepto+"'";
+            return Query;
+        }
 
 
         //Consultar TOTAL Estado de cuenta . Consultar TOTAL Monto a Pagar.
