@@ -20,6 +20,7 @@ namespace Atencion24WebServices.Atencion24DAO
             Cmd.CommandText = QueryAtencion24.EdoCtaMontoFacturadoTotal(medico);
             Da.SelectCommand = Cmd;
             Da.Fill(Ds);
+            CerrarConexionBd();
             return Ds;
         }
 
@@ -29,6 +30,7 @@ namespace Atencion24WebServices.Atencion24DAO
             Cmd.CommandText = QueryAtencion24.EdoCtaMontoNCredTotal(medico);
             Da.SelectCommand = Cmd;
             Da.Fill(Ds);
+            CerrarConexionBd();
             return Ds;
         }
 
@@ -38,6 +40,7 @@ namespace Atencion24WebServices.Atencion24DAO
             Cmd.CommandText = QueryAtencion24.EdoCtaMontoNDebTotal(medico);
             Da.SelectCommand = Cmd;
             Da.Fill(Ds);
+            CerrarConexionBd();
             return Ds;
         }
 
@@ -47,6 +50,7 @@ namespace Atencion24WebServices.Atencion24DAO
             Cmd.CommandText = QueryAtencion24.EdoCtaMontoPagadoTotal(medico);
             Da.SelectCommand = Cmd;
             Da.Fill(Ds);
+            CerrarConexionBd();
             return Ds;
         }
 
@@ -57,6 +61,7 @@ namespace Atencion24WebServices.Atencion24DAO
             Cmd.CommandText = QueryAtencion24.EdoCtaMontoFacturadoAntiguedad(medico, antiguedad);
             Da.SelectCommand = Cmd;
             Da.Fill(Ds);
+            CerrarConexionBd();
             return Ds;
         }
 
@@ -66,6 +71,7 @@ namespace Atencion24WebServices.Atencion24DAO
             Cmd.CommandText = QueryAtencion24.EdoCtaMontoNCredAntiguedad(medico,antiguedad);
             Da.SelectCommand = Cmd;
             Da.Fill(Ds);
+            CerrarConexionBd();
             return Ds;
         }
 
@@ -75,6 +81,7 @@ namespace Atencion24WebServices.Atencion24DAO
             Cmd.CommandText = QueryAtencion24.EdoCtaMontoNDebAntiguedad(medico,antiguedad);
             Da.SelectCommand = Cmd;
             Da.Fill(Ds);
+            CerrarConexionBd();
             return Ds;
         }
 
@@ -84,6 +91,7 @@ namespace Atencion24WebServices.Atencion24DAO
             Cmd.CommandText = QueryAtencion24.EdoCtaMontoPagadoAntiguedad(medico,antiguedad);
             Da.SelectCommand = Cmd;
             Da.Fill(Ds);
+            CerrarConexionBd();
             return Ds;
         }
     }

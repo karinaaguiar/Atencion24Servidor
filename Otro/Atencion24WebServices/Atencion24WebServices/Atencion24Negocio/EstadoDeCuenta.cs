@@ -67,9 +67,10 @@ namespace Atencion24WebServices.Atencion24Negocio
         }
 
         //Funcion Auxiliar que permite calcular el estado de cuenta (deuda) por antiguedad de saldo
-        public decimal auxiliarConsultarEstadoDeCuentaAS(EstadoDeCuentaDAO ud, int antiguedad)
+        public decimal auxiliarConsultarEstadoDeCuentaAS(int antiguedad)
         {
             DataSet ds = new DataSet();
+            EstadoDeCuentaDAO ud = new EstadoDeCuentaDAO();
             decimal monto_facturado = 0;
             decimal monto_notas_Cd = 0;
             decimal monto_notas_Deb = 0;
@@ -83,64 +84,67 @@ namespace Atencion24WebServices.Atencion24Negocio
             if (ds.Tables[0].Rows.Count == 0) { total = 0; return total; }
             else
             {
-                monto = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
-                if (monto.Equals("null") || monto.Equals("NULL"))
+                if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) == DBNull.Value)
                 {
                     total = 0;
                     return total;
                 }
                 else
                 {
+                    monto = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
                     monto_facturado = decimal.Parse(monto);
-                    System.Diagnostics.Debug.WriteLine("monto_facturado " + monto_facturado);
-
+                    
                     //MONTO TOTAL DE LA DEUDA. MONTO notas credito
+                    ud = new EstadoDeCuentaDAO();
                     ds = ud.EdoCtaMontoNCredAntiguedad(medico, antiguedad);
 
                     if (ds.Tables[0].Rows.Count == 0)
                         monto_notas_Cd = 0;
                     else
                     {
-                        monto = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
-                        if (monto.Equals("null") || monto.Equals("NULL"))
+                        if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) == DBNull.Value)
                             monto_notas_Cd = 0;
                         else
+                        {
+                            monto = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
                             monto_notas_Cd = decimal.Parse(monto);
+                        }
                     }
-                    System.Diagnostics.Debug.WriteLine("monto_notas_Cd " + monto_notas_Cd);
 
                     //MONTO TOTAL DE LA DEUDA. MONTO notas debito
+                    ud = new EstadoDeCuentaDAO();
                     ds = ud.EdoCtaMontoNDebAntiguedad(medico, antiguedad);
 
                     if (ds.Tables[0].Rows.Count == 0)
                         monto_notas_Deb = 0;
                     else
                     {
-                        monto = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
-                        if (monto.Equals("null") || monto.Equals("NULL"))
+                        if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) == DBNull.Value)
                             monto_notas_Deb = 0;
                         else
+                        {
+                            monto = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
                             monto_notas_Deb = decimal.Parse(monto);
+                        }
                     }
-                    System.Diagnostics.Debug.WriteLine("monto_notas_Deb " + monto_notas_Deb);
 
                     //MONTO TOTAL DE LA DEUDA. MONTO pagado
+                    ud = new EstadoDeCuentaDAO();
                     ds = ud.EdoCtaMontoPagadoAntiguedad(medico, antiguedad);
 
                     if (ds.Tables[0].Rows.Count == 0)
                         monto_pagado = 0;
                     else
                     {
-                        monto = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
-                        if (monto.Equals("null") || monto.Equals("NULL"))
+                        if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) == DBNull.Value)
                             monto_pagado = 0;
                         else
+                        {
+                            monto = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
                             monto_pagado = decimal.Parse(monto);
+                        }
                     }
-                    System.Diagnostics.Debug.WriteLine("monto_pagado " + monto_pagado);
-
                     total = monto_facturado - (monto_notas_Cd - monto_notas_Deb) - monto_pagado;
-                    System.Diagnostics.Debug.WriteLine("total " + total);
                     return total;
                 }
             }
@@ -167,69 +171,74 @@ namespace Atencion24WebServices.Atencion24Negocio
             if (ds.Tables[0].Rows.Count == 0) { sindeuda = true; return; }
             else
             {
-                monto = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
-                if (monto.Equals("null") || monto.Equals("NULL"))
+                if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) == DBNull.Value)
                 {
                     sindeuda = true;
                     return;
                 }
                 else
                 {
+                    monto = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
                     monto_facturado = decimal.Parse(monto);
-                    System.Diagnostics.Debug.WriteLine("monto_facturado " + monto_facturado);
-
+                    
                     //MONTO TOTAL DE LA DEUDA. MONTO notas credito
+                    ud = new EstadoDeCuentaDAO();
                     ds = ud.EdoCtaMontoNCredTotal(medico);
                     
                     if (ds.Tables[0].Rows.Count == 0)
                         monto_notas_Cd = 0;
                     else
                     {
-                        monto = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
-                        if (monto.Equals("null") || monto.Equals("NULL"))
+                        if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) == DBNull.Value)
                             monto_notas_Cd = 0;
                         else
+                        {
+                            monto = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
                             monto_notas_Cd = decimal.Parse(monto);
+                        }
                     }
-                    System.Diagnostics.Debug.WriteLine("monto_notas_Cd " + monto_notas_Cd);
+                    
                     //MONTO TOTAL DE LA DEUDA. MONTO notas debito
+                    ud = new EstadoDeCuentaDAO();
                     ds = ud.EdoCtaMontoNDebTotal(medico);
 
-                    if (ds.Tables[0].Rows.Count == 0)
-                        monto_notas_Deb = 0;
+                    if (ds.Tables[0].Rows.Count == 0) monto_notas_Deb = 0;
                     else
                     {
-                        monto = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
-                        if (monto.Equals("null") || monto.Equals("NULL"))
+                        if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) == DBNull.Value )
                             monto_notas_Deb = 0;
                         else
+                        {
+                            monto = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
                             monto_notas_Deb = decimal.Parse(monto);
+                        }
                     }
-                    System.Diagnostics.Debug.WriteLine("monto_notas_Deb " + monto_notas_Deb);
+                    
                     //MONTO TOTAL DE LA DEUDA. MONTO pagado
+                    ud = new EstadoDeCuentaDAO();
                     ds = ud.EdoCtaMontoPagadoTotal(medico);
 
                     if (ds.Tables[0].Rows.Count == 0)
                         monto_pagado = 0;
                     else
                     {
-                        monto = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
-                        if (monto.Equals("null") || monto.Equals("NULL"))
+                        if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) == DBNull.Value)
                             monto_pagado = 0;
                         else
+                        {
+                            monto = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
                             monto_pagado = decimal.Parse(monto);
+                        }
                     }
-                    System.Diagnostics.Debug.WriteLine("monto_pagado " + monto_pagado);
+
                     montoTotal = monto_facturado - (monto_notas_Cd - monto_notas_Deb) - monto_pagado;
-                    System.Diagnostics.Debug.WriteLine("montoTotal " + montoTotal);
-                    /*montoA30Dias = auxiliarConsultarEstadoDeCuentaAS(ud,30);
-                    montoA60Dias = auxiliarConsultarEstadoDeCuentaAS(ud,60);
-                    montoA90Dias = auxiliarConsultarEstadoDeCuentaAS(ud,90);
-                    montoA180Dias = auxiliarConsultarEstadoDeCuentaAS(ud,180);
-                    montoAMas180Dias = auxiliarConsultarEstadoDeCuentaAS(ud,181);*/
+                    montoA30Dias = auxiliarConsultarEstadoDeCuentaAS(30); 
+                    montoA60Dias = auxiliarConsultarEstadoDeCuentaAS(60);
+                    montoA90Dias = auxiliarConsultarEstadoDeCuentaAS(90);
+                    montoA180Dias = auxiliarConsultarEstadoDeCuentaAS(180);
+                    montoAMas180Dias = auxiliarConsultarEstadoDeCuentaAS(181);
                 }
             }
-            ud.CerrarConexionBd();
         }
-    }
+   }
 }
