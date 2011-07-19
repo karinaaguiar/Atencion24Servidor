@@ -72,7 +72,10 @@ namespace Atencion24WebServices
 
             //Consultamos el estado de cuenta por antiguedad de saldo
             edoCta.ConsultarEstadoDeCuentaAS();
-            return manej.codificarXmlAEnviar(manej.creacionRespuestaEdoCta(edoCta));
+            if(edoCta.sinDeuda==true)
+                return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+            else
+                return manej.codificarXmlAEnviar(manej.creacionRespuestaEdoCtaAS(edoCta));
         }
     }
 }

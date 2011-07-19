@@ -48,15 +48,131 @@ namespace Atencion24WebServices.Atencion24DAO
         }
 
         //**ESTADO DE CUENTA**//
-        //**MONTOS TOTALES**//
-
-        //Consultar TOTAL Monto a Pagar.
+        //MONTOS TOTALES//
+        //Consultar TOTAL Facturado
         public string EdoCtaMontoFacturadoTotal(string medico)
         {
             Query = "SELECT SUM(MONTOAPAGAR)FROM TBL_CUENTASPORPAGAR " + 
                     "WHERE PROVEEDOR= '" +medico+ "' AND PAGADO = 0";
             return Query;
         }
+
+        //Consultar TOTAL Notas Credito
+        public string EdoCtaMontoNCredTotal(string medico)
+        {
+            Query = "SELECT SUM(B.MONTOTOTAL) "+
+                    "FROM TBL_NOTADECREDITOYDEBITO A INNER JOIN TBL_NOTADECREDITOYDEBITODETALLE B "+ 
+                    "ON A.NRONOTA = B.NRONOTA "+
+                    "INNER JOIN TBL_CUENTASPORPAGAR C "+
+                    "ON A.NROID = C.NROID AND A.UNIDADDENEGOCIO = C.UNIDADDENEGOCIO AND B.CODIGOTIPOP = C.PROVEEDOR AND "+
+                    "B.SERVICIO = C.CLASIFICACIONHONORARIO AND B.SUMINISTRO = C.TIPOHONORARIO AND B.AREA = C.AREAHONORARIO "+
+                    "WHERE A.TIPONOTA = 1 AND C.PROVEEDOR= '" + medico + "' AND C.PAGADO = 0 ";
+            return Query;
+        }
+
+        //Consultar TOTAL Notas Débito
+        public string EdoCtaMontoNDebTotal(string medico)
+        {
+            Query = "SELECT SUM(B.MONTOTOTAL) " +
+                    "FROM TBL_NOTADECREDITOYDEBITO A INNER JOIN TBL_NOTADECREDITOYDEBITODETALLE B " +
+                    "ON A.NRONOTA = B.NRONOTA " +
+                    "INNER JOIN TBL_CUENTASPORPAGAR C " +
+                    "ON A.NROID = C.NROID AND A.UNIDADDENEGOCIO = C.UNIDADDENEGOCIO AND B.CODIGOTIPOP = C.PROVEEDOR AND " +
+                    "B.SERVICIO = C.CLASIFICACIONHONORARIO AND B.SUMINISTRO = C.TIPOHONORARIO AND B.AREA = C.AREAHONORARIO " +
+                    "WHERE A.TIPONOTA = 2 AND C.PROVEEDOR= '" + medico + "' AND C.PAGADO = 0 ";
+            return Query;
+        }
+
+        //Consultar TOTAL Pagado
+        public string EdoCtaMontoPagadoTotal(string medico)
+        {
+            Query = "SELECT SUM(A.MONTO) " +
+                    "FROM TBL_HPAGOSHONORARIOS A INNER JOIN TBL_CUENTASPORPAGAR B " +
+                    "ON  A.UNIDADDENEGOCIO = B.UNIDADDENEGOCIO AND A.CASO = B.NROID AND A.SERVICIO = B.CLASIFICACIONHONORARIO AND " +
+                    "A.SUMINISTRO = B.TIPOHONORARIO AND A.AREA = B.AREAHONORARIO AND A.MEDICO = B.PROVEEDOR " +
+                    "WHERE B.PROVEEDOR= '" + medico + "' AND B.PAGADO = 0 AND A.TIPO = 1 AND A.CONCEPTO = 1 AND A.APAGAR =1 ";
+            return Query;
+        }
+
+        //MONTOS POR ANTIGUEDAD//
+        public string antiguedadSaldo(string Query, int antiguedad)
+        {
+            if (antiguedad == 30)
+                Query = Query + "B.FECHAEMISION >= DATEADD(day, -30, GETDATE()) and B.FECHAEMISION <= GETDATE()";
+            if (antiguedad == 60)
+                Query = Query + "B.FECHAEMISION >= DATEADD(day, -60, GETDATE()) and B.FECHAEMISION < DATEADD(day, -30, GETDATE())";
+            if (antiguedad == 90)
+                Query = Query + "B.FECHAEMISION >= DATEADD(day, -90, GETDATE()) and B.FECHAEMISION < DATEADD(day, -60, GETDATE())";
+            if (antiguedad == 180)
+                Query = Query + "B.FECHAEMISION >= DATEADD(day, -180, GETDATE()) and B.FECHAEMISION < DATEADD(day, -90, GETDATE())";
+            if (antiguedad == 181)
+                Query = Query + "B.FECHAEMISION < DATEADD(day, -180, GETDATE())";
+
+            return Query;
+        }
+
+        //Consultar Facturado por Antiguedad
+        public string EdoCtaMontoFacturadoAntiguedad(string medico, int antiguedad)
+        {
+            Query = "SELECT SUM(A.MONTOAPAGAR) " +
+                    "FROM TBL_CUENTASPORPAGAR A INNER JOIN TBL_HCASO B " +
+                    "ON A.NROID = B.CASO AND A.UNIDADDENEGOCIO = B.UNIDADNEGOCIO " +
+                    "WHERE A.PROVEEDOR= '" + medico + "' AND A.PAGADO = 0 AND ";
+
+            Query = antiguedadSaldo(Query, antiguedad);  
+            return Query;
+        }
+
+        //Consultar Notas de Crédito por Antiguedad 
+        public string EdoCtaMontoNCredAntiguedad(string medico, int antiguedad)
+        {
+            Query = "SELECT SUM(C.MONTOTOTAL) " +
+                    "FROM TBL_NOTADECREDITOYDEBITO A INNER JOIN TBL_NOTADECREDITOYDEBITODETALLE C " +
+                    "ON A.NRONOTA = C.NRONOTA " +
+                    "INNER JOIN TBL_CUENTASPORPAGAR D " +
+                    "ON A.NROID = D.NROID AND A.UNIDADDENEGOCIO = D.UNIDADDENEGOCIO AND C.CODIGOTIPOP = D.PROVEEDOR AND " +
+                    "C.SERVICIO = D.CLASIFICACIONHONORARIO AND C.SUMINISTRO = D.TIPOHONORARIO AND C.AREA = D.AREAHONORARIO " +
+                    "INNER JOIN  TBL_HCASO B " +
+                    "ON D.NROID = B.CASO AND D.UNIDADDENEGOCIO = B.UNIDADNEGOCIO " +
+                    "WHERE A.TIPONOTA = 1 AND D.PROVEEDOR= '" + medico + "' AND D.PAGADO = 0 AND ";
+
+            Query = antiguedadSaldo(Query, antiguedad);  
+            return Query;
+        }
+
+        //Consultar Notas de Débito por Antiguedad 
+        public string EdoCtaMontoNDebAntiguedad(string medico, int antiguedad)
+        {
+            Query = "SELECT SUM(C.MONTOTOTAL) " +
+                    "FROM TBL_NOTADECREDITOYDEBITO A INNER JOIN TBL_NOTADECREDITOYDEBITODETALLE C " +
+                    "ON A.NRONOTA = C.NRONOTA " +
+                    "INNER JOIN TBL_CUENTASPORPAGAR D " +
+                    "ON A.NROID = D.NROID AND A.UNIDADDENEGOCIO = D.UNIDADDENEGOCIO AND C.CODIGOTIPOP = D.PROVEEDOR AND " +
+                    "C.SERVICIO = D.CLASIFICACIONHONORARIO AND C.SUMINISTRO = D.TIPOHONORARIO AND C.AREA = D.AREAHONORARIO " +
+                    "INNER JOIN  TBL_HCASO B " +
+                    "ON D.NROID = B.CASO AND D.UNIDADDENEGOCIO = B.UNIDADNEGOCIO " +
+                    "WHERE A.TIPONOTA = 2 AND D.PROVEEDOR= '" + medico + "' AND D.PAGADO = 0 AND ";
+
+            Query = antiguedadSaldo(Query, antiguedad);  
+            return Query;
+        }
+
+        //Consultar Pagado por Antiguedad 
+        public string EdoCtaMontoPagadoAntiguedad(string medico, int antiguedad)
+        {
+            Query = "SELECT SUM(A.MONTO) " +
+                    "FROM TBL_HPAGOSHONORARIOS A INNER JOIN TBL_CUENTASPORPAGAR C " +
+                    "ON  A.UNIDADDENEGOCIO = C.UNIDADDENEGOCIO AND A.CASO = C.NROID AND A.SERVICIO = C.CLASIFICACIONHONORARIO AND " +
+                    "A.SUMINISTRO = C.TIPOHONORARIO AND A.AREA = C.AREAHONORARIO AND A.MEDICO = C.PROVEEDOR " +
+                    "INNER JOIN TBL_HCASO B " +
+                    "ON C.NROID = B.CASO AND C.UNIDADDENEGOCIO = B.UNIDADNEGOCIO " +
+                    "WHERE C.PROVEEDOR= '" + medico + "' AND C.PAGADO = 0 AND A.TIPO = 1 AND A.CONCEPTO = 1 AND A.APAGAR =1 AND ";
+            
+            Query = antiguedadSaldo(Query, antiguedad);  
+            return Query;
+        }
+
+
 
 
         //Consultar TOTAL Estado de cuenta . Consultar TOTAL Monto a Pagar.
@@ -100,7 +216,7 @@ namespace Atencion24WebServices.Atencion24DAO
             return Query;
         }
 
-        //**ESTADO DE CUENTA**//
+        //**ESTADO DE CUENTA**/
         //**POR UNIDAD DE NEGOCIO**//
         //Consultar POR UNIDAD DE NEGOCIO Estado de cuenta . Consultar TOTAL Monto a Pagar.
         //String o int codMedico?
@@ -147,7 +263,7 @@ namespace Atencion24WebServices.Atencion24DAO
             return Query;
         }
 
-        //**ESTADO DE CUENTA**//
+        //**ESTADO DE CUENTA**/
         //**POR ANTIGUEDAD DE SALDO**//
         //Consultar POR ANTIGUEDAD DE SALDO Estado de cuenta . Consultar TOTAL Monto a Pagar.
         //String o int codMedico?
@@ -218,7 +334,7 @@ namespace Atencion24WebServices.Atencion24DAO
             return antiguedadSaldo(Query, antiguedad);
         }
 
-        //**HONORARIOS PAGADOS**//
+        //**HONORARIOS PAGADOS**/
         //PAGO RECIENTE
         //Estoy segura que asi consulto el NRO NOMINA mas reciente ¿TOP1?
         //Que hay de la fecha de pago? Es la misma para todos los pagos que entran en 
@@ -232,7 +348,7 @@ namespace Atencion24WebServices.Atencion24DAO
             return Query;
         }
 
-        //**HONORARIOS PAGADOS**//
+        //**HONORARIOS PAGADOS**/
         //PAGO POR RANGO DE FECHAS
         /*public string ConsultarHistoricoPagoHonorariosMontoLiberado(string codMedico, DateTime fecha_inicio, DateTime fecha_fin)
         {
@@ -253,7 +369,7 @@ namespace Atencion24WebServices.Atencion24DAO
             return Query;
         }
 
-        //**HONORARIOS FACTURADOS**//
+        //**HONORARIOS FACTURADOS**/
         //Consultar honorarios Facturados. MONTO TOTAL
         //String o int codMedico?
         /*public string ConsultarTotalMontoFacturado(string codMedico, DateTime fecha_inicio, DateTime fecha_fin)
@@ -287,7 +403,7 @@ namespace Atencion24WebServices.Atencion24DAO
             return Query;
         }
         
-        //**DETALLE DE UN CASO**//
+        //**DETALLE DE UN CASO**/
 		//POR NUMERO DE CASO 
         //HONORARIOS PRESTADOS POR EL MEDICO EN ESE CASO Y TOTAL FACTURADO POR CADA SUMINISTRO PRESTADO
 		//ME PERMITE VERIFICAR DE IGUAL MANERA SI SE TRATA DE UN CASO VÁLIDO
