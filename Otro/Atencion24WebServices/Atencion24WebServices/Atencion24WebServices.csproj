@@ -69,10 +69,12 @@
   <ItemGroup>
     <Compile Include="Atencion24DAO\DAO.cs" />
     <Compile Include="Atencion24DAO\EstadoDeCuentaDAO.cs" />
+    <Compile Include="Atencion24DAO\HistoricoPagosDAO.cs" />
     <Compile Include="Atencion24DAO\PagoDAO.cs" />
     <Compile Include="Atencion24DAO\QueryAtencion24.cs" />
     <Compile Include="Atencion24DAO\UsuarioDAO.cs" />
     <Compile Include="Atencion24Negocio\EstadoDeCuenta.cs" />
+    <Compile Include="Atencion24Negocio\HistoricoPagos.cs" />
     <Compile Include="Atencion24Negocio\Pago.cs" />
     <Compile Include="Atencion24Negocio\resumenPorUDN.cs" />
     <Compile Include="Atencion24Negocio\Usuario.cs" />

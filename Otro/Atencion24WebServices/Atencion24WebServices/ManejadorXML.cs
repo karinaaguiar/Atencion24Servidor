@@ -151,5 +151,83 @@ namespace Atencion24WebServices
 
             return XMLtoString(documento);
         }
+
+        public XmlDocument auxiliarHonorariosPagados(XmlDocument documento, Pago pago)
+        {
+            XmlElement elemento;
+            XmlElement elemento1;
+            XmlElement elemento2;
+            XmlElement elemento3;
+            XmlText texto;
+            
+            elemento = documento.CreateElement("pago");
+            
+            //MontoLiberado
+            elemento1 = documento.CreateElement("montoLiberado");
+            texto = documento.CreateTextNode(pago.MontoLiberado);
+            elemento1.AppendChild(texto);
+            elemento.AppendChild(elemento1);
+
+            //Deducciones
+            elemento1 = documento.CreateElement("deducciones");
+            //Deducción
+            for(int i =0; i < (pago.Deducciones.GetLength(0)); i++) 
+            {
+                elemento2 = documento.CreateElement("deduccion");
+                //Concepto
+                elemento3 = documento.CreateElement("concepto");
+                texto = documento.CreateTextNode(pago.Deducciones[i,0]);
+                elemento3.AppendChild(texto);
+                elemento2.AppendChild(elemento3);
+                
+                //Monto
+                elemento3 = documento.CreateElement("monto");
+                texto = documento.CreateTextNode(pago.Deducciones[i,1]);
+                elemento3.AppendChild(texto);
+                elemento2.AppendChild(elemento3);
+
+                elemento1.AppendChild(elemento2);
+            }
+            elemento.AppendChild(elemento1);
+
+            //MontoNeto 
+            elemento1 = documento.CreateElement("montoNeto");
+            texto = documento.CreateTextNode((pago.MontoNeto).ToString("0.##"));
+            elemento1.AppendChild(texto);
+            elemento.AppendChild(elemento1);
+
+            //Fecha Pago
+            elemento1 = documento.CreateElement("fechaPago");
+            texto = documento.CreateTextNode(pago.FechaPago);
+            elemento1.AppendChild(texto);
+            elemento.AppendChild(elemento1);
+
+            documento.AppendChild(elemento);
+            return documento;
+        }
+        
+        public String creacionRespuestaProximoPago(Pago pago) 
+        {
+            XmlDocument documento;
+            
+            documento = newDocument();
+            documento = auxiliarHonorariosPagados(documento, pago);
+            return XMLtoString(documento);
+        }
+
+        public String creacionRespuestaHistoricoPagos(HistoricoPagos pagos) 
+        {
+            XmlDocument documento;
+    
+            documento = newDocument();
+            
+            for (int i = 0; i < pagos.Pagos.Length; i++)
+            {
+                Pago pago = pagos.Pagos[i];
+                documento = auxiliarHonorariosPagados(documento, pago); 
+            }
+            
+            return XMLtoString(documento);
+        }
     }
 }

@@ -203,6 +203,31 @@ namespace Atencion24WebServices.Atencion24DAO
             return Query;
         }
 
+        //**HISTORICO DE PAGOS**
+
+        //Fecha del pago y Monto liberado
+        public string HistoricoPagosFechayMontoLiberado(string medico, string fechaI, string fechaF)
+        {
+            Query = "SELECT CONVERT(VARCHAR(10),FEC_ENVIADOAPAGAR,103), SUM(MONTO) " +
+                    "FROM TBL_HPAGOSHONORARIOS " +
+                    "WHERE FEC_ENVIADOAPAGAR >= '"+ fechaI +"' AND " +
+                    "FEC_ENVIADOAPAGAR <= '" + fechaF + "' AND CONCEPTO = 1 AND TIPO = 1 AND APAGAR = 1 " + 
+                    "AND MEDICO = '" + medico + "' " +
+                    "GROUP BY FEC_ENVIADOAPAGAR " +
+                    "ORDER BY FEC_ENVIADOAPAGAR DESC"; 
+            return Query;
+        }
+
+        //Deducciones 
+        public string HistoricoPagosDeducciones(string medico, string fechapago)
+        {
+            Query = "SELECT CONCEPTO, SUM(MONTO) " +
+                    "FROM TBL_HPAGOSHONORARIOS " +
+                    "WHERE CONVERT(VARCHAR(10),FEC_ENVIADOAPAGAR,103) = '" + fechapago + "' AND " +
+                    "TIPO = -1 AND APAGAR = 1 AND MEDICO = '" + medico + "' " +
+                    "GROUP BY CONCEPTO";
+            return Query;
+        }
 
         //Consultar TOTAL Estado de cuenta . Consultar TOTAL Monto a Pagar.
         //String o int codMedico?

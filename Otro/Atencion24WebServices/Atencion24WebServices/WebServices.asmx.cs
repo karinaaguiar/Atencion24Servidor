@@ -95,6 +95,25 @@ namespace Atencion24WebServices
             else
                 return manej.codificarXmlAEnviar(manej.creacionRespuestaProximoPago(pago));
         }
+
+        [WebMethod(Description = "Consultar Honorarios pagados. Histórico de pagos")]
+        public String ConsultarHistoricoPagos(string medico_tb, string fechaI_tb, string fechaF_tb)
+        {
+            ManejadorXML manej = new ManejadorXML();
+
+            medico_tb = medico_tb.Trim();
+          
+            //Creamos una instancia de EstadoDeCuenta con los datos de entrada (medico_tb)
+            HistoricoPagos pagos = new HistoricoPagos(medico_tb, fechaI_tb, fechaF_tb);
+
+            //Consultamos el estado de cuenta por antiguedad de saldo
+            pagos.consultarHistoricoPagos();
+            if (pagos.sinPagos == true)
+                return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+            else
+                return manej.codificarXmlAEnviar(manej.creacionRespuestaHistoricoPagos(pagos));
+        }
+
     }
 }
 

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Data;
-using System.Windows;
 using Atencion24WebServices.Atencion24DAO;
 
 namespace Atencion24WebServices.Atencion24Negocio
@@ -11,6 +10,7 @@ namespace Atencion24WebServices.Atencion24Negocio
     public class Pago
     {
         private string medico;
+        private string fechaPago;
         private String montoLiberado;
         private string[,] deducciones;
         private decimal montoNeto;
@@ -47,6 +47,12 @@ namespace Atencion24WebServices.Atencion24Negocio
             set { sinpago = value; }
         }
 
+        public string FechaPago
+        {
+            get { return fechaPago; }
+            set { fechaPago = value; }
+        }
+
         //Consultar Proximo Pago
         public void consultarProximoPago()
         {
@@ -77,14 +83,12 @@ namespace Atencion24WebServices.Atencion24Negocio
                     String monto;
                     int numDed = 0;
 
-                    string[,] deducciones;
-
-                    if (ds.Tables[0].Rows.Count == 0) { Deducciones = deducciones; }
+                    if (ds.Tables[0].Rows.Count == 0) { Deducciones = null; }
                     else
                     {
                         if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) == DBNull.Value)
                         {
-                            Deducciones = deducciones;
+                            Deducciones = null;
                         }
                         else
                         {
@@ -108,13 +112,19 @@ namespace Atencion24WebServices.Atencion24Negocio
                                         concepto = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
                                     }
                                 }
-                                deducciones[numDed, 0] = concepto;
-                                deducciones[numDed, 1] = monto;
+                                Deducciones[numDed, 0] = concepto;
+                                Deducciones[numDed, 1] = monto;
                                 montoNeto -= decimal.Parse(monto);
                                 numDed++;
                             }
                         }
                     }
+
+                    //Fecha de pago
+                    DateTime hoy = DateTime.Today; 
+                    DateTime ayer = hoy.AddDays(-1);
+                    System.Diagnostics.Debug.WriteLine(ayer.ToString());
+                    FechaPago = ayer.ToString();
                 }
             }
         }
