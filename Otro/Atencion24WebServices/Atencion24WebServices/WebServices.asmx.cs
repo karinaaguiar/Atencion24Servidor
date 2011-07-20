@@ -100,11 +100,14 @@ namespace Atencion24WebServices
         public String ConsultarHistoricoPagos(string medico_tb, string fechaI_tb, string fechaF_tb)
         {
             ManejadorXML manej = new ManejadorXML();
-
+            System.Diagnostics.Debug.WriteLine("FECHAS ANTES:" + fechaI_tb + " " + fechaF_tb);
             medico_tb = medico_tb.Trim();
-          
+            String fechaI = String.Format("{0:MM/dd/yyyy}", Convert.ToDateTime(fechaI_tb));
+            String fechaF = String.Format("{0:MM/dd/yyyy}", Convert.ToDateTime(fechaF_tb));
+            System.Diagnostics.Debug.WriteLine("FECHAS DESPUES:" + fechaI + " " + fechaF);
+
             //Creamos una instancia de EstadoDeCuenta con los datos de entrada (medico_tb)
-            HistoricoPagos pagos = new HistoricoPagos(medico_tb, fechaI_tb, fechaF_tb);
+            HistoricoPagos pagos = new HistoricoPagos(medico_tb, fechaI, fechaF);
 
             //Consultamos el estado de cuenta por antiguedad de saldo
             pagos.consultarHistoricoPagos();

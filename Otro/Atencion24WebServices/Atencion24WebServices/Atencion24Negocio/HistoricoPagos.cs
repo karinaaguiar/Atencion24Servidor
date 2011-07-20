@@ -34,6 +34,11 @@ namespace Atencion24WebServices.Atencion24Negocio
             set { pagos = value; }
         }
 
+        public Pago getPago(int i)
+        {
+            return pagos[i]; 
+        }
+
         //Consultar Histórico de Pagos
         public void consultarHistoricoPagos()
         {
@@ -44,6 +49,7 @@ namespace Atencion24WebServices.Atencion24Negocio
             String fechaPago;
             String concepto;
             String monto;
+            string[,] deducciones;
             int numDed = 0;
 
             //Monto Liberado
@@ -60,6 +66,7 @@ namespace Atencion24WebServices.Atencion24Negocio
                 }
                 else
                 {
+                    pagos = new Pago[ds.Tables[0].Rows.Count];
                     for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
                     {
                         pago = new Pago(medico);
@@ -84,6 +91,7 @@ namespace Atencion24WebServices.Atencion24Negocio
                             }
                             else
                             {
+                                deducciones = new string[ds.Tables[0].Rows.Count,2];
                                 foreach (DataRow dr in ds.Tables[0].Rows)
                                 {
                                     concepto = dr.ItemArray.ElementAt(0).ToString();
@@ -104,14 +112,15 @@ namespace Atencion24WebServices.Atencion24Negocio
                                             concepto = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
                                         }
                                     }
-                                    pago.Deducciones[numDed, 0] = concepto;
-                                    pago.Deducciones[numDed, 1] = monto;
+                                    deducciones[numDed, 0] = concepto;
+                                    deducciones[numDed, 1] = monto;
                                     pago.MontoNeto -= decimal.Parse(monto);
                                     numDed++;
                                 }
+                                pago.Deducciones = deducciones; 
                             }
                         }
-                        pagos[i] = pago;
+                        Pagos[i] = pago;
                     }
                 }
             }

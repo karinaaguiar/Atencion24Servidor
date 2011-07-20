@@ -164,7 +164,8 @@ namespace Atencion24WebServices
             
             //MontoLiberado
             elemento1 = documento.CreateElement("montoLiberado");
-            texto = documento.CreateTextNode(pago.MontoLiberado);
+            String valor = pago.MontoLiberado;
+            texto = documento.CreateTextNode(valor);
             elemento1.AppendChild(texto);
             elemento.AppendChild(elemento1);
 
@@ -220,10 +221,13 @@ namespace Atencion24WebServices
             XmlDocument documento;
     
             documento = newDocument();
-            
+
+            System.Diagnostics.Debug.WriteLine("Numero de Pagos " + pagos.Pagos.Length);
             for (int i = 0; i < pagos.Pagos.Length; i++)
             {
-                Pago pago = pagos.Pagos[i];
+                Pago pago = pagos.getPago(i);
+                if(!string.IsNullOrEmpty(pago.FechaPago))
+                    System.Diagnostics.Debug.WriteLine("Fecha del pago " + i + ": " + Convert.ToString(pago.FechaPago));
                 documento = auxiliarHonorariosPagados(documento, pago); 
             }
             

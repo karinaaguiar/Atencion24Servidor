@@ -22,6 +22,8 @@ namespace Atencion24WebServices.Atencion24Negocio
             medico = codMedico;
         }
 
+        public Pago() { }
+
         //Getter y Setters
         public String MontoLiberado
         {
