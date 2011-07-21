@@ -229,6 +229,21 @@ namespace Atencion24WebServices.Atencion24DAO
             return Query;
         }
 
+
+        //**HONORARIOS FACTURADOS**//
+         public string HonorariosFacturadosMontoPorUDN(string medico, string fechaI, string fechaF, string udn)
+        {
+            Query = "SELECT SUM(A.MONTOAPAGAR) " +
+                    "FROM TBL_CUENTASPORPAGAR A INNER JOIN TBL_HCASO B " +
+                    "ON A.UNIDADDENEGOCIO = B.UNIDADNEGOCIO AND A.NROID = B.CASO " +
+                    "WHERE A.PROVEEDOR= '" + medico + "' " +
+                    "AND B.FECHAEMISION >= convert(datetime, '" + fechaI + "', 121) " +
+                    "AND B.FECHAEMISION <= convert(datetime, '" + fechaF + "', 121) " +
+                    "AND A.UNIDADDENEGOCIO  = '" + udn + "'";
+            return Query;
+        }
+
+
         //Consultar TOTAL Estado de cuenta . Consultar TOTAL Monto a Pagar.
         //String o int codMedico?
         /*public string ConsultarTotalMontoAPagar(string codMedico)

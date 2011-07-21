@@ -118,6 +118,26 @@ namespace Atencion24WebServices
                 return manej.codificarXmlAEnviar(manej.creacionRespuestaHistoricoPagos(pagos.Pagos));
        
         }
+       
+        [WebMethod(Description = "Consultar Honorarios facturados ")]
+        public String ConsultarHonorariosFacturados(string medico_tb, string fechaI_tb, string fechaF_tb)
+        {
+            ManejadorXML manej = new ManejadorXML();
+            medico_tb = medico_tb.Trim();
+            String fechaI = String.Format("{0:MM/dd/yyyy}", Convert.ToDateTime(fechaI_tb));
+            String fechaF = String.Format("{0:MM/dd/yyyy}", Convert.ToDateTime(fechaF_tb));
+
+            //Creamos una instancia de HistoricoPagos con los datos de entrada (medico_tb, fechaI, fechaF)
+            FacturadoUDN facturado = new FacturadoUDN(medico_tb, fechaI, fechaF);
+
+            //Consultamos el listado de pagos generados para el médico en el rango de fechas
+            facturado.consultarHonorariosFacturados();
+            if (facturado.SinFacturado == true)
+                return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+            else
+                return manej.codificarXmlAEnviar(manej.creacionRespuestaHonorariosFacturados(facturado));
+
+        }
     }
 }
 

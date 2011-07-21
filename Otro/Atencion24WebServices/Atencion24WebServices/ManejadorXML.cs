@@ -237,5 +237,51 @@ namespace Atencion24WebServices
             documento.AppendChild(elemento);
             return XMLtoString(documento);
         }
+
+        public String creacionRespuestaHonorariosFacturados(FacturadoUDN facturado) 
+        {
+            XmlDocument documento;
+            XmlElement elemento;
+            XmlElement elemento1;
+            XmlText texto;
+
+            documento = newDocument();
+            elemento = documento.CreateElement("facturado");
+            
+            //Monto30Dias
+            elemento1 = documento.CreateElement("hospitalizacion");
+            texto = documento.CreateTextNode(facturado.Hospitalizacion.ToString("0.##"));
+            elemento1.AppendChild(texto);
+            elemento.AppendChild(elemento1);
+
+            //Monto60Dias
+            elemento1 = documento.CreateElement("emergencia");
+            texto = documento.CreateTextNode((facturado.Emergencia).ToString("0.##"));
+            elemento1.AppendChild(texto);
+            elemento.AppendChild(elemento1);
+
+            //Monto90Dias
+            elemento1 = documento.CreateElement("cirugia");
+            texto = documento.CreateTextNode((facturado.Cirugia).ToString("0.##"));
+            elemento1.AppendChild(texto);
+            elemento.AppendChild(elemento1);
+
+            //Monto180Dias
+            elemento1 = documento.CreateElement("convenios");
+            texto = documento.CreateTextNode((facturado.Convenios).ToString("0.##"));
+            elemento1.AppendChild(texto);
+            elemento.AppendChild(elemento1);
+
+            //MontoMas180Dias
+            elemento1 = documento.CreateElement("total");
+            texto = documento.CreateTextNode((facturado.MontoTotal).ToString("0.##"));
+            elemento1.AppendChild(texto);
+            elemento.AppendChild(elemento1);
+
+            documento.AppendChild(elemento);
+
+            return XMLtoString(documento);
+        }
+        
     }
 }
