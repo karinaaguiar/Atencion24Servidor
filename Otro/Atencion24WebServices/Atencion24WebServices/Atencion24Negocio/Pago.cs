@@ -10,8 +10,8 @@ namespace Atencion24WebServices.Atencion24Negocio
     public class Pago
     {
         private string medico;
-        private string fechaPago;
-        private String montoLiberado;
+        private string fechaPago = "";
+        private String montoLiberado = "";
         private string[,] deducciones;
         private decimal montoNeto;
         private bool sinpago = false;

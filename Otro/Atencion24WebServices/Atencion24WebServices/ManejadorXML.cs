@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -152,7 +153,7 @@ namespace Atencion24WebServices
             return XMLtoString(documento);
         }
 
-        public XmlDocument auxiliarHonorariosPagados(XmlDocument documento, Pago pago)
+        public XmlElement auxiliarHonorariosPagados(XmlDocument documento, XmlElement elementoPadre, Pago pago)
         {
             XmlElement elemento;
             XmlElement elemento1;
@@ -203,8 +204,9 @@ namespace Atencion24WebServices
             elemento1.AppendChild(texto);
             elemento.AppendChild(elemento1);
 
-            documento.AppendChild(elemento);
-            return documento;
+            elementoPadre.AppendChild(elemento);
+            
+            return elementoPadre;
         }
         
         public String creacionRespuestaProximoPago(Pago pago) 
@@ -212,25 +214,27 @@ namespace Atencion24WebServices
             XmlDocument documento;
             
             documento = newDocument();
-            documento = auxiliarHonorariosPagados(documento, pago);
+            //documento = auxiliarHonorariosPagados(documento, pago);
             return XMLtoString(documento);
         }
-
-        public String creacionRespuestaHistoricoPagos(HistoricoPagos pagos) 
+        
+        public String creacionRespuestaHistoricoPagos(ArrayList pagos) 
         {
             XmlDocument documento;
-    
+            XmlElement elemento;
+ 
             documento = newDocument();
+            elemento = documento.CreateElement("pagos");
 
-            System.Diagnostics.Debug.WriteLine("Numero de Pagos " + pagos.Pagos.Length);
-            for (int i = 0; i < pagos.Pagos.Length; i++)
+            ArrayList listadoPagos = new ArrayList();
+            listadoPagos = pagos;
+
+            foreach(Pago pago in listadoPagos)
             {
-                Pago pago = pagos.getPago(i);
-                if(!string.IsNullOrEmpty(pago.FechaPago))
-                    System.Diagnostics.Debug.WriteLine("Fecha del pago " + i + ": " + Convert.ToString(pago.FechaPago));
-                documento = auxiliarHonorariosPagados(documento, pago); 
+                elemento = auxiliarHonorariosPagados(documento, elemento, pago); 
             }
-            
+
+            documento.AppendChild(elemento);
             return XMLtoString(documento);
         }
     }

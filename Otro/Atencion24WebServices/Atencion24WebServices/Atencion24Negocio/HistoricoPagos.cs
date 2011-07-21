@@ -1,15 +1,17 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Data;
+using System.Globalization;
 using Atencion24WebServices.Atencion24DAO;
 
 namespace Atencion24WebServices.Atencion24Negocio
 {
     public class HistoricoPagos
     {
-        private Pago[] pagos;
+        private ArrayList pagos;
         private string medico;
         private bool sinpagos = false;
         private string fechaI;
@@ -23,26 +25,25 @@ namespace Atencion24WebServices.Atencion24Negocio
             fechaF = fechaF_tb;
         }
 
+        public HistoricoPagos() { }
+
         public bool sinPagos
         {
             get { return sinpagos; }
             set { sinpagos = value; }
         }
-        public Pago[] Pagos
+        public ArrayList Pagos
         {
             get { return pagos; }
             set { pagos = value; }
-        }
-
-        public Pago getPago(int i)
-        {
-            return pagos[i]; 
         }
 
         //Consultar Histórico de Pagos
         public void consultarHistoricoPagos()
         {
             DataSet ds = new DataSet();
+            DataSet dsDeducciones = new DataSet();
+            DataSet dsConceptos = new DataSet();
             HistoricoPagosDAO ud = new HistoricoPagosDAO();
 
             Pago pago;
@@ -66,50 +67,55 @@ namespace Atencion24WebServices.Atencion24Negocio
                 }
                 else
                 {
-                    pagos = new Pago[ds.Tables[0].Rows.Count];
+                    pagos = new ArrayList();// [ds.Tables[0].Rows.Count];
                     for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
                     {
                         pago = new Pago(medico);
                         DataRow row = ds.Tables[0].Rows[i];
+                        
                         //Fecha de Pago
                         fechaPago = row.ItemArray.ElementAt(0).ToString();
                         pago.FechaPago = fechaPago;
+                        
                         //Monto Liberado 
                         pago.MontoLiberado = row.ItemArray.ElementAt(1).ToString();
                         pago.MontoNeto = decimal.Parse(pago.MontoLiberado);
 
                         //Deducciones
                         ud = new HistoricoPagosDAO();
-                        ds = ud.HistoricoPagosDeducciones(medico, fechaPago);
+                        dsDeducciones = new DataSet();
+                        dsDeducciones = ud.HistoricoPagosDeducciones(medico, fechaPago);
 
-                        if (ds.Tables[0].Rows.Count == 0) { pago.Deducciones = null; }
+                        if (dsDeducciones.Tables[0].Rows.Count == 0) { pago.Deducciones = null; }
                         else
                         {
-                            if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) == DBNull.Value)
+                            if (dsDeducciones.Tables[0].Rows[0].ItemArray.ElementAt(0) == DBNull.Value)
                             {
                                 pago.Deducciones = null;
                             }
                             else
                             {
-                                deducciones = new string[ds.Tables[0].Rows.Count,2];
-                                foreach (DataRow dr in ds.Tables[0].Rows)
+                                deducciones = new string[dsDeducciones.Tables[0].Rows.Count, 2];
+                                foreach (DataRow dr in dsDeducciones.Tables[0].Rows)
                                 {
                                     concepto = dr.ItemArray.ElementAt(0).ToString();
                                     monto = dr.ItemArray.ElementAt(1).ToString();
 
                                     //Buscamos el nombre del concepto
                                     PagoDAO ud1 = new PagoDAO();
-                                    ds = ud1.NombreConcepto(concepto);
-                                    if (ds.Tables[0].Rows.Count == 0) { concepto = ""; }
+                                    dsConceptos = new DataSet();
+                                    dsConceptos = ud1.NombreConcepto(concepto);
+                                    if (dsConceptos.Tables[0].Rows.Count == 0) { concepto = ""; }
                                     else
                                     {
-                                        if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) == DBNull.Value)
+                                        if (dsConceptos.Tables[0].Rows[0].ItemArray.ElementAt(0) == DBNull.Value)
                                         {
                                             concepto = "";
                                         }
                                         else
                                         {
-                                            concepto = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
+                                            String concepto1 = dsConceptos.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
+                                            concepto = concepto1.Substring(0, 1).ToUpper() + concepto1.Substring(1).ToLower(); 
                                         }
                                     }
                                     deducciones[numDed, 0] = concepto;
@@ -117,10 +123,11 @@ namespace Atencion24WebServices.Atencion24Negocio
                                     pago.MontoNeto -= decimal.Parse(monto);
                                     numDed++;
                                 }
-                                pago.Deducciones = deducciones; 
+                                pago.Deducciones = deducciones;
+                                numDed = 0; 
                             }
                         }
-                        Pagos[i] = pago;
+                        pagos.Add(pago);
                     }
                 }
             }
