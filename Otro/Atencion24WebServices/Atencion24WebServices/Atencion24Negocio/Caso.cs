@@ -154,6 +154,8 @@ namespace Atencion24WebServices.Atencion24Negocio
                  montoAbonado = decimal.Parse(ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString());
             }
 
+            totalDeuda = montoFacturado - montoExonerado - montoAbonado;
+
             //Nombre y Cédula del paciente
             ud = new CasoDAO();
             ds = ud.DetalleDeCasoNombreyCedulaPaciente(nroCaso, unidadNegocio);
