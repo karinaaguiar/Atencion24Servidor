@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -172,6 +173,25 @@ namespace Atencion24WebServices
             caso.ConsultarDetalleDeCaso();
             
             return manej.codificarXmlAEnviar(manej.creacionRespuestaDetalleDeCaso(caso));
+
+        }
+
+        [WebMethod(Description = "Consultar listado de fianzas pendientes")]
+        public String listFianzas(string medico_tb)
+        {
+            ManejadorXML manej = new ManejadorXML();
+            medico_tb = medico_tb.Trim();
+
+            //Creamos una instancia de HistoricoPagos con los datos de entrada (medico_tb, fechaI, fechaF)
+            ListadoFianzas fianzas = new ListadoFianzas(medico_tb);
+
+            //Consultamos el listado de pagos generados para el médico en el rango de fechas
+            fianzas.ConsultarListadoFianzas();
+
+            if (fianzas.SinFianzas == true)
+                return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+            else
+                return manej.codificarXmlAEnviar(manej.creacionRespuestaListadoFianzas(fianzas.Fianzas));
 
         }
 

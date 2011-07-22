@@ -454,5 +454,94 @@ namespace Atencion24WebServices
             return XMLtoString(documento);
         }
 
+        public XmlElement auxiliarListadoFianzas(XmlDocument documento, XmlElement elementoPadre, Fianza fianza)
+        {
+            XmlElement elemento;
+            XmlElement elemento1;
+            XmlText texto;
+
+            elemento = documento.CreateElement("fianza");
+
+            //Número de caso 
+            elemento1 = documento.CreateElement("caso");
+            String valor = fianza.NroCaso;
+            texto = documento.CreateTextNode(valor);
+            elemento1.AppendChild(texto);
+            elemento.AppendChild(elemento1);
+
+            //Fecha emisión
+            elemento1 = documento.CreateElement("fechaEmision");
+            texto = documento.CreateTextNode(fianza.FechaEmision);
+            elemento1.AppendChild(texto);
+            elemento.AppendChild(elemento1);
+
+            //Fecha emisión
+            elemento1 = documento.CreateElement("paciente");
+            texto = documento.CreateTextNode(fianza.Paciente);
+            elemento1.AppendChild(texto);
+            elemento.AppendChild(elemento1);
+
+            //Moto a cobrar
+            elemento1 = documento.CreateElement("montoACobrar");
+            texto = documento.CreateTextNode(fianza.MontoACobrar.ToString("0.##"));
+            elemento1.AppendChild(texto);
+            elemento.AppendChild(elemento1);
+
+            //Moto abonado
+            elemento1 = documento.CreateElement("montoAbonado");
+            texto = documento.CreateTextNode(fianza.MontoAbonado.ToString("0.##"));
+            elemento1.AppendChild(texto);
+            elemento.AppendChild(elemento1);
+
+            //Moto reintegro
+            elemento1 = documento.CreateElement("montoReintegro");
+            texto = documento.CreateTextNode(fianza.MontoReintegro.ToString("0.##"));
+            elemento1.AppendChild(texto);
+            elemento.AppendChild(elemento1);
+
+            //Moto Notas Crédito
+            elemento1 = documento.CreateElement("montoNotasCred");
+            texto = documento.CreateTextNode(fianza.MontoNotasCred.ToString("0.##"));
+            elemento1.AppendChild(texto);
+            elemento.AppendChild(elemento1);
+
+            
+            //Moto Notas Débito
+            elemento1 = documento.CreateElement("montoNotasDeb");
+            texto = documento.CreateTextNode(fianza.MontoNotasDeb.ToString("0.##"));
+            elemento1.AppendChild(texto);
+            elemento.AppendChild(elemento1);
+
+            //Moto neto
+            elemento1 = documento.CreateElement("montoDeuda");
+            texto = documento.CreateTextNode(fianza.MontoNeto.ToString("0.##"));
+            elemento1.AppendChild(texto);
+            elemento.AppendChild(elemento1);
+
+            elementoPadre.AppendChild(elemento);
+
+            return elementoPadre;
+        }
+
+        public String creacionRespuestaListadoFianzas(ArrayList fianzas) 
+        {
+            XmlDocument documento;
+            XmlElement elemento;
+
+            documento = newDocument();
+            elemento = documento.CreateElement("fianzas");
+
+            ArrayList listadoFianzas = new ArrayList();
+            listadoFianzas = fianzas;
+
+            foreach (Fianza fianza in listadoFianzas)
+            {
+                elemento = auxiliarListadoFianzas(documento, elemento, fianza);
+            }
+
+            documento.AppendChild(elemento);
+            return XMLtoString(documento);
+        }
+        
     }
 }

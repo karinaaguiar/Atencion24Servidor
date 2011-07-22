@@ -416,7 +416,6 @@ namespace Atencion24WebServices.Atencion24DAO
         
          //Pagado por honorario
          public string DetalleDeCasoPagadoPorHonorario(String medico, String nroCaso, String unidadNegocio, String servicio, String suministro, String area)
-
          {
              Query = "SELECT SUM(A.MONTO) " +
                      "FROM TBL_HPAGOSHONORARIOS A INNER JOIN TBL_CUENTASPORPAGAR B " +
@@ -428,6 +427,28 @@ namespace Atencion24WebServices.Atencion24DAO
                      "GROUP BY B.CLASIFICACIONHONORARIO, B.TIPOHONORARIO, B.AREAHONORARIO";
              return Query;
          }
+         
+        //___________________________________________________
+
+        //**LISTADO FIANZAS PENDIENTES**//
+        public string ListadoFianzas(String medico)
+         {
+             Query = "SELECT B.CASO, CONVERT(VARCHAR(10),B.FECHAEMISION,103), B.PACIENTE, A.MONTOACOBRAR, A.MONTOABONADO, A.MONTOTOTALREINTEGRO, A.MONTOTOTALNC, A.MONTOTOTALND " +
+                     "FROM TBL_CUENTASPORCOBRAR A " +
+                     "INNER JOIN TBL_HCASO B " +
+                     "ON A.UNIDADDENEGOCIO = B.UNIDADNEGOCIO AND A.NROID = B.CASO " +
+                     "WHERE A.RESPONSABLEDEPAGO = '" + medico + "' AND A.TIPORESPONSABLE = 4 AND A.CANCELADO = 0 ";
+             return Query;
+         }
+
+            public string NombrePaciente(String cedula)
+         {
+             Query = "SELECT NOMBRE " +
+                     "FROM TBL_PACIENTE " +
+                     "WHERE CEDULA = '" + cedula + "' ";
+             return Query;
+         }
+
 
         //Total Facturado
 
