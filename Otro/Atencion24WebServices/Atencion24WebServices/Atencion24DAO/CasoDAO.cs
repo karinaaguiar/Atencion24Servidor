@@ -84,7 +84,7 @@ namespace Atencion24WebServices.Atencion24DAO
             return Ds;
         }
 
-        //Consultar nombre del responsble
+        //Consultar nombre del responsable
         public DataSet DetalleDeCasoNombreResponsable(String codigoResp, String tipoResp)
         {
             Cmd.CommandText = QueryAtencion24.DetalleDeCasoNombreResponsable(codigoResp, tipoResp);
@@ -93,5 +93,67 @@ namespace Atencion24WebServices.Atencion24DAO
             CerrarConexionBd();
             return Ds;
         }
+
+        //Listado de Honorarios prestados en el caso por el médico  
+        public DataSet DetalleDeCasoListadoHonorarios(String medico, String nroCaso, String unidadNegocio)
+        {
+            Cmd.CommandText = QueryAtencion24.DetalleDeCasoListadoHonorarios(medico, nroCaso, unidadNegocio);
+            Da.SelectCommand = Cmd;
+            Da.Fill(Ds);
+            CerrarConexionBd();
+            return Ds;
+        }
+
+        //Nombre de Honorario prestado en el caso por el médico  
+        public DataSet DetalleDeCasoNombreHonorario(String suministro, String area)
+        {
+            Cmd.CommandText = QueryAtencion24.DetalleDeCasoNombreHonorario(suministro, area);
+            Da.SelectCommand = Cmd;
+            Da.Fill(Ds);
+            CerrarConexionBd();
+            return Ds;
+        }
+               
+        //Facturado por honorario prestado en el caso por el médico  
+        public DataSet DetalleDeCasoFacturadoHonorario(String medico, String nroCaso, String unidadNegocio, String servicio, String suministro, String area)
+        {
+            Cmd.CommandText = QueryAtencion24.DetalleDeCasoFacturadoHonorario(medico, nroCaso, unidadNegocio, servicio, suministro, area);
+            Da.SelectCommand = Cmd;
+            Da.Fill(Ds);
+            CerrarConexionBd();
+            return Ds;
+        }
+                
+        //Notas de Crédito por honorario prestado en el caso por el médico   
+        public DataSet DetalleDeCasoNotasCredHonorario(String medico, String nroCaso, String unidadNegocio, String servicio, String suministro, String area)
+        {
+            Cmd.CommandText = QueryAtencion24.DetalleDeCasoNotasCredHonorario(medico, nroCaso, unidadNegocio, servicio, suministro, area);
+            Da.SelectCommand = Cmd;
+            Da.Fill(Ds);
+            CerrarConexionBd();
+            return Ds;
+        }
+                
+        //Notas de Débito por honorario prestado en el caso por el médico  
+        public DataSet DetalleDeCasoNotasDebHonorario(String medico, String nroCaso, String unidadNegocio, String servicio, String suministro, String area)
+        {
+            Cmd.CommandText = QueryAtencion24.DetalleDeCasoNotasDebHonorario(medico, nroCaso, unidadNegocio, servicio, suministro, area);
+            Da.SelectCommand = Cmd;
+            Da.Fill(Ds);
+            CerrarConexionBd();
+            return Ds;
+        }
+
+        //Monto pagado por honorario prestado en el caso por el médico  
+        public DataSet DetalleDeCasoPagadoPorHonorario(String medico, String nroCaso, String unidadNegocio, String servicio, String suministro, String area)
+        {
+            Cmd.CommandText = QueryAtencion24.DetalleDeCasoPagadoPorHonorario(medico, nroCaso, unidadNegocio, servicio, suministro, area);
+            Da.SelectCommand = Cmd;
+            Da.Fill(Ds);
+            CerrarConexionBd();
+            return Ds;
+        }
+
     }
+
 }

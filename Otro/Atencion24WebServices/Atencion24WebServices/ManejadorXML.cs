@@ -287,8 +287,8 @@ namespace Atencion24WebServices
         {
             XmlElement elemento;
             XmlElement elemento1;
-            //XmlElement elemento2;
-            //XmlElement elemento3;
+            XmlElement elemento2;
+            XmlElement elemento3;
             XmlText texto;
 
             if (tipo == 0) elemento = elementoPadre;
@@ -367,26 +367,48 @@ namespace Atencion24WebServices
                 elemento.AppendChild(elemento1);
 
                 //Honorarios
-                /*elemento1 = documento.CreateElement("honorarios");
+                elemento1 = documento.CreateElement("honorarios");
                 //Honorarios
-                foreach (Honorario honorario in caso.Honorarios)
+                if (caso.Honorarios != null)
                 {
-                    elemento2 = documento.CreateElement("deduccion");
-                    //Concepto
-                    elemento3 = documento.CreateElement("concepto");
-                    texto = documento.CreateTextNode(pago.Deducciones[i, 0]);
-                    elemento3.AppendChild(texto);
-                    elemento2.AppendChild(elemento3);
+                    foreach (Honorario honorario in caso.Honorarios)
+                    {
+                        elemento2 = documento.CreateElement("honorario");
 
-                    //Monto
-                    elemento3 = documento.CreateElement("monto");
-                    texto = documento.CreateTextNode(pago.Deducciones[i, 1]);
-                    elemento3.AppendChild(texto);
-                    elemento2.AppendChild(elemento3);
+                        //Nombre honorario 
+                        elemento3 = documento.CreateElement("nombre");
+                        texto = documento.CreateTextNode(honorario.Nombre);
+                        elemento3.AppendChild(texto);
+                        elemento2.AppendChild(elemento3);
 
-                    elemento1.AppendChild(elemento2);
+                        //Monto Facturado 
+                        elemento3 = documento.CreateElement("facturado");
+                        texto = documento.CreateTextNode(honorario.MontoFacturado.ToString("0.##"));
+                        elemento3.AppendChild(texto);
+                        elemento2.AppendChild(elemento3);
+
+                        //Nombre honorario 
+                        elemento3 = documento.CreateElement("exonerado");
+                        texto = documento.CreateTextNode(honorario.MontoExonerado.ToString("0.##"));
+                        elemento3.AppendChild(texto);
+                        elemento2.AppendChild(elemento3);
+
+                        //Nombre honorario 
+                        elemento3 = documento.CreateElement("abonado");
+                        texto = documento.CreateTextNode(honorario.MontoAbonado.ToString("0.##"));
+                        elemento3.AppendChild(texto);
+                        elemento2.AppendChild(elemento3);
+
+                        //Nombre honorario 
+                        elemento3 = documento.CreateElement("deuda");
+                        texto = documento.CreateTextNode(honorario.TotalDeuda.ToString("0.##"));
+                        elemento3.AppendChild(texto);
+                        elemento2.AppendChild(elemento3);
+
+                        elemento1.AppendChild(elemento2);
+                    }
+                    elemento.AppendChild(elemento1);
                 }
-                elemento.AppendChild(elemento1);*/
             }
 
             if (tipo != 0) elementoPadre.AppendChild(elemento);

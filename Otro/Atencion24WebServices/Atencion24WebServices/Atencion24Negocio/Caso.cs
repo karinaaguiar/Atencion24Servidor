@@ -21,7 +21,7 @@ namespace Atencion24WebServices.Atencion24Negocio
 	    private decimal montoExonerado = 0;
         private decimal montoAbonado = 0;
         private decimal totalDeuda = 0;
-	    private ArrayList honorarios;
+	    private ArrayList honorarios = null;
         private bool simple = false;
         
         ///Constructor
@@ -208,54 +208,84 @@ namespace Atencion24WebServices.Atencion24Negocio
             }
 
             //Honorarios prestados en el caso 
+            ud = new CasoDAO();
+            ds = ud.DetalleDeCasoListadoHonorarios(medico, nroCaso, unidadNegocio);
 
-            /*        
-            //Deducciones
-            ud = new PagoDAO();
-            ds = ud.ProximoPagoDeducciones(medico);
-            String concepto;
-            String monto;
-            int numDed = 0;
-
-            if (ds.Tables[0].Rows.Count == 0) { Deducciones = null; }
+            if (ds.Tables[0].Rows.Count == 0) { honorarios = null; }
             else
             {
-                if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) == DBNull.Value)
+                Honorario honorario = new Honorario();
+                Honorarios = new ArrayList();
+                String servicio;
+                String suministro;
+                String area;
+                foreach (DataRow dr in ds.Tables[0].Rows)
                 {
-                    Deducciones = null;
-                }
-                else
-                {
-                    foreach (DataRow dr in ds.Tables[0].Rows)
+                    if ((dr.ItemArray.ElementAt(0) != DBNull.Value) &&
+                        (dr.ItemArray.ElementAt(1) != DBNull.Value) &&
+                        (dr.ItemArray.ElementAt(2) != DBNull.Value))
                     {
-                        concepto = dr.ItemArray.ElementAt(0).ToString();
-                        monto = dr.ItemArray.ElementAt(1).ToString();
+                        suministro = dr.ItemArray.ElementAt(0).ToString();
+                        area = dr.ItemArray.ElementAt(1).ToString();
+                        servicio = dr.ItemArray.ElementAt(2).ToString();
 
-                        //Buscamos el nombre del concepto
-                        ud = new PagoDAO();
-                        ds = ud.NombreConcepto(concepto);
-                        if (ds.Tables[0].Rows.Count == 0) { concepto = ""; }
-                        else
+                        //Nombre Honorario
+                        ud = new CasoDAO();
+                        ds = ud.DetalleDeCasoNombreHonorario(suministro, area);
+
+                        if (ds.Tables[0].Rows.Count != 0)
                         {
-                            if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) == DBNull.Value)
-                            {
-                                concepto = "";
-                            }
-                            else
-                            {
-                                concepto = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
-                            }
+                            if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
+                                honorario.Nombre = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
                         }
-                        Deducciones[numDed, 0] = concepto;
-                        Deducciones[numDed, 1] = monto;
-                        montoNeto -= decimal.Parse(monto);
-                        numDed++;
+
+                        //Monto Facturado por honorario
+                        ud = new CasoDAO();
+                        ds = ud.DetalleDeCasoFacturadoHonorario(medico, nroCaso, unidadNegocio, servicio, suministro, area);
+
+                        if (ds.Tables[0].Rows.Count != 0)
+                        {
+                            if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
+                                honorario.MontoFacturado = decimal.Parse(ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString());
+                        }
+
+                        //Monto NotasCred por honorario
+                        ud = new CasoDAO();
+                        ds = ud.DetalleDeCasoNotasCredHonorario(medico, nroCaso, unidadNegocio, servicio, suministro, area);
+
+                        if (ds.Tables[0].Rows.Count != 0)
+                        {
+                            if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
+                                honorario.MontoExonerado = decimal.Parse(ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString());
+                        }
+
+                        //Monto NotasDeb por honorario
+                        ud = new CasoDAO();
+                        ds = ud.DetalleDeCasoNotasDebHonorario(medico, nroCaso, unidadNegocio, servicio, suministro, area);
+
+                        if (ds.Tables[0].Rows.Count != 0)
+                        {
+                            if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
+                                honorario.MontoExonerado -= decimal.Parse(ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString());
+                        }
+
+                        //Monto Pagado por honorario
+                        ud = new CasoDAO();
+                        ds = ud.DetalleDeCasoPagadoPorHonorario(medico, nroCaso, unidadNegocio, servicio, suministro, area);
+
+                        if (ds.Tables[0].Rows.Count != 0)
+                        {
+                            if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
+                                honorario.MontoAbonado = decimal.Parse(ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString());
+                        }
+
+                        honorario.TotalDeuda = honorario.MontoFacturado - honorario.MontoExonerado - honorario.MontoAbonado;
+                        honorarios.Add(honorario);
                     }
                 }
-            }
-            */ 
-               
+            }         
         }
+
        
     }
 }

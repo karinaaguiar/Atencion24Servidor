@@ -353,7 +353,81 @@ namespace Atencion24WebServices.Atencion24DAO
              return Query;
          }
 
+         //Listado de honorarios
+         public string DetalleDeCasoListadoHonorarios(string medico, string nroCaso, string unidadNegocio)
+         {
+             Query = "SELECT TIPOHONORARIO, AREAHONORARIO,CLASIFICACIONHONORARIO " +
+                     "FROM TBL_CUENTASPORPAGAR " +
+                     "WHERE PROVEEDOR= '" + medico + "' AND NROID ='" + nroCaso + "' AND UNIDADDENEGOCIO = '" + unidadNegocio + "' " +
+                     "GROUP BY CLASIFICACIONHONORARIO, TIPOHONORARIO, AREAHONORARIO ";
+             return Query;
+         }
+
+         //Nombre de honorario 
+         public string DetalleDeCasoNombreHonorario(String suministro, String area)
+         {
+             Query = "SELECT NOMBRE " +
+                     "FROM TBL_SUMINISTROS " +
+                     "WHERE CODIGO = '" + suministro + "' AND AREA = '" + area + "'";
+             return Query;
+         }
+
+         //Facturado por honorario
+         public string DetalleDeCasoFacturadoHonorario(String medico, String nroCaso, String unidadNegocio, String servicio, String suministro, String area)
+         {
+             Query = "SELECT SUM(MONTOAPAGAR) " +
+                     "FROM TBL_CUENTASPORPAGAR " +
+                     "WHERE PROVEEDOR= '" + medico + "' AND NROID ='" + nroCaso + "' AND UNIDADDENEGOCIO = '" + unidadNegocio + "' " +
+                     "AND TIPOHONORARIO = '" + suministro + "' AND AREAHONORARIO = '" + area + "' AND CLASIFICACIONHONORARIO = '" + servicio + "' " +
+                     "GROUP BY TIPOHONORARIO, AREAHONORARIO, CLASIFICACIONHONORARIO";
+             return Query;
+         }
+ 
+        //Notas de Crédito por honorario
+         public string DetalleDeCasoNotasCredHonorario(String medico, String nroCaso, String unidadNegocio, String servicio, String suministro, String area)
+
+         {
+             Query = "SELECT SUM(B.MONTOTOTAL) " +
+                     "FROM TBL_NOTADECREDITOYDEBITO A INNER JOIN TBL_NOTADECREDITOYDEBITODETALLE B " +
+                     "ON A.NRONOTA = B.NRONOTA " +
+                     "INNER JOIN TBL_CUENTASPORPAGAR C " +
+                     "ON A.NROID = C.NROID AND A.UNIDADDENEGOCIO = C.UNIDADDENEGOCIO AND B.CODIGOTIPOP = C.PROVEEDOR AND " +
+                     "B.SERVICIO = C.CLASIFICACIONHONORARIO AND B.SUMINISTRO = C.TIPOHONORARIO AND B.AREA = C.AREAHONORARIO " +
+                     "WHERE A.TIPONOTA = 1 AND C.NROID ='" + nroCaso + "' AND C.UNIDADDENEGOCIO = '" + unidadNegocio + "' AND C.PROVEEDOR= '" + medico + "' " +
+                     "AND TIPOHONORARIO = '" + suministro + "' AND AREAHONORARIO = '" + area + "' AND CLASIFICACIONHONORARIO = '" + servicio + "' " +
+                     "GROUP BY C.CLASIFICACIONHONORARIO, C.TIPOHONORARIO, C.AREAHONORARIO";
+             return Query;
+         }
+
+         //Notas de Débito por honorario
+         public string DetalleDeCasoNotasDebHonorario(String medico, String nroCaso, String unidadNegocio, String servicio, String suministro, String area)
+         {
+             Query = "SELECT SUM(B.MONTOTOTAL) " +
+                     "FROM TBL_NOTADECREDITOYDEBITO A INNER JOIN TBL_NOTADECREDITOYDEBITODETALLE B " +
+                     "ON A.NRONOTA = B.NRONOTA " +
+                     "INNER JOIN TBL_CUENTASPORPAGAR C " +
+                     "ON A.NROID = C.NROID AND A.UNIDADDENEGOCIO = C.UNIDADDENEGOCIO AND B.CODIGOTIPOP = C.PROVEEDOR AND " +
+                     "B.SERVICIO = C.CLASIFICACIONHONORARIO AND B.SUMINISTRO = C.TIPOHONORARIO AND B.AREA = C.AREAHONORARIO " +
+                     "WHERE A.TIPONOTA = 2 AND C.NROID ='" + nroCaso + "' AND C.UNIDADDENEGOCIO = '" + unidadNegocio + "' AND C.PROVEEDOR= '" + medico + "' " +
+                     "AND TIPOHONORARIO = '" + suministro + "' AND AREAHONORARIO = '" + area + "' AND CLASIFICACIONHONORARIO = '" + servicio + "' " +
+                     "GROUP BY C.CLASIFICACIONHONORARIO, C.TIPOHONORARIO, C.AREAHONORARIO";
+             return Query;
+         }
         
+         //Pagado por honorario
+         public string DetalleDeCasoPagadoPorHonorario(String medico, String nroCaso, String unidadNegocio, String servicio, String suministro, String area)
+
+         {
+             Query = "SELECT SUM(A.MONTO) " +
+                     "FROM TBL_HPAGOSHONORARIOS A INNER JOIN TBL_CUENTASPORPAGAR B " +
+                     "ON  A.UNIDADDENEGOCIO = B.UNIDADDENEGOCIO AND A.CASO = B.NROID AND A.SERVICIO = B.CLASIFICACIONHONORARIO AND " +
+                     "A.SUMINISTRO = B.TIPOHONORARIO AND A.AREA = B.AREAHONORARIO AND A.MEDICO = B.PROVEEDOR " +
+                     "WHERE B.NROID ='" + nroCaso + "' AND B.UNIDADDENEGOCIO = '" + unidadNegocio + "' AND B.PROVEEDOR= '" + medico + "' " +
+                     "AND TIPOHONORARIO = '"+suministro+"' AND AREAHONORARIO = '"+area+"' AND CLASIFICACIONHONORARIO = '"+servicio+"' " +
+                     "AND A.TIPO = 1 AND A.CONCEPTO = 1 AND A.APAGAR =1 " +
+                     "GROUP BY B.CLASIFICACIONHONORARIO, B.TIPOHONORARIO, B.AREAHONORARIO";
+             return Query;
+         }
 
         //Total Facturado
 
