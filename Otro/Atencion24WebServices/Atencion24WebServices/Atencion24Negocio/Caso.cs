@@ -10,21 +10,29 @@ namespace Atencion24WebServices.Atencion24Negocio
 {
     public class Caso
     {
+        private String medico;
         private String nombrePaciente;
 	    private String fechaEmisionFactura;
 	    private String nroCaso;
 	    private String unidadNegocio;
-	    private String ciPaciente;
-	    private String responsablePago;
-	    private decimal montoFacturado;
-	    private decimal montoExonerado;
-	    private decimal montoAbonado;
-	    private decimal totalDeuda;
+	    private String ciPaciente= "";
+        private String responsablePago = "";
+	    private decimal montoFacturado = 0;
+	    private decimal montoExonerado = 0;
+        private decimal montoAbonado = 0;
+        private decimal totalDeuda = 0;
 	    private ArrayList honorarios;
         private bool simple = false;
         
         ///Constructor
         public Caso() { }
+
+        public Caso(String medico, String caso_tb, String udn_tb)
+        {
+            this.medico = medico;
+            this.nroCaso = caso_tb;
+            this.unidadNegocio = udn_tb;
+        }
 
         //Getter y Setters
         public String NombrePaciente
@@ -99,6 +107,155 @@ namespace Atencion24WebServices.Atencion24Negocio
             set { simple = value; }
         }
         
+        //Consultar Detalle de un caso
+        public void ConsultarDetalleDeCaso()
+        {
+            DataSet ds = new DataSet();
+            CasoDAO ud = new CasoDAO();
+            String codigoResp;
+            String tipoResp;
+
+            //Monto Facturado en el caso
+            ds = ud.DetalleDeCasoTotalFacturado(medico, nroCaso, unidadNegocio);
+
+            if (ds.Tables[0].Rows.Count != 0) 
+            {
+                if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
+                 montoFacturado = decimal.Parse(ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString());
+            }
+            
+            //Monto Notas de Crédito
+            ud = new CasoDAO();
+            ds = ud.DetalleDeCasoTotalNotasCred(medico, nroCaso, unidadNegocio);
+
+            if (ds.Tables[0].Rows.Count != 0) 
+            {
+                if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
+                 montoExonerado = decimal.Parse(ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString());
+            }
+
+            //Monto Notas de Débito
+            ud = new CasoDAO();
+            ds = ud.DetalleDeCasoTotalNotasDeb(medico, nroCaso, unidadNegocio);
+
+            if (ds.Tables[0].Rows.Count != 0) 
+            {
+                if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
+                 montoExonerado -= decimal.Parse(ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString());
+            }
+            
+            //Monto Abonado
+            ud = new CasoDAO();
+            ds = ud.DetalleDeCasoTotalAbonado(medico, nroCaso, unidadNegocio);
+
+            if (ds.Tables[0].Rows.Count != 0) 
+            {
+                if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
+                 montoAbonado = decimal.Parse(ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString());
+            }
+
+            //Nombre y Cédula del paciente
+            ud = new CasoDAO();
+            ds = ud.DetalleDeCasoNombreyCedulaPaciente(nroCaso, unidadNegocio);
+
+            if (ds.Tables[0].Rows.Count != 0) 
+            {
+                if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
+                 nombrePaciente = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
+
+                if (ds.Tables[0].Rows[0].ItemArray.ElementAt(1) != DBNull.Value)
+                 ciPaciente = ds.Tables[0].Rows[0].ItemArray.ElementAt(1).ToString();
+
+                if (ds.Tables[0].Rows[0].ItemArray.ElementAt(2) != DBNull.Value)
+                    fechaEmisionFactura = ds.Tables[0].Rows[0].ItemArray.ElementAt(2).ToString();
+                     
+            }
+
+            //Principal responsable de pago
+            ud = new CasoDAO();
+            ds = ud.DetalleDeCasoPpalResponsable(nroCaso, unidadNegocio);
+
+            if (ds.Tables[0].Rows.Count != 0) 
+            {
+                if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
+                {
+                    codigoResp = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString().Trim();
+                    if (codigoResp.Equals("120"))
+                        responsablePago = "Particular";
+                    else
+                    {
+                        //Buscar tipo responsable
+                        ud = new CasoDAO();
+                        ds = ud.DetalleDeCasoTipoDeResponsable(nroCaso, unidadNegocio, codigoResp);
+                        if (ds.Tables[0].Rows.Count != 0)
+                        {
+                            if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
+                            {
+                                tipoResp = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString().Trim();
+
+                                //Nombre del responsable
+                                ud = new CasoDAO();
+                                ds = ud.DetalleDeCasoNombreResponsable(codigoResp, tipoResp);
+                                if (ds.Tables[0].Rows.Count != 0)
+                                {
+                                    if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
+                                        responsablePago = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString().Trim();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            //Honorarios prestados en el caso 
+
+            /*        
+            //Deducciones
+            ud = new PagoDAO();
+            ds = ud.ProximoPagoDeducciones(medico);
+            String concepto;
+            String monto;
+            int numDed = 0;
+
+            if (ds.Tables[0].Rows.Count == 0) { Deducciones = null; }
+            else
+            {
+                if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) == DBNull.Value)
+                {
+                    Deducciones = null;
+                }
+                else
+                {
+                    foreach (DataRow dr in ds.Tables[0].Rows)
+                    {
+                        concepto = dr.ItemArray.ElementAt(0).ToString();
+                        monto = dr.ItemArray.ElementAt(1).ToString();
+
+                        //Buscamos el nombre del concepto
+                        ud = new PagoDAO();
+                        ds = ud.NombreConcepto(concepto);
+                        if (ds.Tables[0].Rows.Count == 0) { concepto = ""; }
+                        else
+                        {
+                            if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) == DBNull.Value)
+                            {
+                                concepto = "";
+                            }
+                            else
+                            {
+                                concepto = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
+                            }
+                        }
+                        Deducciones[numDed, 0] = concepto;
+                        Deducciones[numDed, 1] = monto;
+                        montoNeto -= decimal.Parse(monto);
+                        numDed++;
+                    }
+                }
+            }
+            */ 
+               
+        }
        
     }
 }

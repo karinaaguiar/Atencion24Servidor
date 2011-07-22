@@ -32,6 +32,8 @@ namespace Atencion24WebServices.Atencion24DAO
         {
         }
 
+        //___________________________________________________
+
         //**INICIO SESIÓN**//
         //Query inicio de sesión. Para verificar si el nombre de usuario ingresado existe
         public string ExisteUsuario(Usuario user)
@@ -46,6 +48,8 @@ namespace Atencion24WebServices.Atencion24DAO
             Query = "Select NOMBRE, APELLIDO, CODIGOMEDICO, NOMBREUSUARIO From USUARIO where NOMBREUSUARIO = '" + user.Login + "' and CLAVE ='" + user.Password + "'";
             return Query;
         }
+
+        //___________________________________________________
 
         //**ESTADO DE CUENTA**//
         //MONTOS TOTALES//
@@ -172,6 +176,8 @@ namespace Atencion24WebServices.Atencion24DAO
             return Query;
         }
 
+        //___________________________________________________
+
         //**HONORARIOS PAGADOS**//
         //**PRÓXIMO PAGO**
 
@@ -229,6 +235,7 @@ namespace Atencion24WebServices.Atencion24DAO
             return Query;
         }
 
+        //___________________________________________________
 
         //**HONORARIOS FACTURADOS**//
          public string HonorariosFacturadosMontoPorUDN(string medico, string fechaI, string fechaF, string udn)
@@ -243,9 +250,11 @@ namespace Atencion24WebServices.Atencion24DAO
             return Query;
         }
 
+        //___________________________________________________
+
         //**DETALLE DE UN CASO**//
 
-        //LISTADO DE CASOS 
+        //LISTADO DE CASOS POR APELLIDO
          public string DetalleCasoListadoDeCasos(string medico, string apellido)
         {
             Query = "SELECT A.CASO, A.UNIDADNEGOCIO, B.NOMBRE, CONVERT(VARCHAR(10),A.FECHAEMISION,103) " +
@@ -258,6 +267,95 @@ namespace Atencion24WebServices.Atencion24DAO
             return Query;
         }
 
+        //DETALLE DEL CASO
+
+        //Monto Facturado en el caso 
+         public string DetalleDeCasoTotalFacturado(string medico, string nroCaso, string udn)
+         {
+             Query = "SELECT SUM(MONTOAPAGAR) " +
+                     "FROM TBL_CUENTASPORPAGAR " +
+                     "WHERE PROVEEDOR = '"+medico+"' AND NROID ='"+nroCaso+"' AND UNIDADDENEGOCIO = '"+udn+"'";
+             return Query;
+         }
+
+         //Monto Notas de crédito en el caso 
+         public string DetalleDeCasoTotalNotasCred(string medico, string nroCaso, string udn)
+         {
+             Query = "SELECT SUM(B.MONTOTOTAL) "+
+                     "FROM TBL_NOTADECREDITOYDEBITO A INNER JOIN TBL_NOTADECREDITOYDEBITODETALLE B "+
+                     "ON A.NRONOTA = B.NRONOTA "+
+                     "INNER JOIN TBL_CUENTASPORPAGAR C "+
+                     "ON A.NROID = C.NROID AND A.UNIDADDENEGOCIO = C.UNIDADDENEGOCIO AND B.CODIGOTIPOP = C.PROVEEDOR AND "+
+                     "B.SERVICIO = C.CLASIFICACIONHONORARIO AND B.SUMINISTRO = C.TIPOHONORARIO AND B.AREA = C.AREAHONORARIO "+
+                     "WHERE A.TIPONOTA = 1 AND C.NROID ='" + nroCaso + "' AND C.UNIDADDENEGOCIO = '" + udn + "' AND C.PROVEEDOR= '" + medico + "' ";
+             return Query;
+         }
+
+         //Monto Notas de débito en el caso 
+         public string DetalleDeCasoTotalNotasDeb(string medico, string nroCaso, string udn)
+         {
+             Query = "SELECT SUM(B.MONTOTOTAL) " +
+                     "FROM TBL_NOTADECREDITOYDEBITO A INNER JOIN TBL_NOTADECREDITOYDEBITODETALLE B " +
+                     "ON A.NRONOTA = B.NRONOTA " +
+                     "INNER JOIN TBL_CUENTASPORPAGAR C " +
+                     "ON A.NROID = C.NROID AND A.UNIDADDENEGOCIO = C.UNIDADDENEGOCIO AND B.CODIGOTIPOP = C.PROVEEDOR AND " +
+                     "B.SERVICIO = C.CLASIFICACIONHONORARIO AND B.SUMINISTRO = C.TIPOHONORARIO AND B.AREA = C.AREAHONORARIO " +
+                     "WHERE A.TIPONOTA = 2 AND C.NROID ='" + nroCaso + "' AND C.UNIDADDENEGOCIO = '" + udn + "' AND C.PROVEEDOR= '" + medico + "' ";
+             return Query;
+         }
+
+         //Monto abonado en el caso 
+         public string DetalleDeCasoTotalAbonado(string medico, string nroCaso, string udn)
+         {
+             Query = "SELECT SUM(A.MONTO) " +
+                     "FROM TBL_HPAGOSHONORARIOS A INNER JOIN TBL_CUENTASPORPAGAR B " +
+                     "ON  A.UNIDADDENEGOCIO = B.UNIDADDENEGOCIO AND A.CASO = B.NROID AND A.SERVICIO = B.CLASIFICACIONHONORARIO AND " +
+                     "A.SUMINISTRO = B.TIPOHONORARIO AND A.AREA = B.AREAHONORARIO AND A.MEDICO = B.PROVEEDOR " +
+                     "WHERE B.NROID ='" + nroCaso + "' AND B.UNIDADDENEGOCIO = '" + udn + "' AND B.PROVEEDOR= '" + medico + "' " +
+                     "AND A.TIPO = 1 AND A.CONCEPTO = 1 AND A.APAGAR =1 ";
+             return Query;
+         }
+
+         //Cédula y nombre del paciente del caso 
+         public string DetalleDeCasoNombreyCedulaPaciente(string nroCaso, string udn)
+         {
+             Query = "SELECT A.NOMBRE, A.CEDULA, CONVERT(VARCHAR(10),B.FECHAEMISION,103) " +
+                     "FROM TBL_PACIENTE A INNER JOIN TBL_HCASO B ON A.CEDULA = B.PACIENTE  " +
+                     "WHERE B.CASO ='" + nroCaso + "' AND B.UNIDADNEGOCIO = '" + udn + "'";
+             return Query;
+         }
+
+         //Cógigo del principal responsable de pago 
+         public string DetalleDeCasoPpalResponsable(string nroCaso, string udn)
+         {
+             Query = "SELECT RESPONSABLE " +
+                     "FROM TBL_HCASO " +
+                     "WHERE UNIDADNEGOCIO = '" + udn + "' AND CASO = '" + nroCaso + "' ";
+             return Query;
+         }
+
+         //Tipo de responsable
+         public string DetalleDeCasoTipoDeResponsable(string nroCaso, string udn, string codigoResp)
+         {
+             Query = "SELECT A.TIPORESPONSABLE " +
+                     "FROM TBL_CUENTASPORCOBRAR A INNER JOIN TBL_HCASO B " +
+                     "ON A.RESPONSABLEDEPAGO = B.RESPONSABLE AND A.UNIDADDENEGOCIO = B.UNIDADNEGOCIO AND A.NROID = B.CASO " +
+                     "AND  B.UNIDADNEGOCIO = '" + udn + "' AND B.CASO = '" + nroCaso + "' AND A.RESPONSABLEDEPAGO = '" + codigoResp + "' ";
+             return Query;
+         }
+
+         //Nombre del responsable
+         public string DetalleDeCasoNombreResponsable(string codigoResp, string tipoResp)
+         {
+             Query = "SELECT NOMBRE " +
+                     "FROM TBL_RESPONSABLESDEPAGO " +
+                     "WHERE CODIGO = '" + codigoResp + "' AND TIPORESPONSABLE = '" + tipoResp + "' ";
+             return Query;
+         }
+
+        
+
+        //Total Facturado
 
         //Consultar TOTAL Estado de cuenta . Consultar TOTAL Monto a Pagar.
         //String o int codMedico?

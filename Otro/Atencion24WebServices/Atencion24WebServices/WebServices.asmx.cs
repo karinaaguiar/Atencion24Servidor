@@ -156,6 +156,25 @@ namespace Atencion24WebServices
                 return manej.codificarXmlAEnviar(manej.creacionRespuestaListadoDeCaso(casos.Casos));
 
         }
+
+        [WebMethod(Description = "Consultar detalle de un caso")]
+        public String consultarCaso(string medico_tb, string caso_tb, string udn_tb)
+        {
+            ManejadorXML manej = new ManejadorXML();
+            medico_tb = medico_tb.Trim();
+            caso_tb = caso_tb.Trim();
+            udn_tb = udn_tb.Trim();
+
+            //Creamos una instancia de HistoricoPagos con los datos de entrada (medico_tb, fechaI, fechaF)
+            Caso caso = new Caso(medico_tb, caso_tb, udn_tb);
+
+            //Consultamos el listado de pagos generados para el médico en el rango de fechas
+            caso.ConsultarDetalleDeCaso();
+            
+            return manej.codificarXmlAEnviar(manej.creacionRespuestaDetalleDeCaso(caso));
+
+        }
+
     }
 }
 

@@ -283,7 +283,7 @@ namespace Atencion24WebServices
             return XMLtoString(documento);
         }
 
-        public XmlElement auxiliarDetalleCaso(XmlDocument documento, XmlElement elementoPadre, Caso caso)
+        public XmlElement auxiliarDetalleCaso(XmlDocument documento, XmlElement elementoPadre, Caso caso, int tipo)
         {
             XmlElement elemento;
             XmlElement elemento1;
@@ -291,7 +291,8 @@ namespace Atencion24WebServices
             //XmlElement elemento3;
             XmlText texto;
 
-            elemento = documento.CreateElement("caso");
+            if (tipo == 0) elemento = elementoPadre;
+            else  elemento = documento.CreateElement("caso"); 
 
             //Nombre del paciente
             elemento1 = documento.CreateElement("nombrePaciente");
@@ -388,7 +389,8 @@ namespace Atencion24WebServices
                 elemento.AppendChild(elemento1);*/
             }
 
-            elementoPadre.AppendChild(elemento);
+            if (tipo != 0) elementoPadre.AppendChild(elemento);
+            else elementoPadre = elemento;
 
             return elementoPadre;
         }
@@ -406,8 +408,25 @@ namespace Atencion24WebServices
 
             foreach (Caso caso in listadoCasos)
             {
-                elemento = auxiliarDetalleCaso(documento, elemento, caso);
+                elemento = auxiliarDetalleCaso(documento, elemento, caso, 1);
             }
+
+            documento.AppendChild(elemento);
+            return XMLtoString(documento);
+        }
+
+        public String creacionRespuestaDetalleDeCaso(Caso caso) 
+        {
+            XmlDocument documento;
+            XmlElement elemento;
+
+            documento = newDocument();
+            elemento = documento.CreateElement("caso");
+
+            Caso casoDet = new Caso();
+            casoDet = caso; 
+
+            elemento = auxiliarDetalleCaso(documento, elemento, casoDet, 0);
 
             documento.AppendChild(elemento);
             return XMLtoString(documento);
