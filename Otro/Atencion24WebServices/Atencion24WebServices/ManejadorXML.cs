@@ -282,6 +282,136 @@ namespace Atencion24WebServices
 
             return XMLtoString(documento);
         }
+
+        public XmlElement auxiliarDetalleCaso(XmlDocument documento, XmlElement elementoPadre, Caso caso)
+        {
+            XmlElement elemento;
+            XmlElement elemento1;
+            //XmlElement elemento2;
+            //XmlElement elemento3;
+            XmlText texto;
+
+            elemento = documento.CreateElement("caso");
+
+            //Nombre del paciente
+            elemento1 = documento.CreateElement("nombrePaciente");
+            String valor = caso.NombrePaciente;
+            texto = documento.CreateTextNode(valor);
+            elemento1.AppendChild(texto);
+            elemento.AppendChild(elemento1);
+
+            //Fecha de emisión 
+            elemento1 = documento.CreateElement("fechaEmision");
+            valor = caso.FechaEmision;
+            texto = documento.CreateTextNode(valor);
+            elemento1.AppendChild(texto);
+            elemento.AppendChild(elemento1);
+
+            //Nro de caso 
+            elemento1 = documento.CreateElement("nroCaso");
+            valor = caso.NroCaso;
+            texto = documento.CreateTextNode(valor);
+            elemento1.AppendChild(texto);
+            elemento.AppendChild(elemento1);
+
+            //Unidad de Negocio  
+            elemento1 = documento.CreateElement("unidadNegocio");
+            valor = caso.UnidadNegocio;
+            texto = documento.CreateTextNode(valor);
+            elemento1.AppendChild(texto);
+            elemento.AppendChild(elemento1);
+
+            if (caso.Simple == false)
+            {
+                //Cédula del paciente
+                elemento1 = documento.CreateElement("ciPaciente");
+                valor = caso.CiPaciente;
+                texto = documento.CreateTextNode(valor);
+                elemento1.AppendChild(texto);
+                elemento.AppendChild(elemento1);
+
+                //Responsable de pago
+                elemento1 = documento.CreateElement("responsablePago");
+                valor = caso.ResponsablePago;
+                texto = documento.CreateTextNode(valor);
+                elemento1.AppendChild(texto);
+                elemento.AppendChild(elemento1);
+
+                //Monto Facturado
+                elemento1 = documento.CreateElement("montoFacturado");
+                valor = caso.MontoFacturado.ToString();
+                texto = documento.CreateTextNode(valor);
+                elemento1.AppendChild(texto);
+                elemento.AppendChild(elemento1);
+
+                //Monto Exonerado
+                elemento1 = documento.CreateElement("montoExonerado");
+                valor = caso.MontoExonerado.ToString();
+                texto = documento.CreateTextNode(valor);
+                elemento1.AppendChild(texto);
+                elemento.AppendChild(elemento1);
+
+                //Monto Abonado
+                elemento1 = documento.CreateElement("montoAbonado");
+                valor = caso.MontoAbonado.ToString();
+                texto = documento.CreateTextNode(valor);
+                elemento1.AppendChild(texto);
+                elemento.AppendChild(elemento1);
+
+                //Monto Abonado
+                elemento1 = documento.CreateElement("totalDeuda");
+                valor = caso.TotalDeuda.ToString();
+                texto = documento.CreateTextNode(valor);
+                elemento1.AppendChild(texto);
+                elemento.AppendChild(elemento1);
+
+                //Honorarios
+                /*elemento1 = documento.CreateElement("honorarios");
+                //Honorarios
+                foreach (Honorario honorario in caso.Honorarios)
+                {
+                    elemento2 = documento.CreateElement("deduccion");
+                    //Concepto
+                    elemento3 = documento.CreateElement("concepto");
+                    texto = documento.CreateTextNode(pago.Deducciones[i, 0]);
+                    elemento3.AppendChild(texto);
+                    elemento2.AppendChild(elemento3);
+
+                    //Monto
+                    elemento3 = documento.CreateElement("monto");
+                    texto = documento.CreateTextNode(pago.Deducciones[i, 1]);
+                    elemento3.AppendChild(texto);
+                    elemento2.AppendChild(elemento3);
+
+                    elemento1.AppendChild(elemento2);
+                }
+                elemento.AppendChild(elemento1);*/
+            }
+
+            elementoPadre.AppendChild(elemento);
+
+            return elementoPadre;
+        }
         
+        public String creacionRespuestaListadoDeCaso(ArrayList casos) 
+        {
+            XmlDocument documento;
+            XmlElement elemento;
+
+            documento = newDocument();
+            elemento = documento.CreateElement("casos");
+
+            ArrayList listadoCasos = new ArrayList();
+            listadoCasos = casos;
+
+            foreach (Caso caso in listadoCasos)
+            {
+                elemento = auxiliarDetalleCaso(documento, elemento, caso);
+            }
+
+            documento.AppendChild(elemento);
+            return XMLtoString(documento);
+        }
+
     }
 }
