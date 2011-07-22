@@ -340,28 +340,28 @@ namespace Atencion24WebServices
 
                 //Monto Facturado
                 elemento1 = documento.CreateElement("montoFacturado");
-                valor = caso.MontoFacturado.ToString();
+                valor = caso.MontoFacturado.ToString("0.##");
                 texto = documento.CreateTextNode(valor);
                 elemento1.AppendChild(texto);
                 elemento.AppendChild(elemento1);
 
                 //Monto Exonerado
                 elemento1 = documento.CreateElement("montoExonerado");
-                valor = caso.MontoExonerado.ToString();
+                valor = caso.MontoExonerado.ToString("0.##");
                 texto = documento.CreateTextNode(valor);
                 elemento1.AppendChild(texto);
                 elemento.AppendChild(elemento1);
 
                 //Monto Abonado
                 elemento1 = documento.CreateElement("montoAbonado");
-                valor = caso.MontoAbonado.ToString();
+                valor = caso.MontoAbonado.ToString("0.##");
                 texto = documento.CreateTextNode(valor);
                 elemento1.AppendChild(texto);
                 elemento.AppendChild(elemento1);
 
                 //Monto Abonado
                 elemento1 = documento.CreateElement("totalDeuda");
-                valor = caso.TotalDeuda.ToString();
+                valor = caso.TotalDeuda.ToString("0.##");
                 texto = documento.CreateTextNode(valor);
                 elemento1.AppendChild(texto);
                 elemento.AppendChild(elemento1);
