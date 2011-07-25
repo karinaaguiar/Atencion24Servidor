@@ -165,7 +165,7 @@ namespace Atencion24WebServices
             
             //MontoLiberado
             elemento1 = documento.CreateElement("montoLiberado");
-            String valor = pago.MontoLiberado;
+            String valor = pago.MontoLiberado.ToString("0.##");
             texto = documento.CreateTextNode(valor);
             elemento1.AppendChild(texto);
             elemento.AppendChild(elemento1);

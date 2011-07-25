@@ -11,7 +11,7 @@ namespace Atencion24WebServices.Atencion24Negocio
     {
         private string medico;
         private string fechaPago = "";
-        private String montoLiberado = "";
+        private decimal montoLiberado = 0;
         private string[,] deducciones;
         private decimal montoNeto;
         private bool sinpago = false;
@@ -25,7 +25,7 @@ namespace Atencion24WebServices.Atencion24Negocio
         public Pago() { }
 
         //Getter y Setters
-        public String MontoLiberado
+        public decimal MontoLiberado
         {
             get { return montoLiberado; }
             set { montoLiberado = value; }
@@ -75,8 +75,8 @@ namespace Atencion24WebServices.Atencion24Negocio
                 }
                 else
                 {
-                    montoLiberado = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
-                    montoNeto = decimal.Parse(montoLiberado);
+                    montoLiberado = decimal.Parse(ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString());
+                    montoNeto = montoLiberado;
 
                     //Deducciones
                     ud = new PagoDAO();
