@@ -102,6 +102,11 @@ namespace Atencion24WebServices
             return XMLtoString(documento);
         }
 
+        /// <summary>
+        /// Función que retorna el XML con el estado de cuenta por antiguedad de saldo
+        /// </summary>
+        /// <param name="estadoCta">Contiene toda la información del estado de cuenta</param>
+        /// <returns>XML con el estado de cuenta por antiguedad de saldo</returns>
         public String creacionRespuestaEdoCtaAS(EstadoDeCuenta estadoCta) 
         {
             XmlDocument documento;
@@ -153,16 +158,26 @@ namespace Atencion24WebServices
             return XMLtoString(documento);
         }
 
-        public XmlElement auxiliarHonorariosPagados(XmlDocument documento, XmlElement elementoPadre, Pago pago)
+        /// <summary>
+        /// Funcion auxiliar que permite construir un XML element con la información de un pago
+        /// </summary>
+        /// <param name="documento">documento XML donde se incluirá el XMLElement</param>
+        /// <param name="elementoPadre">elementoPadre al que se unirá el XMLElement </param>
+        /// <param name="pago">Pago que contiene la información del pago</param>
+        /// <param name="tipo">Entero que indica si el XMLElement que se construye es para el reporte próximo pago (0) 
+        /// o para el reporte histótico de pagos (1) </param>
+        /// <returns>XMLElement con la información correspondiente a un pago</returns>
+        public XmlElement auxiliarHonorariosPagados(XmlDocument documento, XmlElement elementoPadre, Pago pago, int tipo)
         {
             XmlElement elemento;
             XmlElement elemento1;
             XmlElement elemento2;
             XmlElement elemento3;
             XmlText texto;
-            
-            elemento = documento.CreateElement("pago");
-            
+
+            if (tipo == 0) elemento = elementoPadre;
+            else elemento = documento.CreateElement("pago");
+
             //MontoLiberado
             elemento1 = documento.CreateElement("montoLiberado");
             String valor = pago.MontoLiberado.ToString("0.##");
@@ -171,26 +186,30 @@ namespace Atencion24WebServices
             elemento.AppendChild(elemento1);
 
             //Deducciones
-            elemento1 = documento.CreateElement("deducciones");
-            //Deducción
-            for(int i =0; i < (pago.Deducciones.GetLength(0)); i++) 
+            if (pago.Deducciones != null)
             {
-                elemento2 = documento.CreateElement("deduccion");
-                //Concepto
-                elemento3 = documento.CreateElement("concepto");
-                texto = documento.CreateTextNode(pago.Deducciones[i,0]);
-                elemento3.AppendChild(texto);
-                elemento2.AppendChild(elemento3);
-                
-                //Monto
-                elemento3 = documento.CreateElement("monto");
-                texto = documento.CreateTextNode(pago.Deducciones[i,1]);
-                elemento3.AppendChild(texto);
-                elemento2.AppendChild(elemento3);
+                elemento1 = documento.CreateElement("deducciones");
+                //Deducción
+                foreach (Deduccion deduccion in pago.Deducciones)
+                {
+                    elemento2 = documento.CreateElement("deduccion");
+                    
+                    //Concepto
+                    elemento3 = documento.CreateElement("concepto");
+                    texto = documento.CreateTextNode(deduccion.Concepto);
+                    elemento3.AppendChild(texto);
+                    elemento2.AppendChild(elemento3);
 
-                elemento1.AppendChild(elemento2);
+                    //Monto
+                    elemento3 = documento.CreateElement("monto");
+                    texto = documento.CreateTextNode(deduccion.Monto.ToString("0.##"));
+                    elemento3.AppendChild(texto);
+                    elemento2.AppendChild(elemento3);
+
+                    elemento1.AppendChild(elemento2);
+                }
+                elemento.AppendChild(elemento1);
             }
-            elemento.AppendChild(elemento1);
 
             //MontoNeto 
             elemento1 = documento.CreateElement("montoNeto");
@@ -204,20 +223,40 @@ namespace Atencion24WebServices
             elemento1.AppendChild(texto);
             elemento.AppendChild(elemento1);
 
-            elementoPadre.AppendChild(elemento);
-            
+            if (tipo != 0) elementoPadre.AppendChild(elemento);
+            else elementoPadre = elemento;
+
             return elementoPadre;
         }
         
+        /// <summary>
+        /// Función que retorna el XML con la información del próximo pago de un médico
+        /// </summary>
+        /// <param name="pago">Contiene toda la información del próximo pago</param>
+        /// <returns>XML con la información del próximo pago de un médico </returns>
         public String creacionRespuestaProximoPago(Pago pago) 
         {
             XmlDocument documento;
+            XmlElement elemento;
             
             documento = newDocument();
-            //documento = auxiliarHonorariosPagados(documento, pago);
+            elemento = documento.CreateElement("pago");
+
+            Pago proxPago = new Pago();
+            proxPago = pago;
+
+            elemento = auxiliarHonorariosPagados(documento, elemento, pago, 0);
+
+            documento.AppendChild(elemento);
             return XMLtoString(documento);
         }
         
+        /// <summary>
+        /// Función que retorna el XML con la información del histórico de pagos de un médico
+        /// en un rango de fechas
+        /// </summary>
+        /// <param name="pagos">Contiene toda la información del histórico de pago</param>
+        /// <returns>XML con la información del histórico de pago</returns>
         public String creacionRespuestaHistoricoPagos(ArrayList pagos) 
         {
             XmlDocument documento;
@@ -231,13 +270,19 @@ namespace Atencion24WebServices
 
             foreach(Pago pago in listadoPagos)
             {
-                elemento = auxiliarHonorariosPagados(documento, elemento, pago); 
+                elemento = auxiliarHonorariosPagados(documento, elemento, pago, 1); 
             }
 
             documento.AppendChild(elemento);
             return XMLtoString(documento);
         }
 
+        /// <summary>
+        /// Función que retorna el XML con la información de lo facturado por un médico
+        /// en un rango de fechas
+        /// </summary>
+        /// <param name="facturado">Contiene toda la información de lo facturado</param>
+        /// <returns>XML con la información de lo facturado por el médico en el rango de fechas</returns>
         public String creacionRespuestaHonorariosFacturados(FacturadoUDN facturado) 
         {
             XmlDocument documento;
@@ -283,6 +328,15 @@ namespace Atencion24WebServices
             return XMLtoString(documento);
         }
 
+        /// <summary>
+        /// Funcion auxiliar que permite construir un XML element con la información de un caso
+        /// </summary>
+        /// <param name="documento">documento XML donde se incluirá el XMLElement</param>
+        /// <param name="elementoPadre">elementoPadre al que se unirá el XMLElement </param>
+        /// <param name="cago">Caso que contiene la información del caso</param>
+        /// <param name="tipo">Entero que indica si el XMLElement que se construye es para el listado de casos por apellido (1) 
+        /// o para el reporte detalle de un caso (0) </param>
+        /// <returns>XMLElement con la información correspondiente al caso</returns>
         public XmlElement auxiliarDetalleCaso(XmlDocument documento, XmlElement elementoPadre, Caso caso, int tipo)
         {
             XmlElement elemento;
@@ -365,12 +419,11 @@ namespace Atencion24WebServices
                 texto = documento.CreateTextNode(valor);
                 elemento1.AppendChild(texto);
                 elemento.AppendChild(elemento1);
-
-                //Honorarios
-                elemento1 = documento.CreateElement("honorarios");
+                
                 //Honorarios
                 if (caso.Honorarios != null)
                 {
+                    elemento1 = documento.CreateElement("honorarios");
                     foreach (Honorario honorario in caso.Honorarios)
                     {
                         elemento2 = documento.CreateElement("honorario");
@@ -416,7 +469,12 @@ namespace Atencion24WebServices
 
             return elementoPadre;
         }
-        
+
+        /// <summary>
+        /// Función que retorna el XML con la información del listado de casos por apellido
+        /// </summary>
+        /// <param name="casos">ArrayList de Caso que contiene la información básica de cada caso</param>
+        /// <returns>XML con la información del listado de casos por apellido</returns>
         public String creacionRespuestaListadoDeCaso(ArrayList casos) 
         {
             XmlDocument documento;
@@ -437,6 +495,11 @@ namespace Atencion24WebServices
             return XMLtoString(documento);
         }
 
+        /// <summary>
+        /// Función que retorna el XML con la información del detalle de un caso
+        /// </summary>
+        /// <param name="caso">Contiene la información detallada del caso</param>
+        /// <returns>XML con la información detallada del caso</returns>
         public String creacionRespuestaDetalleDeCaso(Caso caso) 
         {
             XmlDocument documento;
@@ -454,6 +517,13 @@ namespace Atencion24WebServices
             return XMLtoString(documento);
         }
 
+        /// <summary>
+        /// Funcion auxiliar que permite construir un XML element con la información de una fianza 
+        /// </summary>
+        /// <param name="documento">documento XML donde se incluirá el XMLElement</param>
+        /// <param name="elementoPadre">elementoPadre al que se unirá el XMLElement </param>
+        /// <param name="fianza">Fianza que contiene la información de la fianza</param>
+        /// <returns>XMLElement con la información de una fianza </returns>
         public XmlElement auxiliarListadoFianzas(XmlDocument documento, XmlElement elementoPadre, Fianza fianza)
         {
             XmlElement elemento;
@@ -522,7 +592,12 @@ namespace Atencion24WebServices
 
             return elementoPadre;
         }
-
+        
+        /// <summary>
+        /// Función que retorna el XML con la información del listado de fianzas pendientes de un médico
+        /// </summary>
+        /// <param name="fianzas">ArrayList de Fianza que contiene la información de cada fianza pendiente</param>
+        /// <returns>XML con la información del listado de fianzas pendientes de un médico</returns>
         public String creacionRespuestaListadoFianzas(ArrayList fianzas) 
         {
             XmlDocument documento;

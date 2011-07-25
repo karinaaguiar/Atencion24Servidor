@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -12,8 +13,8 @@ namespace Atencion24WebServices.Atencion24Negocio
         private string medico;
         private string fechaPago = "";
         private decimal montoLiberado = 0;
-        private string[,] deducciones;
-        private decimal montoNeto;
+        private ArrayList deducciones = null;
+        private decimal montoNeto = 0;
         private bool sinpago = false;
 
         ///Constructor
@@ -31,7 +32,7 @@ namespace Atencion24WebServices.Atencion24Negocio
             set { montoLiberado = value; }
         }
 
-        public string[,]  Deducciones
+        public ArrayList Deducciones
         {
             get { return deducciones; }
             set { deducciones = value; }
@@ -55,10 +56,13 @@ namespace Atencion24WebServices.Atencion24Negocio
             set { fechaPago = value; }
         }
 
-        //Consultar Proximo Pago
+        /// <summary>
+        /// Consultar proximo pago que recibirá el medico
+        /// </summary>
         public void consultarProximoPago()
         {
             DataSet ds = new DataSet();
+            DataSet dsConcepto = new DataSet();
             PagoDAO ud = new PagoDAO();
 
             //Monto Liberado
@@ -81,44 +85,44 @@ namespace Atencion24WebServices.Atencion24Negocio
                     //Deducciones
                     ud = new PagoDAO();
                     ds = ud.ProximoPagoDeducciones(medico);
-                    String concepto;
-                    String monto;
-                    int numDed = 0;
 
+                    Deduccion deduccion;
+                    String concepto = "";
+                    decimal monto = 0;
+                    
                     if (ds.Tables[0].Rows.Count == 0) { Deducciones = null; }
                     else
                     {
-                        if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) == DBNull.Value)
+                        Deducciones = new ArrayList();
+                        foreach (DataRow dr in ds.Tables[0].Rows)
                         {
-                            Deducciones = null;
-                        }
-                        else
-                        {
-                            foreach (DataRow dr in ds.Tables[0].Rows)
+                            deduccion = new Deduccion();
+                            //Concepto deduccion
+                            if (dr.ItemArray.ElementAt(0) != DBNull.Value)
                             {
                                 concepto = dr.ItemArray.ElementAt(0).ToString();
-                                monto = dr.ItemArray.ElementAt(1).ToString();
-
-                                //Buscamos el nombre del concepto
                                 ud = new PagoDAO();
-                                ds = ud.NombreConcepto(concepto);
-                                if (ds.Tables[0].Rows.Count == 0) { concepto = ""; }
-                                else
+                                dsConcepto = ud.NombreConcepto(concepto);
+                                if (dsConcepto.Tables[0].Rows.Count != 0) 
                                 {
-                                    if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) == DBNull.Value)
+                                    if (dsConcepto.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
                                     {
-                                        concepto = "";
-                                    }
-                                    else
-                                    {
-                                        concepto = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
+                                        concepto = dsConcepto.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
+                                        deduccion.Concepto = concepto;
                                     }
                                 }
-                                Deducciones[numDed, 0] = concepto;
-                                Deducciones[numDed, 1] = monto;
-                                montoNeto -= decimal.Parse(monto);
-                                numDed++;
                             }
+                            
+                            //Monto
+                            if (dr.ItemArray.ElementAt(1) != DBNull.Value)
+                            {
+                                monto = decimal.Parse(dr.ItemArray.ElementAt(1).ToString());
+                                deduccion.Monto = monto;
+                                montoNeto -= monto;
+                            }
+                            
+                            //Agregamos la deduccion al ArrayList
+                            deducciones.Add(deduccion);
                         }
                     }
 
@@ -130,7 +134,6 @@ namespace Atencion24WebServices.Atencion24Negocio
                 }
             }
         }
-
 
 
     }

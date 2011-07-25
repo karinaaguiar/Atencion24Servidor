@@ -10,13 +10,16 @@ using Atencion24WebServices.Atencion24Negocio;
 namespace Atencion24WebServices
 {
     /// <summary>
-    /// Web services para consulta de reportes (Atención 24)
+    /// Servicios Web para aplicación Atención 24 móvil
     /// </summary>
+   
     [WebService(Namespace = "http://localhost/Atencion24Servidor")]
     [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
     [System.ComponentModel.ToolboxItem(false)]
     // To allow this Web Service to be called from script, using ASP.NET AJAX, uncomment the following line. 
     // [System.Web.Script.Services.ScriptService]
+    
+        
     public class OperacionesWebServicesAtencion24 : System.Web.Services.WebService
     {
 
@@ -61,6 +64,13 @@ namespace Atencion24WebServices
             }
         }
 
+        /// <summary>
+        /// Este servicio web permite consultar el estado de 
+        /// cuenta de un médico por antiguedad de saldo
+        /// </summary>
+        /// <param name="medico_tb"> codigo de pago del médico cuyo  
+        /// estado de cuenta se quiere conocer.</param>
+        /// <returns>XML con el estado de cuenta</returns>
         [WebMethod(Description = "Consultar Estado de Cuenta por antiguedad de saldo")]
         public String edoCtaAntiguedadSaldo(string medico_tb)
         {
@@ -79,6 +89,13 @@ namespace Atencion24WebServices
                 return manej.codificarXmlAEnviar(manej.creacionRespuestaEdoCtaAS(edoCta));
         }
 
+        /// <summary>
+        /// Este servicio web permite consultar el monto a cobrar en  
+        /// en próximo pago a realizarse. 
+        /// </summary>
+        /// <param name="medico_tb"> codigo de pago del médico cuyo  
+        /// próximo pago se quiere conocer.</param>
+        /// <returns>XML con la información del próximo pago </returns>
         [WebMethod(Description = "Consultar Honorarios pagados. Pago en proceso")]
         public String ConsultarProximoPago(string medico_tb)
         {
@@ -97,6 +114,14 @@ namespace Atencion24WebServices
                 return manej.codificarXmlAEnviar(manej.creacionRespuestaProximoPago(pago));
         }
 
+        /// <summary>
+        /// Este servicio web permite consultar los pagos que se han realizado a un
+        /// médico en el rango de fechas indicado.
+        /// </summary>
+        /// <param name="medico_tb">codigo de pago del médico</param>
+        /// <param name="fechaI_tb">fecha inicio consulta</param>
+        /// <param name="fechaF_tb">fecha fin consulta</param>
+        /// <returns>XML con la información de los pagos hechos en el rango de fechas</returns>
         [WebMethod(Description = "Consultar Honorarios pagados. Histórico de pagos")]
         public String ConsultarHistoricoPagos(string medico_tb, string fechaI_tb, string fechaF_tb)
         {
@@ -105,8 +130,8 @@ namespace Atencion24WebServices
             String fechaI = String.Format("{0:MM/dd/yyyy}", Convert.ToDateTime(fechaI_tb));
             String fechaF = String.Format("{0:MM/dd/yyyy}", Convert.ToDateTime(fechaF_tb));
 
-            System.Diagnostics.Debug.WriteLine("FECHAS ANTES:" + fechaI_tb + " " + fechaF_tb);
-            System.Diagnostics.Debug.WriteLine("FECHAS DESPUES:" + fechaI + " " + fechaF);
+            //System.Diagnostics.Debug.WriteLine("FECHAS ANTES:" + fechaI_tb + " " + fechaF_tb);
+            //System.Diagnostics.Debug.WriteLine("FECHAS DESPUES:" + fechaI + " " + fechaF);
 
             //Creamos una instancia de HistoricoPagos con los datos de entrada (medico_tb, fechaI, fechaF)
             HistoricoPagos pagos = new HistoricoPagos(medico_tb, fechaI, fechaF);
@@ -120,6 +145,14 @@ namespace Atencion24WebServices
        
         }
        
+        /// <summary>
+        /// Este servicio web permite consultar los honorarios facturados por un médico
+        /// en el rango de fechas indicado.
+        /// </summary>
+        /// <param name="medico_tb">codigo de pago del médico</param>
+        /// <param name="fechaI_tb">fecha inicio consulta</param>
+        /// <param name="fechaF_tb">fecha fin consulta</param>
+        /// <returns>XML con la información de lo facturado por el médico en el rango de fechas</returns>
         [WebMethod(Description = "Consultar Honorarios facturados ")]
         public String ConsultarHonorariosFacturados(string medico_tb, string fechaI_tb, string fechaF_tb)
         {
@@ -140,6 +173,13 @@ namespace Atencion24WebServices
 
         }
 
+        /// <summary>
+        /// Este servicio web permite consultar el listado de casos atendidos por un médico 
+        /// por apellido de paciente
+        /// </summary>
+        /// <param name="medico_tb">médico</param>
+        /// <param name="apellido_tb">apellido del paciente</param>
+        /// <returns>XML con el listado de casos atendidos por el médico con pacientes por el apellido ingresado</returns>
         [WebMethod(Description = "Consultar Listado de casos atendidos por un médico por apellido del paciente")]
         public String consultarListadoDeCaso(string medico_tb, string apellido_tb)
         {
@@ -158,6 +198,13 @@ namespace Atencion24WebServices
 
         }
 
+        /// <summary>
+        /// Este servicio web permite consultar el detalle de un caso.
+        /// </summary>
+        /// <param name="medico_tb">médico que prestó algún servicio médico en el caso</param>
+        /// <param name="caso_tb">identificador del caso</param>
+        /// <param name="udn_tb">unidad de negocio en la cual ingresó el caso</param>
+        /// <returns>XML con el detalle del caso</returns>
         [WebMethod(Description = "Consultar detalle de un caso")]
         public String consultarCaso(string medico_tb, string caso_tb, string udn_tb)
         {
@@ -176,6 +223,11 @@ namespace Atencion24WebServices
 
         }
 
+        /// <summary>
+        /// Este servicio web permite consultar el listado de fianzas pendientes de un médico
+        /// </summary>
+        /// <param name="medico_tb">codigo de pago del médico</param>
+        /// <returns>XML con el listado de fianzas pendientes del médico</returns>
         [WebMethod(Description = "Consultar listado de fianzas pendientes")]
         public String listFianzas(string medico_tb)
         {

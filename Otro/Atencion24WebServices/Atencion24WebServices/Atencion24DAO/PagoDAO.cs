@@ -43,9 +43,5 @@ namespace Atencion24WebServices.Atencion24DAO
             CerrarConexionBd();
             return Ds;
         }
-
-
-
-  
     }
 }

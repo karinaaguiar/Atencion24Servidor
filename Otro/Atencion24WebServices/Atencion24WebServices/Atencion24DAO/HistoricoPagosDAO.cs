@@ -24,6 +24,7 @@ namespace Atencion24WebServices.Atencion24DAO
             return Ds;
         }
 
+        //Deducciones que le aplicaron al médico en la fecha de pago indicada
         public DataSet HistoricoPagosDeducciones(String medico, String fechapago)
         {
             Cmd.CommandText = QueryAtencion24.HistoricoPagosDeducciones(medico, fechapago);

@@ -38,21 +38,23 @@ namespace Atencion24WebServices.Atencion24Negocio
             set { pagos = value; }
         }
 
-        //Consultar Histórico de Pagos
+        /// <summary>
+        /// Consultar Histórico de Pagos
+        /// </summary>
         public void consultarHistoricoPagos()
         {
             DataSet ds = new DataSet();
             DataSet dsDeducciones = new DataSet();
-            DataSet dsConceptos = new DataSet();
+            DataSet dsConcepto = new DataSet();
             HistoricoPagosDAO ud = new HistoricoPagosDAO();
+            PagoDAO ud1 = new PagoDAO();
 
             Pago pago;
             String fechaPago;
             String concepto;
             String monto;
-            string[,] deducciones;
-            int numDed = 0;
-
+            Deduccion deduccion;
+            
             //Monto Liberado
             ds = ud.HistoricoPagosFechayMontoLiberado(medico, fechaI, fechaF);
 
@@ -60,26 +62,17 @@ namespace Atencion24WebServices.Atencion24Negocio
             if (ds.Tables[0].Rows.Count == 0) { sinpagos = true; return; }
             else
             {
-                if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) == DBNull.Value)
+                pagos = new ArrayList();
+                for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
                 {
-                    sinpagos = true;
-                    return;
-                }
-                else
-                {
-                    pagos = new ArrayList();// [ds.Tables[0].Rows.Count];
-                    for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+                    pago = new Pago(medico);
+                    DataRow row = ds.Tables[0].Rows[i];
+                    
+                    //Fecha de Pago
+                    if (row.ItemArray.ElementAt(0) != DBNull.Value)
                     {
-                        pago = new Pago(medico);
-                        DataRow row = ds.Tables[0].Rows[i];
-                        
-                        //Fecha de Pago
                         fechaPago = row.ItemArray.ElementAt(0).ToString();
                         pago.FechaPago = fechaPago;
-                        
-                        //Monto Liberado 
-                        pago.MontoLiberado = row.ItemArray.ElementAt(1).ToString();
-                        pago.MontoNeto = decimal.Parse(pago.MontoLiberado);
 
                         //Deducciones
                         ud = new HistoricoPagosDAO();
@@ -89,46 +82,48 @@ namespace Atencion24WebServices.Atencion24Negocio
                         if (dsDeducciones.Tables[0].Rows.Count == 0) { pago.Deducciones = null; }
                         else
                         {
-                            if (dsDeducciones.Tables[0].Rows[0].ItemArray.ElementAt(0) == DBNull.Value)
+                            pago.Deducciones = new ArrayList();
+                            foreach (DataRow dr in dsDeducciones.Tables[0].Rows)
                             {
-                                pago.Deducciones = null;
-                            }
-                            else
-                            {
-                                deducciones = new string[dsDeducciones.Tables[0].Rows.Count, 2];
-                                foreach (DataRow dr in dsDeducciones.Tables[0].Rows)
+                                deduccion = new Deduccion();
+                                //Concepto deduccion
+                                if (dr.ItemArray.ElementAt(0) != DBNull.Value)
                                 {
                                     concepto = dr.ItemArray.ElementAt(0).ToString();
-                                    monto = dr.ItemArray.ElementAt(1).ToString();
-
-                                    //Buscamos el nombre del concepto
-                                    PagoDAO ud1 = new PagoDAO();
-                                    dsConceptos = new DataSet();
-                                    dsConceptos = ud1.NombreConcepto(concepto);
-                                    if (dsConceptos.Tables[0].Rows.Count == 0) { concepto = ""; }
-                                    else
+                                    ud1 = new PagoDAO();
+                                    dsConcepto = ud1.NombreConcepto(concepto);
+                                    if (dsConcepto.Tables[0].Rows.Count != 0)
                                     {
-                                        if (dsConceptos.Tables[0].Rows[0].ItemArray.ElementAt(0) == DBNull.Value)
+                                        if (dsConcepto.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
                                         {
-                                            concepto = "";
-                                        }
-                                        else
-                                        {
-                                            String concepto1 = dsConceptos.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
-                                            concepto = concepto1.Substring(0, 1).ToUpper() + concepto1.Substring(1).ToLower(); 
+                                            concepto = dsConcepto.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
+                                            deduccion.Concepto = concepto;
                                         }
                                     }
-                                    deducciones[numDed, 0] = concepto;
-                                    deducciones[numDed, 1] = monto;
-                                    pago.MontoNeto -= decimal.Parse(monto);
-                                    numDed++;
                                 }
-                                pago.Deducciones = deducciones;
-                                numDed = 0; 
+
+                                //Monto
+                                if (dr.ItemArray.ElementAt(1) != DBNull.Value)
+                                {
+                                    monto = dr.ItemArray.ElementAt(1).ToString();
+                                    deduccion.Monto = decimal.Parse(monto);
+                                    pago.MontoNeto -= decimal.Parse(monto);
+                                }
+
+                                //Agregamos la deduccion al ArrayList
+                                pago.Deducciones.Add(deduccion);
                             }
                         }
-                        pagos.Add(pago);
                     }
+
+                    //Monto Liberado 
+                    if (row.ItemArray.ElementAt(1) != DBNull.Value)
+                    {
+                        pago.MontoLiberado = decimal.Parse(row.ItemArray.ElementAt(1).ToString());
+                        pago.MontoNeto += pago.MontoLiberado;
+                    }
+                    
+                    pagos.Add(pago);
                 }
             }
         }

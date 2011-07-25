@@ -11,10 +11,10 @@ namespace Atencion24WebServices.Atencion24Negocio
     public class Caso
     {
         private String medico;
-        private String nombrePaciente;
-	    private String fechaEmisionFactura;
-	    private String nroCaso;
-	    private String unidadNegocio;
+        private String nombrePaciente="";
+	    private String fechaEmisionFactura="";
+	    private String nroCaso="";
+	    private String unidadNegocio="";
 	    private String ciPaciente= "";
         private String responsablePago = "";
 	    private decimal montoFacturado = 0;
@@ -163,10 +163,10 @@ namespace Atencion24WebServices.Atencion24Negocio
             if (ds.Tables[0].Rows.Count != 0) 
             {
                 if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
-                 nombrePaciente = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
+                    nombrePaciente = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
 
                 if (ds.Tables[0].Rows[0].ItemArray.ElementAt(1) != DBNull.Value)
-                 ciPaciente = ds.Tables[0].Rows[0].ItemArray.ElementAt(1).ToString();
+                    ciPaciente = ds.Tables[0].Rows[0].ItemArray.ElementAt(1).ToString();
 
                 if (ds.Tables[0].Rows[0].ItemArray.ElementAt(2) != DBNull.Value)
                     fechaEmisionFactura = ds.Tables[0].Rows[0].ItemArray.ElementAt(2).ToString();
@@ -217,7 +217,7 @@ namespace Atencion24WebServices.Atencion24Negocio
             else
             {
                 Honorario honorario = new Honorario();
-                Honorarios = new ArrayList();
+                honorarios = new ArrayList();
                 String servicio;
                 String suministro;
                 String area;
