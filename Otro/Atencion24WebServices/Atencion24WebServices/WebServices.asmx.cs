@@ -387,6 +387,7 @@ namespace Atencion24WebServices
                 if (Session["Loggedin"].Equals("yes"))
                 {
                     Session.Abandon();
+                    System.Diagnostics.Debug.WriteLine("Cerre Sesion");
                 }
             }
 
