@@ -27,13 +27,43 @@ namespace Atencion24WebServices
         public String InicioSesion(string usuario_tb, string clave_tb)
         {
             ManejadorXML manej = new ManejadorXML();
+
+            usuario_tb = usuario_tb.Trim();
+            clave_tb = clave_tb.Trim();
+
+            System.Diagnostics.Debug.WriteLine("ESTE es el SessionID " + Session.SessionID);
+
+            //Creamos una instancia de usuario con los datos que fueron introducidos por pantalla (Pantalla de Inicio de Sesión)
+            Usuario usuarioInput = new Usuario(usuario_tb, clave_tb);
+
+            //Verificamos si el usuario ingresado existe en la base de datos
+            usuarioInput.ExisteUsuario();
+            if (usuarioInput.Valido == false)
+                return manej.codificarXmlAEnviar(manej.envioMensajeError("1"));
+            else
+            { 
+                //Verificamos que se introdujo bien la contraseña
+                String cedula = usuarioInput.ConsultarUsuario();
+                if (usuarioInput.Valido == false)
+                    return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                else
+                {
+                    //Los datos introducidos son correctos. Inicio de sesión exitoso
+                    usuarioInput.ConsultarCodigosPago(cedula);
+                    Session.Add("Loggedin", "");
+                    Session["Loggedin"] = "yes";
+                    return manej.codificarXmlAEnviar(manej.creacionRespuestaInicioSesion(usuarioInput));
+                }
+            }
+            
+            /*VERSION VIEJA
+            ManejadorXML manej = new ManejadorXML();
             DataSet ds = new DataSet();
 
             usuario_tb = usuario_tb.Trim();
             clave_tb = clave_tb.Trim();
            
             //LOGIN USUARIO//
-            if (Session.IsNewSession) System.Diagnostics.Debug.WriteLine("SI acabo de inicar la sesion");
             System.Diagnostics.Debug.WriteLine("ESTE es el SessionID " + Session.SessionID); 
             Session.Add("Loggedin", "");
 
@@ -66,7 +96,7 @@ namespace Atencion24WebServices
                     Session["Loggedin"] = "yes";
                     return manej.codificarXmlAEnviar(manej.creacionRespuestaInicioSesion(nombre, apellido, codigo, nombreUsuario));
                 }
-            }
+            }*/
         }
 
         /// <summary>

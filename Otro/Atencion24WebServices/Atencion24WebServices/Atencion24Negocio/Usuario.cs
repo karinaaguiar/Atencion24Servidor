@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -11,6 +12,9 @@ namespace Atencion24WebServices.Atencion24Negocio
     {
         private string login;
         private string password;
+        private string nombre = "";
+        private ArrayList codigosPago = null;
+        private bool valido = true;
 
         //Constructor
         public Usuario() { }
@@ -34,6 +38,98 @@ namespace Atencion24WebServices.Atencion24Negocio
             set { password = value; }
         }
 
+        public string Nombre
+        {
+            get { return nombre; }
+            set { nombre = value; }
+        }
+
+        public ArrayList CodigosPago
+        {
+            get { return codigosPago; }
+            set { codigosPago = value; }
+        }
+
+        public bool Valido
+        {
+            get { return valido; }
+            set { valido = value; }
+        }
+
+        //Función que llama a otra función en la capa de datos para decir si un usuario existe o no.
+        public void ExisteUsuario()
+        {
+            DataSet ds = new DataSet();
+            UsuarioDAO ud = new UsuarioDAO();
+
+            ds = ud.InicioSesionExisteUsuario(login);
+            if (ds.Tables[0].Rows.Count == 0)
+                valido = false;
+            else
+                if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) == DBNull.Value)
+                    valido = false;
+        }
+
+        public String ConsultarUsuario()
+        {
+            DataSet ds = new DataSet();
+            UsuarioDAO ud = new UsuarioDAO();
+            String cedula = "";
+
+            ds = ud.InicioSesionConsultarUsuario(login, password);
+            if (ds.Tables[0].Rows.Count == 0)
+                valido = false;
+            else
+                if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) == DBNull.Value)
+                    valido = false;
+                else
+                    cedula = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
+
+            return cedula;
+        }
+
+        public void ConsultarCodigosPago(String cedula)
+        {
+            DataSet ds = new DataSet();
+            DataSet dsCodigos = new DataSet();
+            UsuarioDAO ud = new UsuarioDAO();
+
+            String codigo = "";
+            String nombre = "";
+
+            //Consultamos los códigos de pago del usuario 
+            ds = ud.InicioSesionConsultarCodigosPago(cedula);
+
+            //Verificamos que el medico haya facturado honorarios en hospitalización 
+            if (ds.Tables[0].Rows.Count != 0)
+            {
+                codigosPago = new ArrayList();
+                foreach (DataRow dr in ds.Tables[0].Rows)
+                {
+                    CodigoPago codPago = new CodigoPago();
+                    //Codigo
+                    if (dr.ItemArray.ElementAt(0) != DBNull.Value)
+                    {
+                        codigo = dr.ItemArray.ElementAt(0).ToString();
+                        //Nombre
+                        ud = new UsuarioDAO();
+                        dsCodigos = ud.InicioSesionConsultarNombreCodigosPago(codigo);
+                        if (dsCodigos.Tables[0].Rows.Count != 0)
+                        {
+                            if (dsCodigos.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
+                            {
+                                nombre = dsCodigos.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
+                                codPago.Codigo = codigo;
+                                codPago.Nombre = nombre;
+                                codigosPago.Add(codPago);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /*VERISON VIEJA
         //Función que llama a otra función en la capa de datos para decir si un usuario existe o no.
         public DataSet ExisteUsuario(Usuario user)
         {
@@ -54,6 +150,6 @@ namespace Atencion24WebServices.Atencion24Negocio
 
             ds = ud.ConsultarUsuarioDAO(user);
             return ds;
-        }
+        }*/
     }
 }

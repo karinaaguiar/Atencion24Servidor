@@ -62,9 +62,66 @@ namespace Atencion24WebServices
             return XMLtoString(documento);
         }
 
-        //Método que permite enviar respuesta cuando se solicita iniciar sesión
-        public String creacionRespuestaInicioSesion(String nombre, String apellido, String codigo, String nombreUsuario)
+        /// <summary>
+        /// Método que permite enviar respuesta cuando se solicita iniciar sesión
+        /// </summary>
+        /// <param name="usu">Contiene toda la información del usuario loggeado</param>
+        /// <returns>XML con la respuesta del inicio de sesión exitoso</returns>
+        //(String nombre, String apellido, String codigo, String nombreUsuario)
+        public String creacionRespuestaInicioSesion(Usuario usu)
         {
+            XmlDocument documento;
+            XmlElement elemento;
+            XmlElement elemento1;
+            XmlElement elemento2;
+            XmlElement elemento3;
+            XmlText texto;
+
+            documento = newDocument();
+            elemento = documento.CreateElement("usuario");
+
+            Usuario usuario  = new Usuario();
+            usuario = usu;
+
+            //Nombre usuario 
+            elemento1 = documento.CreateElement("nombreUsuario");
+            texto = documento.CreateTextNode(usuario.Nombre);
+            elemento1.AppendChild(texto);
+            elemento.AppendChild(elemento1);    
+
+            //CodigosPago
+            if (usuario.CodigosPago != null)
+            {
+                if (usuario.CodigosPago.Count != 0)
+                {
+                    elemento1 = documento.CreateElement("codigosPago");
+                    //Deducción
+                    foreach (CodigoPago codigoPago in usuario.CodigosPago)
+                    {
+                        elemento2 = documento.CreateElement("codigoPago");
+
+                        //Codigo
+                        elemento3 = documento.CreateElement("codigo");
+                        texto = documento.CreateTextNode(codigoPago.Codigo);
+                        elemento3.AppendChild(texto);
+                        elemento2.AppendChild(elemento3);
+
+                        //Nombre
+                        elemento3 = documento.CreateElement("nombre");
+                        texto = documento.CreateTextNode(codigoPago.Nombre);
+                        elemento3.AppendChild(texto);
+                        elemento2.AppendChild(elemento3);
+
+                        elemento1.AppendChild(elemento2);
+                    }
+                    elemento.AppendChild(elemento1);
+                }
+            }
+
+            documento.AppendChild(elemento);
+            return XMLtoString(documento);
+ 
+            /* VERSION VIEJA
             XmlDocument documento;
             XmlElement elemento;
             XmlElement elemento1;
@@ -100,6 +157,7 @@ namespace Atencion24WebServices
             documento.AppendChild(elemento);
 
             return XMLtoString(documento);
+            */
         }
 
         /// <summary>

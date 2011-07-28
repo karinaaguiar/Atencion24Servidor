@@ -36,7 +36,7 @@ namespace Atencion24WebServices.Atencion24DAO
 
         //**INICIO SESIÓN**//
         //Query inicio de sesión. Para verificar si el nombre de usuario ingresado existe
-        public string ExisteUsuario(Usuario user)
+        /*public string ExisteUsuario(Usuario user)
         {
             Query = "Select NOMBREUSUARIO From USUARIO where NOMBREUSUARIO = '" + user.Login + "'";
             return Query;
@@ -46,6 +46,35 @@ namespace Atencion24WebServices.Atencion24DAO
         public string ConsultarUsuario(Usuario user)
         {
             Query = "Select NOMBRE, APELLIDO, CODIGOMEDICO, NOMBREUSUARIO From USUARIO where NOMBREUSUARIO = '" + user.Login + "' and CLAVE ='" + user.Password + "'";
+            return Query;
+        }*/
+
+        //**INICIO SESIÓN NUEVA VERSION**//
+        //Query inicio de sesión. Para verificar si el nombre de usuario ingresado existe
+        public string ExisteUsuario(String login)
+        {
+            Query = "SELECT USUARIO FROM TBL_PERSONAL WHERE USUARIO = '" + login + "'";
+            return Query;
+        }
+
+        //Query inicio de sesión. Retorna los datos (cédula) del usuario que intenta ingresar al sistema.
+        public string ConsultarUsuario(String login, String clave)
+        {
+            Query = "SELECT CEDULA FROM TBL_PERSONAL WHERE USUARIO = '" + login + "' AND CLAVE = '" + clave + "'";
+            return Query;
+        }
+
+        //Query inicio de sesión. Retorna los códigos de pago asociados a la cédula del usuario 
+        public string ConsultarCodigosPago(String cedula)
+        {
+            Query = "SELECT Cod_Medico FROM TBL_Relacion_Cod_Medico WHERE Cedula_Medico = '"+ cedula+ "'";
+            return Query;
+        }
+
+        //Query inicio de sesión. Retorna el nombre de los códigos de pago asociados al usuario loggeado
+        public string ConsultarNombreCodigosPago(String codigo)
+        {
+            Query = "SELECT NOMBRE FROM TBL_PERSONAL WHERE Codigo = '" +codigo+ "'";
             return Query;
         }
 

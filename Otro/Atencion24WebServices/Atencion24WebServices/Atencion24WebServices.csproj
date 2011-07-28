@@ -78,6 +78,7 @@
     <Compile Include="Atencion24DAO\QueryAtencion24.cs" />
     <Compile Include="Atencion24DAO\UsuarioDAO.cs" />
     <Compile Include="Atencion24Negocio\Caso.cs" />
+    <Compile Include="Atencion24Negocio\CodigoPago.cs" />
     <Compile Include="Atencion24Negocio\Deduccion.cs" />
     <Compile Include="Atencion24Negocio\EstadoDeCuenta.cs" />
     <Compile Include="Atencion24Negocio\FacturadoUDN.cs" />
