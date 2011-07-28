@@ -12,7 +12,8 @@ namespace Atencion24WebServices.Atencion24Negocio
     {
         private string login;
         private string password;
-        private string nombre = "";
+        private string nombre = " ";
+        private string cedula = " ";
         private ArrayList codigosPago = null;
         private bool valido = true;
 
@@ -74,21 +75,33 @@ namespace Atencion24WebServices.Atencion24Negocio
         {
             DataSet ds = new DataSet();
             UsuarioDAO ud = new UsuarioDAO();
-            String cedula = "";
+            String codigo = " ";
 
             ds = ud.InicioSesionConsultarUsuario(login, password);
             if (ds.Tables[0].Rows.Count == 0)
                 valido = false;
             else
+            {
+                //Cedula
                 if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) == DBNull.Value)
                     valido = false;
                 else
                     cedula = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
-
-            return cedula;
+                
+                //Nombre
+                if (ds.Tables[0].Rows[0].ItemArray.ElementAt(1) != DBNull.Value)
+                    nombre = ds.Tables[0].Rows[0].ItemArray.ElementAt(1).ToString();
+                
+                //Codigo
+                if (ds.Tables[0].Rows[0].ItemArray.ElementAt(2) == DBNull.Value)
+                    valido = false;
+                else
+                    codigo = ds.Tables[0].Rows[0].ItemArray.ElementAt(2).ToString();
+            }
+            return codigo;
         }
 
-        public void ConsultarCodigosPago(String cedula)
+        public void ConsultarCodigosPago(String codigoPropio)
         {
             DataSet ds = new DataSet();
             DataSet dsCodigos = new DataSet();
@@ -98,7 +111,7 @@ namespace Atencion24WebServices.Atencion24Negocio
             String nombre = "";
 
             //Consultamos los códigos de pago del usuario 
-            ds = ud.InicioSesionConsultarCodigosPago(cedula);
+            ds = ud.InicioSesionConsultarCodigosPago(this.cedula);
 
             //Verificamos que el medico haya facturado honorarios en hospitalización 
             if (ds.Tables[0].Rows.Count != 0)
@@ -126,6 +139,14 @@ namespace Atencion24WebServices.Atencion24Negocio
                         }
                     }
                 }
+            }
+            else
+            {
+                codigosPago = new ArrayList();
+                CodigoPago codPago = new CodigoPago();
+                codPago.Codigo = codigoPropio;
+                codPago.Nombre = this.nombre;
+                codigosPago.Add(codPago);
             }
         }
 

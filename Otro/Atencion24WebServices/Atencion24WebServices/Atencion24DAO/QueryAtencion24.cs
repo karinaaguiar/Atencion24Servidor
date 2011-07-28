@@ -60,7 +60,7 @@ namespace Atencion24WebServices.Atencion24DAO
         //Query inicio de sesión. Retorna los datos (cédula) del usuario que intenta ingresar al sistema.
         public string ConsultarUsuario(String login, String clave)
         {
-            Query = "SELECT CEDULA FROM TBL_PERSONAL WHERE USUARIO = '" + login + "' AND CLAVE = '" + clave + "'";
+            Query = "SELECT CEDULA, NOMBRE, CODIGO FROM TBL_PERSONAL WHERE USUARIO = '" + login + "' AND CLAVE = '" + clave + "'";
             return Query;
         }
 

@@ -22,7 +22,12 @@ namespace Atencion24WebServices
         
     public class OperacionesWebServicesAtencion24 : System.Web.Services.WebService
     {
-
+        /// <summary>
+        /// Este servicio web permite iniciar sesión. 
+        /// </summary>
+        /// <param name="usuario_tb"> nombre usuario</param>
+        /// <param name="clave_tb"> contraseña del usuario </param>
+        /// <returns>XML con respuesta en cuanto a Inicio de Sesión</returns>
         [WebMethod(Description = "Inicio de sesión en la aplicación Atencion 24", EnableSession = true)]
         public String InicioSesion(string usuario_tb, string clave_tb)
         {
@@ -43,13 +48,13 @@ namespace Atencion24WebServices
             else
             { 
                 //Verificamos que se introdujo bien la contraseña
-                String cedula = usuarioInput.ConsultarUsuario();
+                String codigo = usuarioInput.ConsultarUsuario();
                 if (usuarioInput.Valido == false)
                     return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
                 else
                 {
                     //Los datos introducidos son correctos. Inicio de sesión exitoso
-                    usuarioInput.ConsultarCodigosPago(cedula);
+                    usuarioInput.ConsultarCodigosPago(codigo);
                     Session.Add("Loggedin", "");
                     Session["Loggedin"] = "yes";
                     return manej.codificarXmlAEnviar(manej.creacionRespuestaInicioSesion(usuarioInput));

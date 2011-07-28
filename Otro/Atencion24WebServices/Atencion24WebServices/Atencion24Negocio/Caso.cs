@@ -216,17 +216,19 @@ namespace Atencion24WebServices.Atencion24Negocio
             if (ds.Tables[0].Rows.Count == 0) { honorarios = null; }
             else
             {
-                Honorario honorario = new Honorario();
+                
                 honorarios = new ArrayList();
                 String servicio;
                 String suministro;
                 String area;
                 foreach (DataRow dr in ds.Tables[0].Rows)
                 {
+                    
                     if ((dr.ItemArray.ElementAt(0) != DBNull.Value) &&
                         (dr.ItemArray.ElementAt(1) != DBNull.Value) &&
                         (dr.ItemArray.ElementAt(2) != DBNull.Value))
                     {
+                        Honorario honorario = new Honorario();
                         suministro = dr.ItemArray.ElementAt(0).ToString();
                         area = dr.ItemArray.ElementAt(1).ToString();
                         servicio = dr.ItemArray.ElementAt(2).ToString();

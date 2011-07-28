@@ -481,44 +481,47 @@ namespace Atencion24WebServices
                 //Honorarios
                 if (caso.Honorarios != null)
                 {
-                    elemento1 = documento.CreateElement("honorarios");
-                    foreach (Honorario honorario in caso.Honorarios)
+                    if (caso.Honorarios.Count != 0)
                     {
-                        elemento2 = documento.CreateElement("honorario");
+                        elemento1 = documento.CreateElement("honorarios");
+                        foreach (Honorario honorario in caso.Honorarios)
+                        {
+                            elemento2 = documento.CreateElement("honorario");
 
-                        //Nombre honorario 
-                        elemento3 = documento.CreateElement("nombre");
-                        texto = documento.CreateTextNode(honorario.Nombre);
-                        elemento3.AppendChild(texto);
-                        elemento2.AppendChild(elemento3);
+                            //Nombre honorario 
+                            elemento3 = documento.CreateElement("nombre");
+                            texto = documento.CreateTextNode(honorario.Nombre);
+                            elemento3.AppendChild(texto);
+                            elemento2.AppendChild(elemento3);
 
-                        //Monto Facturado 
-                        elemento3 = documento.CreateElement("facturado");
-                        texto = documento.CreateTextNode(honorario.MontoFacturado.ToString("0.##"));
-                        elemento3.AppendChild(texto);
-                        elemento2.AppendChild(elemento3);
+                            //Monto Facturado 
+                            elemento3 = documento.CreateElement("facturado");
+                            texto = documento.CreateTextNode(honorario.MontoFacturado.ToString("0.##"));
+                            elemento3.AppendChild(texto);
+                            elemento2.AppendChild(elemento3);
 
-                        //Nombre honorario 
-                        elemento3 = documento.CreateElement("exonerado");
-                        texto = documento.CreateTextNode(honorario.MontoExonerado.ToString("0.##"));
-                        elemento3.AppendChild(texto);
-                        elemento2.AppendChild(elemento3);
+                            //Nombre honorario 
+                            elemento3 = documento.CreateElement("exonerado");
+                            texto = documento.CreateTextNode(honorario.MontoExonerado.ToString("0.##"));
+                            elemento3.AppendChild(texto);
+                            elemento2.AppendChild(elemento3);
 
-                        //Nombre honorario 
-                        elemento3 = documento.CreateElement("abonado");
-                        texto = documento.CreateTextNode(honorario.MontoAbonado.ToString("0.##"));
-                        elemento3.AppendChild(texto);
-                        elemento2.AppendChild(elemento3);
+                            //Nombre honorario 
+                            elemento3 = documento.CreateElement("abonado");
+                            texto = documento.CreateTextNode(honorario.MontoAbonado.ToString("0.##"));
+                            elemento3.AppendChild(texto);
+                            elemento2.AppendChild(elemento3);
 
-                        //Nombre honorario 
-                        elemento3 = documento.CreateElement("deuda");
-                        texto = documento.CreateTextNode(honorario.TotalDeuda.ToString("0.##"));
-                        elemento3.AppendChild(texto);
-                        elemento2.AppendChild(elemento3);
+                            //Nombre honorario 
+                            elemento3 = documento.CreateElement("deuda");
+                            texto = documento.CreateTextNode(honorario.TotalDeuda.ToString("0.##"));
+                            elemento3.AppendChild(texto);
+                            elemento2.AppendChild(elemento3);
 
-                        elemento1.AppendChild(elemento2);
+                            elemento1.AppendChild(elemento2);
+                        }
+                        elemento.AppendChild(elemento1);
                     }
-                    elemento.AppendChild(elemento1);
                 }
             }
 
