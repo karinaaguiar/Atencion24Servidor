@@ -22,6 +22,22 @@ namespace Atencion24WebServices
         
     public class OperacionesWebServicesAtencion24 : System.Web.Services.WebService
     {
+
+        public bool CodValido(String medico)
+        {
+            bool valido = false;
+            if (Session["codigosPago"] != null)
+            {
+                ArrayList codigosPago = ( ArrayList)Session["codigosPago"];
+                foreach (CodigoPago codigoPago in codigosPago)
+                {
+                    if (codigoPago.Codigo == medico)
+                        valido = true;
+                }
+            }
+            return valido;
+        }
+        
         /// <summary>
         /// Este servicio web permite iniciar sesión. 
         /// </summary>
@@ -57,6 +73,7 @@ namespace Atencion24WebServices
                     usuarioInput.ConsultarCodigosPago(codigo);
                     Session.Add("Loggedin", "");
                     Session["Loggedin"] = "yes";
+                    Session["codigosPago"] = usuarioInput.CodigosPago;
                     return manej.codificarXmlAEnviar(manej.creacionRespuestaInicioSesion(usuarioInput));
                 }
             }
@@ -120,25 +137,55 @@ namespace Atencion24WebServices
 
             System.Diagnostics.Debug.WriteLine("En Estado de cuenta ESTE es el SessionID " + Session.SessionID);
              
-            if (Session["Loggedin"] !=null) 
+            //check to see if the Session is null (doesnt exist)
+            if (Context.Session != null)
             {
-                if (Session["Loggedin"].Equals("yes"))
+                //check the IsNewSession value, this will tell us if the session has been reset
+                if (Session.IsNewSession)
                 {
-                    //Creamos una instancia de EstadoDeCuenta con los datos de entrada (medico_tb)
-                    EstadoDeCuenta edoCta = new EstadoDeCuenta(medico_tb);
-
-                    //Consultamos el estado de cuenta por antiguedad de saldo
-                    edoCta.ConsultarEstadoDeCuentaAS();
-                    if (edoCta.sinDeuda == true)
-                        return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                    //now we know it's a new session, so we check to see if a cookie is present
+                    string cookie = HttpContext.Current.Request.Headers["Cookie"];
+                    //now we determine if there is a cookie does it contains what we're looking for
+                    if ((null != cookie) && (cookie.IndexOf("ASP.NET_SessionId") >= 0))
+                    {
+                        //since it's a new session but a ASP.Net cookie exist we know
+                        //the session has expired so we need to redirect them
+                        return manej.codificarXmlAEnviar(manej.envioMensajeError("500"));
+                    }
                     else
-                        return manej.codificarXmlAEnviar(manej.creacionRespuestaEdoCtaAS(edoCta));
+                    {
+                        return manej.codificarXmlAEnviar(manej.envioMensajeError("13"));
+                    }
                 }
                 else
-                    return manej.codificarXmlAEnviar(manej.envioMensajeError("13")); 
+                {
+                    if (Session["Loggedin"] != null)
+                    {
+                        if (Session["Loggedin"].Equals("yes"))
+                        {
+                            if (CodValido(medico_tb))
+                            {
+                                //Creamos una instancia de EstadoDeCuenta con los datos de entrada (medico_tb)
+                                EstadoDeCuenta edoCta = new EstadoDeCuenta(medico_tb);
+
+                                //Consultamos el estado de cuenta por antiguedad de saldo
+                                edoCta.ConsultarEstadoDeCuentaAS();
+                                if (edoCta.sinDeuda == true)
+                                    return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                                else
+                                    return manej.codificarXmlAEnviar(manej.creacionRespuestaEdoCtaAS(edoCta));
+                            }
+                            else return manej.codificarXmlAEnviar(manej.envioMensajeError("14"));
+                        }
+                        else
+                            return manej.codificarXmlAEnviar(manej.envioMensajeError("13"));
+                    }
+                    else
+                        return manej.codificarXmlAEnviar(manej.envioMensajeError("13"));
+                }
             }
             else
-                return manej.codificarXmlAEnviar(manej.envioMensajeError("13")); 
+                return manej.codificarXmlAEnviar(manej.envioMensajeError("13"));
         }
 
         /// <summary>
@@ -157,25 +204,54 @@ namespace Atencion24WebServices
 
             System.Diagnostics.Debug.WriteLine("En proximo pago ESTE es el SessionID " + Session.SessionID);
 
-            if (Session["Loggedin"] !=null) 
+            if (Context.Session != null)
             {
-                if (Session["Loggedin"].Equals("yes"))
+                //check the IsNewSession value, this will tell us if the session has been reset
+                if (Session.IsNewSession)
                 {
-                    //Creamos una instancia de EstadoDeCuenta con los datos de entrada (medico_tb)
-                    Pago pago = new Pago(medico_tb);
-
-                    //Consultamos el estado de cuenta por antiguedad de saldo
-                    pago.consultarProximoPago();
-                    if (pago.sinPago == true)
-                        return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                    //now we know it's a new session, so we check to see if a cookie is present
+                    string cookie = HttpContext.Current.Request.Headers["Cookie"];
+                    //now we determine if there is a cookie does it contains what we're looking for
+                    if ((null != cookie) && (cookie.IndexOf("ASP.NET_SessionId") >= 0))
+                    {
+                        //since it's a new session but a ASP.Net cookie exist we know
+                        //the session has expired so we need to redirect them
+                        return manej.codificarXmlAEnviar(manej.envioMensajeError("500"));
+                    }
                     else
-                        return manej.codificarXmlAEnviar(manej.creacionRespuestaProximoPago(pago));
+                    {
+                        return manej.codificarXmlAEnviar(manej.envioMensajeError("13"));
+                    }
                 }
                 else
-                    return manej.codificarXmlAEnviar(manej.envioMensajeError("13")); 
+                {
+                    if (Session["Loggedin"] != null)
+                    {
+                        if (Session["Loggedin"].Equals("yes"))
+                        {
+                            if (CodValido(medico_tb))
+                            {
+                                //Creamos una instancia de EstadoDeCuenta con los datos de entrada (medico_tb)
+                                Pago pago = new Pago(medico_tb);
+
+                                //Consultamos el estado de cuenta por antiguedad de saldo
+                                pago.consultarProximoPago();
+                                if (pago.sinPago == true)
+                                    return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                                else
+                                    return manej.codificarXmlAEnviar(manej.creacionRespuestaProximoPago(pago));
+                            }
+                            else return manej.codificarXmlAEnviar(manej.envioMensajeError("14"));
+                        }
+                        else
+                            return manej.codificarXmlAEnviar(manej.envioMensajeError("13"));
+                    }
+                    else
+                        return manej.codificarXmlAEnviar(manej.envioMensajeError("13"));
+                }
             }
             else
-                return manej.codificarXmlAEnviar(manej.envioMensajeError("13")); 
+                return manej.codificarXmlAEnviar(manej.envioMensajeError("13"));
         }
 
         /// <summary>
@@ -196,28 +272,58 @@ namespace Atencion24WebServices
 
             System.Diagnostics.Debug.WriteLine("En Historico de pagos ESTE es el SessionID " + Session.SessionID);
 
-            if (Session["Loggedin"] !=null) 
+            if (Context.Session != null)
             {
-                if (Session["Loggedin"].Equals("yes"))
+                //check the IsNewSession value, this will tell us if the session has been reset
+                if (Session.IsNewSession)
                 {
-                    //System.Diagnostics.Debug.WriteLine("FECHAS ANTES:" + fechaI_tb + " " + fechaF_tb);
-                    //System.Diagnostics.Debug.WriteLine("FECHAS DESPUES:" + fechaI + " " + fechaF);
-
-                    //Creamos una instancia de HistoricoPagos con los datos de entrada (medico_tb, fechaI, fechaF)
-                    HistoricoPagos pagos = new HistoricoPagos(medico_tb, fechaI, fechaF);
-
-                    //Consultamos el listado de pagos generados para el médico en el rango de fechas
-                    pagos.consultarHistoricoPagos();
-                    if (pagos.sinPagos == true)
-                        return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                    //now we know it's a new session, so we check to see if a cookie is present
+                    string cookie = HttpContext.Current.Request.Headers["Cookie"];
+                    //now we determine if there is a cookie does it contains what we're looking for
+                    if ((null != cookie) && (cookie.IndexOf("ASP.NET_SessionId") >= 0))
+                    {
+                        //since it's a new session but a ASP.Net cookie exist we know
+                        //the session has expired so we need to redirect them
+                        return manej.codificarXmlAEnviar(manej.envioMensajeError("500"));
+                    }
                     else
-                        return manej.codificarXmlAEnviar(manej.creacionRespuestaHistoricoPagos(pagos.Pagos));
+                    {
+                        return manej.codificarXmlAEnviar(manej.envioMensajeError("13"));
+                    }
                 }
                 else
-                    return manej.codificarXmlAEnviar(manej.envioMensajeError("13")); 
+                {
+                    if (Session["Loggedin"] != null)
+                    {
+                        if (Session["Loggedin"].Equals("yes"))
+                        {
+                            if (CodValido(medico_tb))
+                            {
+                                //System.Diagnostics.Debug.WriteLine("FECHAS ANTES:" + fechaI_tb + " " + fechaF_tb);
+                                //System.Diagnostics.Debug.WriteLine("FECHAS DESPUES:" + fechaI + " " + fechaF);
+
+                                //Creamos una instancia de HistoricoPagos con los datos de entrada (medico_tb, fechaI, fechaF)
+                                HistoricoPagos pagos = new HistoricoPagos(medico_tb, fechaI, fechaF);
+
+                                //Consultamos el listado de pagos generados para el médico en el rango de fechas
+                                pagos.consultarHistoricoPagos();
+                                if (pagos.sinPagos == true)
+                                    return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                                else
+                                    return manej.codificarXmlAEnviar(manej.creacionRespuestaHistoricoPagos(pagos.Pagos));
+                            }
+                            else
+                                return manej.codificarXmlAEnviar(manej.envioMensajeError("14"));
+                        }
+                        else
+                            return manej.codificarXmlAEnviar(manej.envioMensajeError("13"));
+                    }
+                    else
+                        return manej.codificarXmlAEnviar(manej.envioMensajeError("13"));
+                }
             }
             else
-                return manej.codificarXmlAEnviar(manej.envioMensajeError("13")); 
+                return manej.codificarXmlAEnviar(manej.envioMensajeError("13"));
        
         }
        
@@ -239,26 +345,54 @@ namespace Atencion24WebServices
 
             System.Diagnostics.Debug.WriteLine("En Facturado ESTE es el SessionID " + Session.SessionID);
 
-            if (Session["Loggedin"] !=null) 
+            if (Context.Session != null)
             {
-                if (Session["Loggedin"].Equals("yes"))
+                //check the IsNewSession value, this will tell us if the session has been reset
+                if (Session.IsNewSession)
                 {
-                    //Creamos una instancia de HistoricoPagos con los datos de entrada (medico_tb, fechaI, fechaF)
-                    FacturadoUDN facturado = new FacturadoUDN(medico_tb, fechaI, fechaF);
-
-                    //Consultamos el listado de pagos generados para el médico en el rango de fechas
-                    facturado.consultarHonorariosFacturados();
-                    if (facturado.SinFacturado == true)
-                        return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                    //now we know it's a new session, so we check to see if a cookie is present
+                    string cookie = HttpContext.Current.Request.Headers["Cookie"];
+                    //now we determine if there is a cookie does it contains what we're looking for
+                    if ((null != cookie) && (cookie.IndexOf("ASP.NET_SessionId") >= 0))
+                    {
+                        //since it's a new session but a ASP.Net cookie exist we know
+                        //the session has expired so we need to redirect them
+                        return manej.codificarXmlAEnviar(manej.envioMensajeError("500"));
+                    }
                     else
-                        return manej.codificarXmlAEnviar(manej.creacionRespuestaHonorariosFacturados(facturado));
+                    {
+                        return manej.codificarXmlAEnviar(manej.envioMensajeError("13"));
+                    }
                 }
                 else
-                    return manej.codificarXmlAEnviar(manej.envioMensajeError("13")); 
-            }
-            else
-                return manej.codificarXmlAEnviar(manej.envioMensajeError("13")); 
+                {
+                    if (Session["Loggedin"] !=null) 
+                    {
+                        if (Session["Loggedin"].Equals("yes"))
+                        {
+                            if (CodValido(medico_tb))
+                            {
+                                //Creamos una instancia de HistoricoPagos con los datos de entrada (medico_tb, fechaI, fechaF)
+                                FacturadoUDN facturado = new FacturadoUDN(medico_tb, fechaI, fechaF);
 
+                                //Consultamos el listado de pagos generados para el médico en el rango de fechas
+                                facturado.consultarHonorariosFacturados();
+                                if (facturado.SinFacturado == true)
+                                    return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                                else
+                                    return manej.codificarXmlAEnviar(manej.creacionRespuestaHonorariosFacturados(facturado));
+                            }
+                            else return manej.codificarXmlAEnviar(manej.envioMensajeError("14"));
+                        }
+                        else
+                            return manej.codificarXmlAEnviar(manej.envioMensajeError("13")); 
+                    }
+                    else
+                        return manej.codificarXmlAEnviar(manej.envioMensajeError("13")); 
+                }
+            }
+             else
+                 return manej.codificarXmlAEnviar(manej.envioMensajeError("13")); 
         }
 
         /// <summary>
@@ -276,24 +410,53 @@ namespace Atencion24WebServices
 
             System.Diagnostics.Debug.WriteLine("En Listado de casos ESTE es el SessionID " + Session.SessionID);
 
-            if (Session["Loggedin"] !=null) 
+            if (Context.Session != null)
             {
-                if (Session["Loggedin"].Equals("yes"))
+                //check the IsNewSession value, this will tell us if the session has been reset
+                if (Session.IsNewSession)
                 {
-                    //Creamos una instancia de HistoricoPagos con los datos de entrada (medico_tb, fechaI, fechaF)
-                    ListadoCasos casos = new ListadoCasos(medico_tb, apellido_tb);
-
-                    //Consultamos el listado de pagos generados para el médico en el rango de fechas
-                    casos.ConsultarListadoDeCasos();
-                    if (casos.SinCasos == true)
-                        return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                    //now we know it's a new session, so we check to see if a cookie is present
+                    string cookie = HttpContext.Current.Request.Headers["Cookie"];
+                    //now we determine if there is a cookie does it contains what we're looking for
+                    if ((null != cookie) && (cookie.IndexOf("ASP.NET_SessionId") >= 0))
+                    {
+                        //since it's a new session but a ASP.Net cookie exist we know
+                        //the session has expired so we need to redirect them
+                        return manej.codificarXmlAEnviar(manej.envioMensajeError("500"));
+                    }
                     else
-                        return manej.codificarXmlAEnviar(manej.creacionRespuestaListadoDeCaso(casos.Casos));
+                    {
+                        return manej.codificarXmlAEnviar(manej.envioMensajeError("13"));
+                    }
                 }
                 else
-                    return manej.codificarXmlAEnviar(manej.envioMensajeError("13")); 
-            }
-            else 
+                {
+                    if (Session["Loggedin"] != null)
+                    {
+                        if (Session["Loggedin"].Equals("yes"))
+                        {
+                            if (CodValido(medico_tb))
+                            {
+                                //Creamos una instancia de HistoricoPagos con los datos de entrada (medico_tb, fechaI, fechaF)
+                                ListadoCasos casos = new ListadoCasos(medico_tb, apellido_tb);
+
+                                //Consultamos el listado de pagos generados para el médico en el rango de fechas
+                                casos.ConsultarListadoDeCasos();
+                                if (casos.SinCasos == true)
+                                    return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                                else
+                                    return manej.codificarXmlAEnviar(manej.creacionRespuestaListadoDeCaso(casos.Casos));
+                            }
+                            else return manej.codificarXmlAEnviar(manej.envioMensajeError("14"));
+                        }
+                        else
+                            return manej.codificarXmlAEnviar(manej.envioMensajeError("13"));
+                    }
+                    else
+                        return manej.codificarXmlAEnviar(manej.envioMensajeError("13"));
+                 }
+             }
+             else 
                 return manej.codificarXmlAEnviar(manej.envioMensajeError("13")); 
 
         }
@@ -315,20 +478,49 @@ namespace Atencion24WebServices
 
             System.Diagnostics.Debug.WriteLine("En Detalle de caso ESTE es el SessionID " + Session.SessionID);
 
-            if (Session["Loggedin"] !=null) 
+            if (Context.Session != null)
             {
-                if (Session["Loggedin"].Equals("yes"))
+                //check the IsNewSession value, this will tell us if the session has been reset
+                if (Session.IsNewSession)
                 {
-                    //Creamos una instancia de HistoricoPagos con los datos de entrada (medico_tb, fechaI, fechaF)
-                    Caso caso = new Caso(medico_tb, caso_tb, udn_tb);
-
-                    //Consultamos el listado de pagos generados para el médico en el rango de fechas
-                    caso.ConsultarDetalleDeCaso();
-
-                    return manej.codificarXmlAEnviar(manej.creacionRespuestaDetalleDeCaso(caso));
+                    //now we know it's a new session, so we check to see if a cookie is present
+                    string cookie = HttpContext.Current.Request.Headers["Cookie"];
+                    //now we determine if there is a cookie does it contains what we're looking for
+                    if ((null != cookie) && (cookie.IndexOf("ASP.NET_SessionId") >= 0))
+                    {
+                        //since it's a new session but a ASP.Net cookie exist we know
+                        //the session has expired so we need to redirect them
+                        return manej.codificarXmlAEnviar(manej.envioMensajeError("500"));
+                    }
+                    else
+                    {
+                        return manej.codificarXmlAEnviar(manej.envioMensajeError("13"));
+                    }
                 }
                 else
-                    return manej.codificarXmlAEnviar(manej.envioMensajeError("13")); 
+                {
+                    if (Session["Loggedin"] !=null) 
+                    {
+                        if (Session["Loggedin"].Equals("yes"))
+                        {
+                            if (CodValido(medico_tb))
+                            {
+                                //Creamos una instancia de HistoricoPagos con los datos de entrada (medico_tb, fechaI, fechaF)
+                                Caso caso = new Caso(medico_tb, caso_tb, udn_tb);
+
+                                //Consultamos el listado de pagos generados para el médico en el rango de fechas
+                                caso.ConsultarDetalleDeCaso();
+
+                                return manej.codificarXmlAEnviar(manej.creacionRespuestaDetalleDeCaso(caso));
+                            }
+                            else return manej.codificarXmlAEnviar(manej.envioMensajeError("14")); 
+                        }
+                        else
+                            return manej.codificarXmlAEnviar(manej.envioMensajeError("13")); 
+                    }
+                    else
+                        return manej.codificarXmlAEnviar(manej.envioMensajeError("13")); 
+                }
             }
             else
                 return manej.codificarXmlAEnviar(manej.envioMensajeError("13")); 
@@ -348,27 +540,55 @@ namespace Atencion24WebServices
 
             System.Diagnostics.Debug.WriteLine("En listado de fianzas ESTE es el SessionID " + Session.SessionID);
 
-           if (Session["Loggedin"] !=null) 
+            if (Context.Session != null)
             {
-                if (Session["Loggedin"].Equals("yes"))
+                //check the IsNewSession value, this will tell us if the session has been reset
+                if (Session.IsNewSession)
                 {
-                    //Creamos una instancia de HistoricoPagos con los datos de entrada (medico_tb, fechaI, fechaF)
-                    ListadoFianzas fianzas = new ListadoFianzas(medico_tb);
-
-                    //Consultamos el listado de pagos generados para el médico en el rango de fechas
-                    fianzas.ConsultarListadoFianzas();
-
-                    if (fianzas.SinFianzas == true)
-                        return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                    //now we know it's a new session, so we check to see if a cookie is present
+                    string cookie = HttpContext.Current.Request.Headers["Cookie"];
+                    //now we determine if there is a cookie does it contains what we're looking for
+                    if ((null != cookie) && (cookie.IndexOf("ASP.NET_SessionId") >= 0))
+                    {
+                        //since it's a new session but a ASP.Net cookie exist we know
+                        //the session has expired so we need to redirect them
+                        return manej.codificarXmlAEnviar(manej.envioMensajeError("500"));
+                    }
                     else
-                        return manej.codificarXmlAEnviar(manej.creacionRespuestaListadoFianzas(fianzas.Fianzas));
+                    {
+                        return manej.codificarXmlAEnviar(manej.envioMensajeError("13"));
+                    }
                 }
                 else
-                    return manej.codificarXmlAEnviar(manej.envioMensajeError("13")); 
+                {
+                    if (Session["Loggedin"] != null)
+                    {
+                        if (Session["Loggedin"].Equals("yes"))
+                        {
+                            if (CodValido(medico_tb))
+                            {
+                                //Creamos una instancia de HistoricoPagos con los datos de entrada (medico_tb, fechaI, fechaF)
+                                ListadoFianzas fianzas = new ListadoFianzas(medico_tb);
+
+                                //Consultamos el listado de pagos generados para el médico en el rango de fechas
+                                fianzas.ConsultarListadoFianzas();
+
+                                if (fianzas.SinFianzas == true)
+                                    return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                                else
+                                    return manej.codificarXmlAEnviar(manej.creacionRespuestaListadoFianzas(fianzas.Fianzas));
+                            }
+                            else return manej.codificarXmlAEnviar(manej.envioMensajeError("14"));
+                        }
+                        else
+                            return manej.codificarXmlAEnviar(manej.envioMensajeError("13"));
+                    }
+                    else
+                        return manej.codificarXmlAEnviar(manej.envioMensajeError("13"));
+                }
             }
             else
-                return manej.codificarXmlAEnviar(manej.envioMensajeError("13")); 
-
+                return manej.codificarXmlAEnviar(manej.envioMensajeError("13"));
         }
 
         /// <summary>
@@ -376,20 +596,46 @@ namespace Atencion24WebServices
         /// </summary>
         /// <returns>Cierra la Session</returns>
         [WebMethod(Description = "Cerrar sesión", EnableSession = true)]
-        public void cerrarSesion()
+        public String cerrarSesion()
         {
             ManejadorXML manej = new ManejadorXML();
 
             System.Diagnostics.Debug.WriteLine("En cierre de sesion ESTE es el SessionID " + Session.SessionID);
 
-            if (Session["Loggedin"] != null)
+            if (Context.Session != null)
             {
-                if (Session["Loggedin"].Equals("yes"))
+                //check the IsNewSession value, this will tell us if the session has been reset
+                if (Session.IsNewSession)
                 {
-                    Session.Abandon();
-                    System.Diagnostics.Debug.WriteLine("Cerre Sesion");
+                    //now we know it's a new session, so we check to see if a cookie is present
+                    string cookie = HttpContext.Current.Request.Headers["Cookie"];
+                    //now we determine if there is a cookie does it contains what we're looking for
+                    if ((null != cookie) && (cookie.IndexOf("ASP.NET_SessionId") >= 0))
+                    {
+                        //since it's a new session but a ASP.Net cookie exist we know
+                        //the session has expired so we need to redirect them
+                        return manej.codificarXmlAEnviar(manej.envioMensajeError("500"));
+                    }
+                    else
+                    {
+                        return manej.codificarXmlAEnviar(manej.envioMensajeError("13"));
+                    }
+                }
+                else
+                {
+                    if (Session["Loggedin"] != null)
+                    {
+                        if (Session["Loggedin"].Equals("yes"))
+                        {
+                            Session.Abandon();
+                            System.Diagnostics.Debug.WriteLine("Cerre Sesion");
+                        }
+                    }
+                    return manej.codificarXmlAEnviar(manej.envioMensajeError("13"));
                 }
             }
+            else
+                return manej.codificarXmlAEnviar(manej.envioMensajeError("13"));
 
         }
 

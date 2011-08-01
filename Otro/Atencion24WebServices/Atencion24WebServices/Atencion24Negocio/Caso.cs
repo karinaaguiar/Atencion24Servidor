@@ -15,7 +15,7 @@ namespace Atencion24WebServices.Atencion24Negocio
 	    private String fechaEmisionFactura="";
 	    private String nroCaso="";
 	    private String unidadNegocio="";
-	    private String ciPaciente= "";
+        private decimal ciPaciente = 0;
         private String responsablePago = "";
 	    private decimal montoFacturado = 0;
 	    private decimal montoExonerado = 0;
@@ -59,7 +59,7 @@ namespace Atencion24WebServices.Atencion24Negocio
             set { unidadNegocio = value; }
         }
 
-        public String CiPaciente
+        public decimal CiPaciente
         {
             get { return ciPaciente; }
             set { ciPaciente = value; }
@@ -166,7 +166,7 @@ namespace Atencion24WebServices.Atencion24Negocio
                     nombrePaciente = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
 
                 if (ds.Tables[0].Rows[0].ItemArray.ElementAt(1) != DBNull.Value)
-                    ciPaciente = ds.Tables[0].Rows[0].ItemArray.ElementAt(1).ToString();
+                    ciPaciente = decimal.Parse(ds.Tables[0].Rows[0].ItemArray.ElementAt(1).ToString());
 
                 if (ds.Tables[0].Rows[0].ItemArray.ElementAt(2) != DBNull.Value)
                     fechaEmisionFactura = ds.Tables[0].Rows[0].ItemArray.ElementAt(2).ToString();

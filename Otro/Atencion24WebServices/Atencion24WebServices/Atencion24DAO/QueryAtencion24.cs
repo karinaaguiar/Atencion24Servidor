@@ -466,7 +466,8 @@ namespace Atencion24WebServices.Atencion24DAO
                      "FROM TBL_CUENTASPORCOBRAR A " +
                      "INNER JOIN TBL_HCASO B " +
                      "ON A.UNIDADDENEGOCIO = B.UNIDADNEGOCIO AND A.NROID = B.CASO " +
-                     "WHERE A.RESPONSABLEDEPAGO = '" + medico + "' AND A.TIPORESPONSABLE = 4 AND A.CANCELADO = 0 ";
+                     "WHERE A.RESPONSABLEDEPAGO = '" + medico + "' AND A.TIPORESPONSABLE = 4 AND A.CANCELADO = 0 "+
+                     "ORDER BY B.FECHAEMISION DESC ";
              return Query;
          }
 

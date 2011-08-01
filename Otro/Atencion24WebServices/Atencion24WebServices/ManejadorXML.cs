@@ -177,37 +177,37 @@ namespace Atencion24WebServices
             
             //Monto30Dias
             elemento1 = documento.CreateElement("montoA30Dias");
-            texto = documento.CreateTextNode((estadoCta.MontoA30Dias).ToString("0.##"));
+            texto = documento.CreateTextNode((estadoCta.MontoA30Dias).ToString("N2"));
             elemento1.AppendChild(texto);
             elemento.AppendChild(elemento1);
 
             //Monto60Dias
             elemento1 = documento.CreateElement("montoA60Dias");
-            texto = documento.CreateTextNode((estadoCta.MontoA60Dias).ToString("0.##"));
+            texto = documento.CreateTextNode((estadoCta.MontoA60Dias).ToString("N2"));
             elemento1.AppendChild(texto);
             elemento.AppendChild(elemento1);
 
             //Monto90Dias
             elemento1 = documento.CreateElement("montoA90Dias");
-            texto = documento.CreateTextNode((estadoCta.MontoA90Dias).ToString("0.##"));
+            texto = documento.CreateTextNode((estadoCta.MontoA90Dias).ToString("N2"));
             elemento1.AppendChild(texto);
             elemento.AppendChild(elemento1);
 
             //Monto180Dias
             elemento1 = documento.CreateElement("montoA180Dias");
-            texto = documento.CreateTextNode((estadoCta.MontoA180Dias).ToString("0.##"));
+            texto = documento.CreateTextNode((estadoCta.MontoA180Dias).ToString("N2"));
             elemento1.AppendChild(texto);
             elemento.AppendChild(elemento1);
 
             //MontoMas180Dias
             elemento1 = documento.CreateElement("montoAMas180Dias");
-            texto = documento.CreateTextNode((estadoCta.MontoAMas180Dias).ToString("0.##"));
+            texto = documento.CreateTextNode((estadoCta.MontoAMas180Dias).ToString("N2"));
             elemento1.AppendChild(texto);
             elemento.AppendChild(elemento1);
 
             //MontoTotal
             elemento1 = documento.CreateElement("montoTotal");
-            texto = documento.CreateTextNode((estadoCta.MontoTotal).ToString("0.##"));
+            texto = documento.CreateTextNode((estadoCta.MontoTotal).ToString("N2"));
             elemento1.AppendChild(texto);
             elemento.AppendChild(elemento1);
 
@@ -238,7 +238,7 @@ namespace Atencion24WebServices
 
             //MontoLiberado
             elemento1 = documento.CreateElement("montoLiberado");
-            String valor = pago.MontoLiberado.ToString("0.##");
+            String valor = pago.MontoLiberado.ToString("N2");
             texto = documento.CreateTextNode(valor);
             elemento1.AppendChild(texto);
             elemento.AppendChild(elemento1);
@@ -260,7 +260,7 @@ namespace Atencion24WebServices
 
                     //Monto
                     elemento3 = documento.CreateElement("monto");
-                    texto = documento.CreateTextNode(deduccion.Monto.ToString("0.##"));
+                    texto = documento.CreateTextNode(deduccion.Monto.ToString("N2"));
                     elemento3.AppendChild(texto);
                     elemento2.AppendChild(elemento3);
 
@@ -271,7 +271,7 @@ namespace Atencion24WebServices
 
             //MontoNeto 
             elemento1 = documento.CreateElement("montoNeto");
-            texto = documento.CreateTextNode((pago.MontoNeto).ToString("0.##"));
+            texto = documento.CreateTextNode((pago.MontoNeto).ToString("N2"));
             elemento1.AppendChild(texto);
             elemento.AppendChild(elemento1);
 
@@ -353,31 +353,31 @@ namespace Atencion24WebServices
             
             //Monto30Dias
             elemento1 = documento.CreateElement("hospitalizacion");
-            texto = documento.CreateTextNode(facturado.Hospitalizacion.ToString("0.##"));
+            texto = documento.CreateTextNode(facturado.Hospitalizacion.ToString("N2"));
             elemento1.AppendChild(texto);
             elemento.AppendChild(elemento1);
 
             //Monto60Dias
             elemento1 = documento.CreateElement("emergencia");
-            texto = documento.CreateTextNode((facturado.Emergencia).ToString("0.##"));
+            texto = documento.CreateTextNode((facturado.Emergencia).ToString("N2"));
             elemento1.AppendChild(texto);
             elemento.AppendChild(elemento1);
 
             //Monto90Dias
             elemento1 = documento.CreateElement("cirugia");
-            texto = documento.CreateTextNode((facturado.Cirugia).ToString("0.##"));
+            texto = documento.CreateTextNode((facturado.Cirugia).ToString("N2"));
             elemento1.AppendChild(texto);
             elemento.AppendChild(elemento1);
 
             //Monto180Dias
             elemento1 = documento.CreateElement("convenios");
-            texto = documento.CreateTextNode((facturado.Convenios).ToString("0.##"));
+            texto = documento.CreateTextNode((facturado.Convenios).ToString("N2"));
             elemento1.AppendChild(texto);
             elemento.AppendChild(elemento1);
 
             //MontoMas180Dias
             elemento1 = documento.CreateElement("total");
-            texto = documento.CreateTextNode((facturado.MontoTotal).ToString("0.##"));
+            texto = documento.CreateTextNode((facturado.MontoTotal).ToString("N2"));
             elemento1.AppendChild(texto);
             elemento.AppendChild(elemento1);
 
@@ -438,7 +438,7 @@ namespace Atencion24WebServices
             {
                 //Cédula del paciente
                 elemento1 = documento.CreateElement("ciPaciente");
-                valor = caso.CiPaciente;
+                valor = caso.CiPaciente.ToString("N0"); 
                 texto = documento.CreateTextNode(valor);
                 elemento1.AppendChild(texto);
                 elemento.AppendChild(elemento1);
@@ -452,28 +452,28 @@ namespace Atencion24WebServices
 
                 //Monto Facturado
                 elemento1 = documento.CreateElement("montoFacturado");
-                valor = caso.MontoFacturado.ToString("0.##");
+                valor = caso.MontoFacturado.ToString("N2");
                 texto = documento.CreateTextNode(valor);
                 elemento1.AppendChild(texto);
                 elemento.AppendChild(elemento1);
 
                 //Monto Exonerado
                 elemento1 = documento.CreateElement("montoExonerado");
-                valor = caso.MontoExonerado.ToString("0.##");
+                valor = caso.MontoExonerado.ToString("N2");
                 texto = documento.CreateTextNode(valor);
                 elemento1.AppendChild(texto);
                 elemento.AppendChild(elemento1);
 
                 //Monto Abonado
                 elemento1 = documento.CreateElement("montoAbonado");
-                valor = caso.MontoAbonado.ToString("0.##");
+                valor = caso.MontoAbonado.ToString("N2");
                 texto = documento.CreateTextNode(valor);
                 elemento1.AppendChild(texto);
                 elemento.AppendChild(elemento1);
 
                 //Monto Abonado
                 elemento1 = documento.CreateElement("totalDeuda");
-                valor = caso.TotalDeuda.ToString("0.##");
+                valor = caso.TotalDeuda.ToString("N2");
                 texto = documento.CreateTextNode(valor);
                 elemento1.AppendChild(texto);
                 elemento.AppendChild(elemento1);
@@ -496,25 +496,25 @@ namespace Atencion24WebServices
 
                             //Monto Facturado 
                             elemento3 = documento.CreateElement("facturado");
-                            texto = documento.CreateTextNode(honorario.MontoFacturado.ToString("0.##"));
+                            texto = documento.CreateTextNode(honorario.MontoFacturado.ToString("N2"));
                             elemento3.AppendChild(texto);
                             elemento2.AppendChild(elemento3);
 
                             //Nombre honorario 
                             elemento3 = documento.CreateElement("exonerado");
-                            texto = documento.CreateTextNode(honorario.MontoExonerado.ToString("0.##"));
+                            texto = documento.CreateTextNode(honorario.MontoExonerado.ToString("N2"));
                             elemento3.AppendChild(texto);
                             elemento2.AppendChild(elemento3);
 
                             //Nombre honorario 
                             elemento3 = documento.CreateElement("abonado");
-                            texto = documento.CreateTextNode(honorario.MontoAbonado.ToString("0.##"));
+                            texto = documento.CreateTextNode(honorario.MontoAbonado.ToString("N2"));
                             elemento3.AppendChild(texto);
                             elemento2.AppendChild(elemento3);
 
                             //Nombre honorario 
                             elemento3 = documento.CreateElement("deuda");
-                            texto = documento.CreateTextNode(honorario.TotalDeuda.ToString("0.##"));
+                            texto = documento.CreateTextNode(honorario.TotalDeuda.ToString("N2"));
                             elemento3.AppendChild(texto);
                             elemento2.AppendChild(elemento3);
 
@@ -614,38 +614,38 @@ namespace Atencion24WebServices
 
             //Moto a cobrar
             elemento1 = documento.CreateElement("montoACobrar");
-            texto = documento.CreateTextNode(fianza.MontoACobrar.ToString("0.##"));
+            texto = documento.CreateTextNode(fianza.MontoACobrar.ToString("N2"));
             elemento1.AppendChild(texto);
             elemento.AppendChild(elemento1);
 
             //Moto abonado
             elemento1 = documento.CreateElement("montoAbonado");
-            texto = documento.CreateTextNode(fianza.MontoAbonado.ToString("0.##"));
+            texto = documento.CreateTextNode(fianza.MontoAbonado.ToString("N2"));
             elemento1.AppendChild(texto);
             elemento.AppendChild(elemento1);
 
             //Moto reintegro
             elemento1 = documento.CreateElement("montoReintegro");
-            texto = documento.CreateTextNode(fianza.MontoReintegro.ToString("0.##"));
+            texto = documento.CreateTextNode(fianza.MontoReintegro.ToString("N2"));
             elemento1.AppendChild(texto);
             elemento.AppendChild(elemento1);
 
             //Moto Notas Crédito
             elemento1 = documento.CreateElement("montoNotasCred");
-            texto = documento.CreateTextNode(fianza.MontoNotasCred.ToString("0.##"));
+            texto = documento.CreateTextNode(fianza.MontoNotasCred.ToString("N2"));
             elemento1.AppendChild(texto);
             elemento.AppendChild(elemento1);
 
             
             //Moto Notas Débito
             elemento1 = documento.CreateElement("montoNotasDeb");
-            texto = documento.CreateTextNode(fianza.MontoNotasDeb.ToString("0.##"));
+            texto = documento.CreateTextNode(fianza.MontoNotasDeb.ToString("N2"));
             elemento1.AppendChild(texto);
             elemento.AppendChild(elemento1);
 
             //Moto neto
             elemento1 = documento.CreateElement("montoDeuda");
-            texto = documento.CreateTextNode(fianza.MontoNeto.ToString("0.##"));
+            texto = documento.CreateTextNode(fianza.MontoNeto.ToString("N2"));
             elemento1.AppendChild(texto);
             elemento.AppendChild(elemento1);
 
