@@ -53,29 +53,70 @@ namespace Atencion24WebServices
             clave_tb = clave_tb.Trim();
 
             System.Diagnostics.Debug.WriteLine("ESTE es el SessionID " + Session.SessionID);
-
-            //Creamos una instancia de usuario con los datos que fueron introducidos por pantalla (Pantalla de Inicio de Sesión)
-            Usuario usuarioInput = new Usuario(usuario_tb, clave_tb);
-
-            //Verificamos si el usuario ingresado existe en la base de datos
-            usuarioInput.ExisteUsuario();
-            if (usuarioInput.Valido == false)
-                return manej.codificarXmlAEnviar(manej.envioMensajeError("1"));
-            else
-            { 
-                //Verificamos que se introdujo bien la contraseña
-                String codigo = usuarioInput.ConsultarUsuario();
-                if (usuarioInput.Valido == false)
-                    return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+            
+            //check the IsNewSession value, this will tell us if the session has been reset
+            if (Session.IsNewSession)
+            {
+                //now we know it's a new session, so we check to see if a cookie is present
+                string cookie = HttpContext.Current.Request.Headers["Cookie"];
+                //now we determine if there is a cookie does it contains what we're looking for
+                if ((null != cookie) && (cookie.IndexOf("ASP.NET_SessionId") >= 0))
+                {
+                    //since it's a new session but a ASP.Net cookie exist we know
+                    //the session has expired so we need to redirect them
+                    return manej.codificarXmlAEnviar(manej.envioMensajeError("500"));
+                }
                 else
                 {
-                    //Los datos introducidos son correctos. Inicio de sesión exitoso
-                    usuarioInput.ConsultarCodigosPago(codigo);
                     Session.Add("Loggedin", "");
-                    Session["Loggedin"] = "yes";
-                    Session["codigosPago"] = usuarioInput.CodigosPago;
-                    return manej.codificarXmlAEnviar(manej.creacionRespuestaInicioSesion(usuarioInput));
+                    Session.Add("Count", 0);
+                    Session.Add("bloqueado", "");
                 }
+            }        
+            if (Session["Count"] != null)
+            {
+                if ((int)Session["Count"] == 3)
+                {
+                    Session["bloqueado"] = "yes";
+                }
+            }
+
+            if (Session["bloqueado"] != null && (!Session["bloqueado"].Equals("yes")))
+            {
+
+                //Creamos una instancia de usuario con los datos que fueron introducidos por pantalla (Pantalla de Inicio de Sesión)
+                Usuario usuarioInput = new Usuario(usuario_tb, clave_tb);
+
+                //Verificamos si el usuario ingresado existe en la base de datos
+                usuarioInput.ExisteUsuario();
+                if (usuarioInput.Valido == false)
+                {
+                    Session["Count"] = (int)Session["Count"] + 1;
+                    return manej.codificarXmlAEnviar(manej.envioMensajeError("1"));
+                }
+                else
+                {
+                    //Verificamos que se introdujo bien la contraseña
+                    String codigo = usuarioInput.ConsultarUsuario();
+                    if (usuarioInput.Valido == false)
+                    {
+                        Session["Count"] = (int)Session["Count"] + 1;
+                        return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                    }
+                    else
+                    {
+                        //Los datos introducidos son correctos. Inicio de sesión exitoso
+                        usuarioInput.ConsultarCodigosPago(codigo);
+
+                        Session["Loggedin"] = "yes";
+                        Session["codigosPago"] = usuarioInput.CodigosPago;
+                        return manej.codificarXmlAEnviar(manej.creacionRespuestaInicioSesion(usuarioInput));
+                    }
+                }
+            }
+            else
+            {
+                return manej.codificarXmlAEnviar(manej.envioMensajeError("3"));
             }
             
             /*VERSION VIEJA
