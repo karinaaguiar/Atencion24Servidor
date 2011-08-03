@@ -64,26 +64,39 @@ namespace Atencion24WebServices
                 {
                     //since it's a new session but a ASP.Net cookie exist we know
                     //the session has expired so we need to redirect them
-                    return manej.codificarXmlAEnviar(manej.envioMensajeError("500"));
+                    return manej.codificarXmlAEnviar(manej.envioMensajeError("502"));
                 }
                 else
                 {
                     Session.Add("Loggedin", "");
                     Session.Add("Count", 0);
                     Session.Add("bloqueado", "");
+                    Session.Add("bloquedoAhora", 0);
                 }
             }        
             if (Session["Count"] != null)
             {
+                System.Diagnostics.Debug.WriteLine("Count hasta ahora " + Session["Count"]);
                 if ((int)Session["Count"] == 3)
                 {
                     Session["bloqueado"] = "yes";
+                    if (Session["bloqueadoAhora"] != null)
+                    {
+                        if ((int)Session["bloqueadoAhora"] == 0)
+                        {
+                            Session["bloqueadoAhora"] = 1;
+                            return manej.codificarXmlAEnviar(manej.envioMensajeError("3"));
+                        }
+                        if ((int)Session["bloqueadoAhora"] == 1)
+                            return manej.codificarXmlAEnviar(manej.envioMensajeError("4"));
+                    }
                 }
             }
 
-            if (Session["bloqueado"] != null && (!Session["bloqueado"].Equals("yes")))
+            if ((Session["bloqueado"] != null) && (!Session["bloqueado"].Equals("yes")))
             {
 
+                System.Diagnostics.Debug.WriteLine("Entre y bloqueado es " + Session["bloqueado"]);
                 //Creamos una instancia de usuario con los datos que fueron introducidos por pantalla (Pantalla de Inicio de Sesión)
                 Usuario usuarioInput = new Usuario(usuario_tb, clave_tb);
 
@@ -116,7 +129,7 @@ namespace Atencion24WebServices
             }
             else
             {
-                return manej.codificarXmlAEnviar(manej.envioMensajeError("3"));
+                return manej.codificarXmlAEnviar(manej.envioMensajeError("4"));
             }
             
             /*VERSION VIEJA

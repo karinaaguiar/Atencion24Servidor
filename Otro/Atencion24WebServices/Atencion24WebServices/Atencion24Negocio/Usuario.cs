@@ -82,21 +82,32 @@ namespace Atencion24WebServices.Atencion24Negocio
                 valido = false;
             else
             {
-                //Cedula
+                //Clave
                 if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) == DBNull.Value)
                     valido = false;
                 else
-                    cedula = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
-                
-                //Nombre
-                if (ds.Tables[0].Rows[0].ItemArray.ElementAt(1) != DBNull.Value)
-                    nombre = ds.Tables[0].Rows[0].ItemArray.ElementAt(1).ToString();
-                
-                //Codigo
-                if (ds.Tables[0].Rows[0].ItemArray.ElementAt(2) == DBNull.Value)
-                    valido = false;
-                else
-                    codigo = ds.Tables[0].Rows[0].ItemArray.ElementAt(2).ToString();
+                {
+                    if (!ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString().Equals("1"))
+                        valido = false;
+                    else
+                    {
+                        //Cedula
+                        if (ds.Tables[0].Rows[0].ItemArray.ElementAt(1) == DBNull.Value)
+                            valido = false;
+                        else
+                            cedula = ds.Tables[0].Rows[0].ItemArray.ElementAt(1).ToString();
+
+                        //Nombre
+                        if (ds.Tables[0].Rows[0].ItemArray.ElementAt(2) != DBNull.Value)
+                            nombre = ds.Tables[0].Rows[0].ItemArray.ElementAt(2).ToString();
+
+                        //Codigo
+                        if (ds.Tables[0].Rows[0].ItemArray.ElementAt(3) == DBNull.Value)
+                            valido = false;
+                        else
+                            codigo = ds.Tables[0].Rows[0].ItemArray.ElementAt(3).ToString();
+                    }
+                }
             }
             return codigo;
         }
@@ -113,7 +124,7 @@ namespace Atencion24WebServices.Atencion24Negocio
             //Consultamos los códigos de pago del usuario 
             ds = ud.InicioSesionConsultarCodigosPago(this.cedula);
 
-            //Verificamos que el medico haya facturado honorarios en hospitalización 
+            //Verificamos que tnga códigos de pago
             if (ds.Tables[0].Rows.Count != 0)
             {
                 codigosPago = new ArrayList();
