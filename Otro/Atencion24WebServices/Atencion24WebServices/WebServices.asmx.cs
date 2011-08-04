@@ -64,6 +64,7 @@ namespace Atencion24WebServices
                 {
                     //since it's a new session but a ASP.Net cookie exist we know
                     //the session has expired so we need to redirect them
+                    System.Diagnostics.Debug.WriteLine("Error 502");
                     return manej.codificarXmlAEnviar(manej.envioMensajeError("502"));
                 }
                 else
@@ -71,7 +72,7 @@ namespace Atencion24WebServices
                     Session.Add("Loggedin", "");
                     Session.Add("Count", 0);
                     Session.Add("bloqueado", "");
-                    Session.Add("bloquedoAhora", 0);
+                    Session.Add("bloqueadoAhora", "no");
                 }
             }        
             if (Session["Count"] != null)
@@ -82,13 +83,17 @@ namespace Atencion24WebServices
                     Session["bloqueado"] = "yes";
                     if (Session["bloqueadoAhora"] != null)
                     {
-                        if ((int)Session["bloqueadoAhora"] == 0)
+                        if (Session["bloqueadoAhora"].Equals("no"))
                         {
-                            Session["bloqueadoAhora"] = 1;
+                            Session["bloqueadoAhora"] = "si";
+                            System.Diagnostics.Debug.WriteLine("Error 3");
                             return manej.codificarXmlAEnviar(manej.envioMensajeError("3"));
                         }
-                        if ((int)Session["bloqueadoAhora"] == 1)
+                        if (Session["bloqueadoAhora"].Equals("si"))
+                        {
+                            System.Diagnostics.Debug.WriteLine("Error 4-1");
                             return manej.codificarXmlAEnviar(manej.envioMensajeError("4"));
+                        }
                     }
                 }
             }
@@ -105,6 +110,7 @@ namespace Atencion24WebServices
                 if (usuarioInput.Valido == false)
                 {
                     Session["Count"] = (int)Session["Count"] + 1;
+                    System.Diagnostics.Debug.WriteLine("Error 1");
                     return manej.codificarXmlAEnviar(manej.envioMensajeError("1"));
                 }
                 else
@@ -114,6 +120,7 @@ namespace Atencion24WebServices
                     if (usuarioInput.Valido == false)
                     {
                         Session["Count"] = (int)Session["Count"] + 1;
+                        System.Diagnostics.Debug.WriteLine("Error 0");
                         return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
                     }
                     else
@@ -129,6 +136,7 @@ namespace Atencion24WebServices
             }
             else
             {
+                System.Diagnostics.Debug.WriteLine("Error 4-2");
                 return manej.codificarXmlAEnviar(manej.envioMensajeError("4"));
             }
             
