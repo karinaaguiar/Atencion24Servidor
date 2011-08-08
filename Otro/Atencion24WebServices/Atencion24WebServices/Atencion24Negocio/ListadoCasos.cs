@@ -14,13 +14,13 @@ namespace Atencion24WebServices.Atencion24Negocio
         private ArrayList casos;
         private string medico;
         private bool sinCasos = false;
-        private string apellido;
+        private string []apellido;
 
         ///Constructor
-        public ListadoCasos(string codMedico, string apellido)
+        public ListadoCasos(string codMedico, string [] apellidos)
         {
             medico = codMedico;
-            this.apellido = apellido;
+            this.apellido = apellidos;
         }
 
         public ListadoCasos() { }

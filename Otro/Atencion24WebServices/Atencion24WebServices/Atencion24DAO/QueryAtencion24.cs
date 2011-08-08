@@ -338,14 +338,19 @@ namespace Atencion24WebServices.Atencion24DAO
         //**DETALLE DE UN CASO**//
 
         //LISTADO DE CASOS POR APELLIDO
-         public string DetalleCasoListadoDeCasos(string medico, string apellido)
+         public string DetalleCasoListadoDeCasos(string medico, string [] apellido)
         {
             Query = "SELECT A.CASO, A.UNIDADNEGOCIO, B.NOMBRE, CONVERT(VARCHAR(10),A.FECHAEMISION,103) " +
                     "FROM TBL_HCASO A INNER JOIN TBL_PACIENTE B ON A.PACIENTE = B.CEDULA " +
                     "WHERE EXISTS " +
                     "(SELECT * FROM TBL_CUENTASPORPAGAR C " +
-                    "WHERE C.PROVEEDOR = '" + medico + "' AND A.UNIDADNEGOCIO = C.UNIDADDENEGOCIO AND A.CASO = C.NROID) AND " +
-                    "B.NOMBRE LIKE '%" + apellido + "%' " +
+                    "WHERE C.PROVEEDOR = '" + medico + "' AND A.UNIDADNEGOCIO = C.UNIDADDENEGOCIO AND A.CASO = C.NROID) AND ";
+            
+            for(int i = 0; i < apellido.Length-1; i++)
+	        {
+	            Query = Query + "B.NOMBRE LIKE '%" + apellido[i] + "%' AND ";
+	        }
+            Query = Query + "B.NOMBRE LIKE '%" + apellido[apellido.Length -1] + "%' " +
                     "ORDER BY A.FECHAEMISION DESC";
             return Query;
         }

@@ -500,7 +500,8 @@ namespace Atencion24WebServices
                             if (CodValido(medico_tb))
                             {
                                 //Creamos una instancia de HistoricoPagos con los datos de entrada (medico_tb, fechaI, fechaF)
-                                ListadoCasos casos = new ListadoCasos(medico_tb, apellido_tb);
+                                string[] apellidos = apellido_tb.Split('_'); 
+                                ListadoCasos casos = new ListadoCasos(medico_tb, apellidos);
 
                                 //Consultamos el listado de pagos generados para el médico en el rango de fechas
                                 casos.ConsultarListadoDeCasos();

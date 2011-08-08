@@ -15,7 +15,7 @@ namespace Atencion24WebServices.Atencion24DAO
         {}
 
         //Consultar Listado de casos por apellido
-        public DataSet DetalleCasoListadoDeCasos(String medico, String apellido)
+        public DataSet DetalleCasoListadoDeCasos(String medico, String []apellido)
         {
             Cmd.CommandText = QueryAtencion24.DetalleCasoListadoDeCasos(medico, apellido);
             Da.SelectCommand = Cmd;
