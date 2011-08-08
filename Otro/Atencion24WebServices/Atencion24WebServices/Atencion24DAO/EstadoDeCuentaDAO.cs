@@ -14,6 +14,27 @@ namespace Atencion24WebServices.Atencion24DAO
         public EstadoDeCuentaDAO(): base()
         {}
 
+        //Consultar TOTALES
+        public DataSet EdoCtaMontoTotal(String medico)
+        {
+            Cmd.CommandText = QueryAtencion24.EdoCtaMontoTotal(medico);
+            Da.SelectCommand = Cmd;
+            Da.Fill(Ds);
+            CerrarConexionBd();
+            return Ds;
+        }
+
+        //Consultar por antiguedad
+        public DataSet EdoCtaMontoAntiguedad(String medico, int antiguedad)
+        {
+            Cmd.CommandText = QueryAtencion24.EdoCtaMontoAntiguedad(medico, antiguedad);
+            Da.SelectCommand = Cmd;
+            Da.Fill(Ds);
+            CerrarConexionBd();
+            return Ds;
+        }
+
+        /* VERSION QUE NO! CONSULTA TABLA TEMP_ESTADO_CUENTA
         //Consultar TOTAL Facturado
         public DataSet EdoCtaMontoFacturadoTotal(String medico)
         {
@@ -94,5 +115,6 @@ namespace Atencion24WebServices.Atencion24DAO
             CerrarConexionBd();
             return Ds;
         }
+        */
     }
 }

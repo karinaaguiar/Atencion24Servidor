@@ -92,6 +92,7 @@ namespace Atencion24WebServices.Atencion24DAO
         //___________________________________________________
 
         //**ESTADO DE CUENTA**//
+        /* VERSION NO! CONSULTA TABLA TEMP_ESTADO_CUENTA
         //MONTOS TOTALES//
         //Consultar TOTAL Facturado
         public string EdoCtaMontoFacturadoTotal(string medico)
@@ -149,8 +150,10 @@ namespace Atencion24WebServices.Atencion24DAO
                 Query = Query + "B.FECHAEMISION >= DATEADD(day, -90, GETDATE()) and B.FECHAEMISION < DATEADD(day, -60, GETDATE())";
             if (antiguedad == 180)
                 Query = Query + "B.FECHAEMISION >= DATEADD(day, -180, GETDATE()) and B.FECHAEMISION < DATEADD(day, -90, GETDATE())";
-            if (antiguedad == 181)
-                Query = Query + "B.FECHAEMISION < DATEADD(day, -180, GETDATE())";
+            if (antiguedad == 360)
+                Query = Query + "B.FECHAEMISION >= DATEADD(day, -360, GETDATE()) and B.FECHAEMISION < DATEADD(day, -180, GETDATE())";
+            if (antiguedad == 361)
+                Query = Query + "B.FECHAEMISION < DATEADD(day, -360, GETDATE())";
 
             return Query;
         }
@@ -213,6 +216,46 @@ namespace Atencion24WebServices.Atencion24DAO
                     "WHERE C.PROVEEDOR= '" + medico + "' AND C.PAGADO = 0 AND A.TIPO = 1 AND A.CONCEPTO = 1 AND A.APAGAR =1 AND ";
             
             Query = antiguedadSaldo(Query, antiguedad);  
+            return Query;
+        }*/
+
+        //Consultar TOTAL DEUDA
+        public string EdoCtaMontoTotal(string medico)
+        {
+            Query = "SELECT SUM(TOTALDEUDA) " +
+                    "FROM TBL_TEMP_ESTADO_CUENTA " +
+                    "WHERE MEDICO = '" + medico + "' AND PAGADO = 0 " +
+                    "GROUP BY MEDICO";
+            return Query;
+        }
+
+        //MONTOS POR ANTIGUEDAD//
+        public string antiguedadSaldo(string Query, int antiguedad)
+        {
+            if (antiguedad == 30)
+                Query = Query + "FECHAEGRESO >= DATEADD(day, -30, GETDATE()) and FECHAEGRESO <= GETDATE()";
+            if (antiguedad == 60)
+                Query = Query + "FECHAEGRESO >= DATEADD(day, -60, GETDATE()) and FECHAEGRESO < DATEADD(day, -30, GETDATE())";
+            if (antiguedad == 90)
+                Query = Query + "FECHAEGRESO >= DATEADD(day, -90, GETDATE()) and FECHAEGRESO < DATEADD(day, -60, GETDATE())";
+            if (antiguedad == 180)
+                Query = Query + "FECHAEGRESO >= DATEADD(day, -180, GETDATE()) and FECHAEGRESO < DATEADD(day, -90, GETDATE())";
+            if (antiguedad == 360)
+                Query = Query + "FECHAEGRESO >= DATEADD(day, -360, GETDATE()) and FECHAEGRESO < DATEADD(day, -180, GETDATE())";
+            if (antiguedad == 361)
+                Query = Query + "FECHAEGRESO < DATEADD(day, -360, GETDATE())";
+
+            return Query;
+        }
+
+        //Consultar por Antiguedad
+        public string EdoCtaMontoAntiguedad(string medico, int antiguedad)
+        {
+            Query = "SELECT SUM(TOTALDEUDA) "+
+                    "FROM TBL_TEMP_ESTADO_CUENTA WHERE MEDICO = '" + medico + "' AND PAGADO = 0  " +
+                    "AND ";
+            Query = antiguedadSaldo(Query, antiguedad);
+            Query =  Query + " GROUP BY MEDICO ";
             return Query;
         }
 

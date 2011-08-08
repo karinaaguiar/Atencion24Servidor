@@ -15,7 +15,8 @@ namespace Atencion24WebServices.Atencion24Negocio
         private decimal montoA60Dias = 0;
         private decimal montoA90Dias = 0;
         private decimal montoA180Dias = 0;
-        private decimal montoAMas180Dias = 0;
+        private decimal montoA360Dias = 0;
+        private decimal montoAMas360Dias = 0;
         private bool sindeuda = false;
 
         ///Constructor
@@ -55,10 +56,16 @@ namespace Atencion24WebServices.Atencion24Negocio
             set { montoA180Dias = value; }
         }
 
-        public decimal MontoAMas180Dias
+        public decimal MontoA360Dias
         {
-            get { return montoAMas180Dias; }
-            set { montoAMas180Dias = value; }
+            get { return montoA360Dias; }
+            set { montoA360Dias = value; }
+        }
+
+        public decimal MontoAMas360Dias
+        {
+            get { return montoAMas360Dias; }
+            set { montoAMas360Dias = value; }
         }
         public bool sinDeuda
         {
@@ -72,6 +79,76 @@ namespace Atencion24WebServices.Atencion24Negocio
         /// <param name="antiguedad">entero que indica la antiguedad a la cual se quiere consultar 
         /// el saldo</param>
         /// <returns>deuda según lo facturado en la antiguedad indicada</returns>
+
+        public decimal auxiliarConsultarEstadoDeCuentaAS(int antiguedad)
+        {
+            DataSet ds = new DataSet();
+            EstadoDeCuentaDAO ud = new EstadoDeCuentaDAO();
+            decimal total = 0;
+
+            ds = ud.EdoCtaMontoAntiguedad(medico, antiguedad);
+
+            //Este médico no tiene cuentas por pagar que estén pendientes por pagar a la antiguedad
+            if (ds.Tables[0].Rows.Count != 0) 
+            {
+                if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
+                {
+                    if (decimal.Parse(ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString()) != 0)
+                    {
+                        total = decimal.Parse(ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString());
+                    }
+                }
+            }
+            return total; 
+        }
+
+        /// <summary>
+        /// Consultar Estado de cuenta por Antiguedad saldo
+        /// </summary>
+        public void ConsultarEstadoDeCuentaAS()
+        {
+            DataSet ds = new DataSet();
+            EstadoDeCuentaDAO ud = new EstadoDeCuentaDAO();
+
+            //**MONTO TOTAL DE LA DEUDA**
+            ds = ud.EdoCtaMontoTotal(medico);
+
+            //Este médico no tiene cuentas por pagar que estén pendientes por pagar
+            if (ds.Tables[0].Rows.Count == 0) { sindeuda = true; return; }
+            else
+            {
+                if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
+                {
+                    if (!ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString().Equals("0"))
+                    {
+                        montoTotal = decimal.Parse(ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString());
+                        montoA30Dias = auxiliarConsultarEstadoDeCuentaAS(30);
+                        montoA60Dias = auxiliarConsultarEstadoDeCuentaAS(60);
+                        montoA90Dias = auxiliarConsultarEstadoDeCuentaAS(90);
+                        montoA180Dias = auxiliarConsultarEstadoDeCuentaAS(180);
+                        montoA360Dias = auxiliarConsultarEstadoDeCuentaAS(360);
+                        montoAMas360Dias = auxiliarConsultarEstadoDeCuentaAS(361);
+                    }
+                    else
+                    {
+                        sindeuda = true; return; 
+                    }
+                }
+                else
+                {
+                    sindeuda = true; return; 
+                }
+            }
+        }
+
+        /* VERSION QUE NO! CONSULTA TABLA TEMP_ESTADO_CUENTA
+        /// <summary>
+        /// Funcion Auxiliar que permite calcular el estado de cuenta (deuda) por antiguedad de saldo
+        /// </summary>
+        /// <param name="antiguedad">entero que indica la antiguedad a la cual se quiere consultar 
+        /// el saldo</param>
+        /// <returns>deuda según lo facturado en la antiguedad indicada</returns>
+        
         public decimal auxiliarConsultarEstadoDeCuentaAS(int antiguedad)
         {
             DataSet ds = new DataSet();
@@ -222,9 +299,11 @@ namespace Atencion24WebServices.Atencion24Negocio
                     montoA60Dias = auxiliarConsultarEstadoDeCuentaAS(60);
                     montoA90Dias = auxiliarConsultarEstadoDeCuentaAS(90);
                     montoA180Dias = auxiliarConsultarEstadoDeCuentaAS(180);
-                    montoAMas180Dias = auxiliarConsultarEstadoDeCuentaAS(181);
+                    montoA360Dias = auxiliarConsultarEstadoDeCuentaAS(360);
+                    montoAMas360Dias = auxiliarConsultarEstadoDeCuentaAS(361);
                 }
             }
         }
+        */
    }
 }

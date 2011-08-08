@@ -176,7 +176,6 @@ namespace Atencion24WebServices.Atencion24Negocio
                         if (dr1.ItemArray.ElementAt(0) != DBNull.Value)
                         {
                             codigo = dr1.ItemArray.ElementAt(0).ToString();
-                            System.Diagnostics.Debug.WriteLine(codigo);
                             //Nombre
                             ud = new UsuarioDAO();
                             dsCodigos = ud.InicioSesionConsultarNombreCodigosPago(codigo);
@@ -185,7 +184,6 @@ namespace Atencion24WebServices.Atencion24Negocio
                                 if (dsCodigos.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
                                 {
                                     nombre = dsCodigos.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
-                                    System.Diagnostics.Debug.WriteLine(nombre);
                                     codPago.Codigo = codigo;
                                     codPago.Nombre = nombre;
                                     codigosPago.Add(codPago);

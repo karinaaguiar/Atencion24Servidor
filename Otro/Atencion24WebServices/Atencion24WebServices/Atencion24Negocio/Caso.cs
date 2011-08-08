@@ -184,24 +184,29 @@ namespace Atencion24WebServices.Atencion24Negocio
                     codigoResp = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString().Trim();
                     if (codigoResp.Equals("120"))
                         responsablePago = "Particular";
-                    else
+                    else 
                     {
-                        //Buscar tipo responsable
-                        ud = new CasoDAO();
-                        ds = ud.DetalleDeCasoTipoDeResponsable(nroCaso, unidadNegocio, codigoResp);
-                        if (ds.Tables[0].Rows.Count != 0)
+                        if(codigoResp.Equals("118"))
+                            responsablePago = "Fianza médica";
+                        else
                         {
-                            if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
+                            //Buscar tipo responsable
+                            ud = new CasoDAO();
+                            ds = ud.DetalleDeCasoTipoDeResponsable(nroCaso, unidadNegocio, codigoResp);
+                            if (ds.Tables[0].Rows.Count != 0)
                             {
-                                tipoResp = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString().Trim();
-
-                                //Nombre del responsable
-                                ud = new CasoDAO();
-                                ds = ud.DetalleDeCasoNombreResponsable(codigoResp, tipoResp);
-                                if (ds.Tables[0].Rows.Count != 0)
+                                if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
                                 {
-                                    if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
-                                        responsablePago = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString().Trim();
+                                    tipoResp = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString().Trim();
+
+                                    //Nombre del responsable
+                                    ud = new CasoDAO();
+                                    ds = ud.DetalleDeCasoNombreResponsable(codigoResp, tipoResp);
+                                    if (ds.Tables[0].Rows.Count != 0)
+                                    {
+                                        if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
+                                            responsablePago = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString().Trim();
+                                    }
                                 }
                             }
                         }

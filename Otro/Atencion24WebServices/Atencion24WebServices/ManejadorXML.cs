@@ -98,7 +98,6 @@ namespace Atencion24WebServices
                     //Deducción
                     foreach (CodigoPago codigoPago in usuario.CodigosPago)
                     {
-                        System.Diagnostics.Debug.WriteLine(codigoPago.Nombre + " " + codigoPago.Codigo);
                         elemento2 = documento.CreateElement("codigoPago");
 
                         //Codigo
@@ -120,7 +119,6 @@ namespace Atencion24WebServices
             }
 
             documento.AppendChild(elemento);
-            System.Diagnostics.Debug.WriteLine(XMLtoString(documento));
             return XMLtoString(documento);
  
             /* VERSION VIEJA
@@ -201,9 +199,15 @@ namespace Atencion24WebServices
             elemento1.AppendChild(texto);
             elemento.AppendChild(elemento1);
 
-            //MontoMas180Dias
-            elemento1 = documento.CreateElement("montoAMas180Dias");
-            texto = documento.CreateTextNode((estadoCta.MontoAMas180Dias).ToString("N2"));
+            //Monto360Dias
+            elemento1 = documento.CreateElement("montoA360Dias");
+            texto = documento.CreateTextNode((estadoCta.MontoA360Dias).ToString("N2"));
+            elemento1.AppendChild(texto);
+            elemento.AppendChild(elemento1);
+
+            //MontoMas360Dias
+            elemento1 = documento.CreateElement("montoAMas360Dias");
+            texto = documento.CreateTextNode((estadoCta.MontoAMas360Dias).ToString("N2"));
             elemento1.AppendChild(texto);
             elemento.AppendChild(elemento1);
 
