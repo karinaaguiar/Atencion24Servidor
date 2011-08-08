@@ -13,6 +13,12 @@ namespace Atencion24WebServices.Atencion24Negocio
         ///Constructor
         public CodigoPago() { }
 
+        public CodigoPago(String nombre, String codigo)
+        {
+            Codigo = codigo;
+            Nombre = nombre;
+        }
+
         //Getter y Setters
         public string Codigo
         {

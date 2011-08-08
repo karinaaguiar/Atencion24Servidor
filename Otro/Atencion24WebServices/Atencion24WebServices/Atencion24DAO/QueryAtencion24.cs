@@ -71,6 +71,17 @@ namespace Atencion24WebServices.Atencion24DAO
             return Query;
         }
 
+       //Query inicio de sesión. Retorna el código de pool en caso de que el médico pertenezca a alguno
+        public string ConsultarPool(String codigoPropio)
+        {
+            Query = "SELECT DISTINCT  "+
+                    "A.CODIGOPOOL "+
+                    "FROM TBL_POOLMEDICO A INNER JOIN TBL_POOLMEDICODETALLE B "+
+                    "ON A.NROPOOL= B.NROPOOL "+
+                    "WHERE B.MEDICO = '"+codigoPropio+"'";
+            return Query;
+        }
+        
         //Query inicio de sesión. Retorna el nombre de los códigos de pago asociados al usuario loggeado
         public string ConsultarNombreCodigosPago(String codigo)
         {

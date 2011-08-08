@@ -115,37 +115,81 @@ namespace Atencion24WebServices.Atencion24Negocio
         public void ConsultarCodigosPago(String codigoPropio)
         {
             DataSet ds = new DataSet();
+            DataSet ds1 = new DataSet();
             DataSet dsCodigos = new DataSet();
             UsuarioDAO ud = new UsuarioDAO();
 
             String codigo = "";
-            String nombre = "";
-
+            String nombre = ""; 
+            
             //Consultamos los códigos de pago del usuario 
             ds = ud.InicioSesionConsultarCodigosPago(this.cedula);
+            ud = new UsuarioDAO();
+            ds1 = ud.InicioSesionConsultarPool(codigoPropio);
 
             //Verificamos que tnga códigos de pago
-            if (ds.Tables[0].Rows.Count != 0)
+            if ((ds.Tables[0].Rows.Count != 0) || (ds1.Tables[0].Rows.Count != 0))
             {
-                codigosPago = new ArrayList();
-                foreach (DataRow dr in ds.Tables[0].Rows)
+
+                if (ds.Tables[0].Rows.Count != 0)
                 {
-                    CodigoPago codPago = new CodigoPago();
-                    //Codigo
-                    if (dr.ItemArray.ElementAt(0) != DBNull.Value)
+                    codigosPago = new ArrayList();
+                    foreach (DataRow dr in ds.Tables[0].Rows)
                     {
-                        codigo = dr.ItemArray.ElementAt(0).ToString();
-                        //Nombre
-                        ud = new UsuarioDAO();
-                        dsCodigos = ud.InicioSesionConsultarNombreCodigosPago(codigo);
-                        if (dsCodigos.Tables[0].Rows.Count != 0)
+                        CodigoPago codPago = new CodigoPago();
+                        //Codigo
+                        if (dr.ItemArray.ElementAt(0) != DBNull.Value)
                         {
-                            if (dsCodigos.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
+                            codigo = dr.ItemArray.ElementAt(0).ToString();
+                            //Nombre
+                            ud = new UsuarioDAO();
+                            dsCodigos = ud.InicioSesionConsultarNombreCodigosPago(codigo);
+                            if (dsCodigos.Tables[0].Rows.Count != 0)
                             {
-                                nombre = dsCodigos.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
-                                codPago.Codigo = codigo;
-                                codPago.Nombre = nombre;
-                                codigosPago.Add(codPago);
+                                if (dsCodigos.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
+                                {
+                                    nombre = dsCodigos.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
+                                    codPago.Codigo = codigo;
+                                    codPago.Nombre = nombre;
+                                    codigosPago.Add(codPago);
+                                }
+                            }
+                        }
+                    }
+                }
+                if (ds1.Tables[0].Rows.Count != 0)
+                {
+                    codigosPago = new ArrayList();
+                    CodigoPago codPago = new CodigoPago();
+                    
+                    if (ds.Tables[0].Rows.Count == 0)
+                    {
+                        codPago.Codigo = codigoPropio;
+                        codPago.Nombre = this.nombre;
+                        codigosPago.Add(codPago);
+                    }
+                    
+                    foreach (DataRow dr1 in ds1.Tables[0].Rows)
+                    {
+                        codPago = new CodigoPago();
+                        //Codigo
+                        if (dr1.ItemArray.ElementAt(0) != DBNull.Value)
+                        {
+                            codigo = dr1.ItemArray.ElementAt(0).ToString();
+                            System.Diagnostics.Debug.WriteLine(codigo);
+                            //Nombre
+                            ud = new UsuarioDAO();
+                            dsCodigos = ud.InicioSesionConsultarNombreCodigosPago(codigo);
+                            if (dsCodigos.Tables[0].Rows.Count != 0)
+                            {
+                                if (dsCodigos.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
+                                {
+                                    nombre = dsCodigos.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
+                                    System.Diagnostics.Debug.WriteLine(nombre);
+                                    codPago.Codigo = codigo;
+                                    codPago.Nombre = nombre;
+                                    codigosPago.Add(codPago);
+                                }
                             }
                         }
                     }

@@ -45,6 +45,16 @@ namespace Atencion24WebServices.Atencion24DAO
             return Ds;
         }
 
+        //Query inicio de sesión. Retorna el código de pool en caso de que el médico pertenezca a alguno
+        public DataSet InicioSesionConsultarPool(String codigoPropio)
+        {
+            Cmd.CommandText = QueryAtencion24.ConsultarPool(codigoPropio);
+            Da.SelectCommand = Cmd;
+            Da.Fill(Ds);
+            CerrarConexionBd();
+            return Ds;
+        }
+
         //Query inicio de sesión. Retorna el nombre de los códigos de pago asociados al usuario loggeado
         public DataSet InicioSesionConsultarNombreCodigosPago(String codigo)
         {

@@ -98,6 +98,7 @@ namespace Atencion24WebServices
                     //Deducción
                     foreach (CodigoPago codigoPago in usuario.CodigosPago)
                     {
+                        System.Diagnostics.Debug.WriteLine(codigoPago.Nombre + " " + codigoPago.Codigo);
                         elemento2 = documento.CreateElement("codigoPago");
 
                         //Codigo
@@ -119,6 +120,7 @@ namespace Atencion24WebServices
             }
 
             documento.AppendChild(elemento);
+            System.Diagnostics.Debug.WriteLine(XMLtoString(documento));
             return XMLtoString(documento);
  
             /* VERSION VIEJA
