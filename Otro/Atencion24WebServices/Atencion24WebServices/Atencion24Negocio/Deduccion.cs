@@ -7,7 +7,7 @@ namespace Atencion24WebServices.Atencion24Negocio
 {
     public class Deduccion
     {
-        private string concepto = "";
+        private string concepto = " ";
         private decimal monto = 0;
 
         ///Constructor

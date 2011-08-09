@@ -11,7 +11,7 @@ namespace Atencion24WebServices.Atencion24Negocio
     public class Pago
     {
         private string medico;
-        private string fechaPago = "";
+        private string fechaPago = " ";
         private decimal montoLiberado = 0;
         private ArrayList deducciones = null;
         private decimal montoNeto = 0;

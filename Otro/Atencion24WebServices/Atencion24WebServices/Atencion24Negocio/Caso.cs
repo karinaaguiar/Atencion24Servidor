@@ -11,12 +11,12 @@ namespace Atencion24WebServices.Atencion24Negocio
     public class Caso
     {
         private String medico;
-        private String nombrePaciente="";
-	    private String fechaEmisionFactura="";
-	    private String nroCaso="";
-	    private String unidadNegocio="";
+        private String nombrePaciente=" ";
+	    private String fechaEmisionFactura=" ";
+	    private String nroCaso=" ";
+	    private String unidadNegocio=" ";
         private decimal ciPaciente = 0;
-        private String responsablePago = "";
+        private String responsablePago = " ";
 	    private decimal montoFacturado = 0;
 	    private decimal montoExonerado = 0;
         private decimal montoAbonado = 0;

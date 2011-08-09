@@ -7,8 +7,8 @@ namespace Atencion24WebServices.Atencion24Negocio
 {
     public class CodigoPago
     {
-        private string codigo = "";
-        private string nombre = "";
+        private string codigo = " ";
+        private string nombre = " ";
 
         ///Constructor
         public CodigoPago() { }

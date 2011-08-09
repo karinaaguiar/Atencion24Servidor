@@ -372,7 +372,12 @@ namespace Atencion24WebServices
                                 if (pagos.sinPagos == true)
                                     return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
                                 else
-                                    return manej.codificarXmlAEnviar(manej.creacionRespuestaHistoricoPagos(pagos.Pagos));
+                                {
+                                    if (pagos.Excede == true)
+                                        return manej.codificarXmlAEnviar(manej.envioMensajeError("1"));
+                                    else
+                                        return manej.codificarXmlAEnviar(manej.creacionRespuestaHistoricoPagos(pagos.Pagos));
+                                }
                             }
                             else
                                 return manej.codificarXmlAEnviar(manej.envioMensajeError("14"));

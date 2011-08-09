@@ -7,7 +7,7 @@ namespace Atencion24WebServices.Atencion24Negocio
 {
     public class Honorario
     {
-        private String nombre = "";
+        private String nombre = " ";
         private decimal montoFacturado = 0;
         private decimal montoExonerado = 0;
         private decimal montoAbonado = 0;

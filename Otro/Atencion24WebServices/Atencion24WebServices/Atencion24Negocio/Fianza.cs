@@ -7,9 +7,9 @@ namespace Atencion24WebServices.Atencion24Negocio
 {
     public class Fianza
     {
-        private String nroCaso="";
-        private String fechaEmisionFactura="";
-        private String paciente="";
+        private String nroCaso=" ";
+        private String fechaEmisionFactura=" ";
+        private String paciente=" ";
         private decimal montoACobrar = 0;
         private decimal montoAbonado = 0;
         private decimal montoNeto = 0;
