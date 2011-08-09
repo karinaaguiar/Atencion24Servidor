@@ -14,6 +14,7 @@ namespace Atencion24WebServices.Atencion24Negocio
         private ArrayList casos;
         private string medico;
         private bool sinCasos = false;
+        private bool excede = false;
         private string []apellido;
 
         ///Constructor
@@ -30,6 +31,13 @@ namespace Atencion24WebServices.Atencion24Negocio
             get { return sinCasos; }
             set { sinCasos = value; }
         }
+
+        public bool Excede
+        {
+            get { return excede; }
+            set { excede = value; }
+        }
+
         public ArrayList Casos
         {
             get { return casos; }
@@ -50,30 +58,34 @@ namespace Atencion24WebServices.Atencion24Negocio
             if (ds.Tables[0].Rows.Count == 0) { sinCasos = true; return; }
             else
             {
-                casos = new ArrayList();
-                for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+                if (ds.Tables[0].Rows.Count > 50) { excede = true; return; }
+                else
                 {
-                    caso = new Caso();
-                    DataRow row = ds.Tables[0].Rows[i];
-                    
-                    //Número de caso 
-                    if (row.ItemArray.ElementAt(0) != DBNull.Value)
-                        caso.NroCaso = row.ItemArray.ElementAt(0).ToString();
-                    
-                    //Unidad de negocio  
-                    if (row.ItemArray.ElementAt(1) != DBNull.Value)
-                        caso.UnidadNegocio = row.ItemArray.ElementAt(1).ToString();
-                    
-                    //Nombre del paciente
-                    if (row.ItemArray.ElementAt(2) != DBNull.Value)
-                        caso.NombrePaciente = row.ItemArray.ElementAt(2).ToString();
-                    
-                    //Fecha emisión factura 
-                    if (row.ItemArray.ElementAt(3) != DBNull.Value)
-                        caso.FechaEmision = row.ItemArray.ElementAt(3).ToString();
+                    casos = new ArrayList();
+                    for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+                    {
+                        caso = new Caso();
+                        DataRow row = ds.Tables[0].Rows[i];
 
-                    caso.Simple = true;
-                    casos.Add(caso);
+                        //Número de caso 
+                        if (row.ItemArray.ElementAt(0) != DBNull.Value)
+                            caso.NroCaso = row.ItemArray.ElementAt(0).ToString();
+
+                        //Unidad de negocio  
+                        if (row.ItemArray.ElementAt(1) != DBNull.Value)
+                            caso.UnidadNegocio = row.ItemArray.ElementAt(1).ToString();
+
+                        //Nombre del paciente
+                        if (row.ItemArray.ElementAt(2) != DBNull.Value)
+                            caso.NombrePaciente = row.ItemArray.ElementAt(2).ToString();
+
+                        //Fecha emisión factura 
+                        if (row.ItemArray.ElementAt(3) != DBNull.Value)
+                            caso.FechaEmision = row.ItemArray.ElementAt(3).ToString();
+
+                        caso.Simple = true;
+                        casos.Add(caso);
+                    }
                 }
             }
         }

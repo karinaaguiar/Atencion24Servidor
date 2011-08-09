@@ -508,7 +508,12 @@ namespace Atencion24WebServices
                                 if (casos.SinCasos == true)
                                     return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
                                 else
-                                    return manej.codificarXmlAEnviar(manej.creacionRespuestaListadoDeCaso(casos.Casos));
+                                {
+                                    if (casos.Excede == true)
+                                        return manej.codificarXmlAEnviar(manej.envioMensajeError("1"));
+                                    else
+                                        return manej.codificarXmlAEnviar(manej.creacionRespuestaListadoDeCaso(casos.Casos));
+                                }
                             }
                             else return manej.codificarXmlAEnviar(manej.envioMensajeError("14"));
                         }
