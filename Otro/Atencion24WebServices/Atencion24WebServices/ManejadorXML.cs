@@ -368,39 +368,31 @@ namespace Atencion24WebServices
 
             documento = newDocument();
             elemento = documento.CreateElement("facturado");
-            
-            //Monto30Dias
-            elemento1 = documento.CreateElement("hospitalizacion");
-            texto = documento.CreateTextNode(facturado.Hospitalizacion.ToString("N2"));
-            elemento1.AppendChild(texto);
-            elemento.AppendChild(elemento1);
 
-            //Monto60Dias
-            elemento1 = documento.CreateElement("emergencia");
-            texto = documento.CreateTextNode((facturado.Emergencia).ToString("N2"));
-            elemento1.AppendChild(texto);
-            elemento.AppendChild(elemento1);
-
-            //Monto90Dias
-            elemento1 = documento.CreateElement("cirugia");
-            texto = documento.CreateTextNode((facturado.Cirugia).ToString("N2"));
-            elemento1.AppendChild(texto);
-            elemento.AppendChild(elemento1);
-
-            //Monto180Dias
-            elemento1 = documento.CreateElement("convenios");
-            texto = documento.CreateTextNode((facturado.Convenios).ToString("N2"));
-            elemento1.AppendChild(texto);
-            elemento.AppendChild(elemento1);
-
-            //MontoMas180Dias
+            //MontoTotalFacturado
             elemento1 = documento.CreateElement("total");
             texto = documento.CreateTextNode((facturado.MontoTotal).ToString("N2"));
             elemento1.AppendChild(texto);
             elemento.AppendChild(elemento1);
 
-            documento.AppendChild(elemento);
+            //Facturado por UDN
+            FacturadoUDN factu = new FacturadoUDN();
+            factu = facturado;
+            ArrayList facturadoUDN = new ArrayList();
+            facturadoUDN = factu.FactPorUdn;
 
+            if (facturadoUDN != null)
+            {
+                foreach (Facturado fact in facturadoUDN)
+                {
+                    elemento1 = documento.CreateElement(fact.Udn);
+                    texto = documento.CreateTextNode(fact.Monto.ToString("N2"));
+                    elemento1.AppendChild(texto);
+                    elemento.AppendChild(elemento1);
+                }
+            }
+           
+            documento.AppendChild(elemento);
             return XMLtoString(documento);
         }
 

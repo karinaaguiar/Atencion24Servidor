@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -13,27 +14,19 @@ namespace Atencion24WebServices.Atencion24Negocio
         private string fechaI;
         private string fechaF;
 		private decimal montoTotal;
-        private decimal hospitalizacion;
-        private decimal emergencia;
-        private decimal cirugia;
-        private decimal convenios;
+        private ArrayList factPorUdn;
         private bool sinFacturado = false;
-        private static string HOSP = "1";
-        private static string EMER = "4";
-        private static string CIRU = "7";
-        private static string CONV = "15";
 
         ///Constructor
+
+        public FacturadoUDN() { }
+
         public FacturadoUDN(string codMedico, string fechaI_tb, string fechaF_tb)
         {
             medico = codMedico;
             fechaI = fechaI_tb;
             fechaF = fechaF_tb;
-            this.montoTotal = 0;
-            this.hospitalizacion = 0; 
-            this.emergencia = 0;
-            this.cirugia = 0;
-            this.convenios = 0; 
+            this.montoTotal = 0; 
         }
 
         //Getter y Setters
@@ -43,28 +36,10 @@ namespace Atencion24WebServices.Atencion24Negocio
             set { montoTotal = value; }
         }
 
-        public decimal Hospitalizacion
+        public ArrayList FactPorUdn
         {
-            get { return hospitalizacion; }
-            set { hospitalizacion = value; }
-        }
-
-        public decimal Emergencia
-        {
-            get { return emergencia; }
-            set { emergencia = value; }
-        }
-
-        public decimal Cirugia
-        {
-            get { return cirugia; }
-            set { cirugia = value; }
-        }
-
-        public decimal Convenios
-        {
-            get { return convenios; }
-            set { convenios = value; }
+            get { return factPorUdn; }
+            set { factPorUdn = value; }
         }
 
         public bool SinFacturado
@@ -73,74 +48,44 @@ namespace Atencion24WebServices.Atencion24Negocio
             set { sinFacturado = value; }
         }
 
-        //Consultar Estado de cuenta por Antiguedad saldo
+        //Consultar Honorarios facturados por UDN
         public void consultarHonorariosFacturados()
         {
             DataSet ds = new DataSet();
             FacturadoDAO ud = new FacturadoDAO();
+            Facturado fact; 
 
-            String monto;
+            //Monto Total Facturado por UDN
+            ds = ud.HonorariosFacturadosMontoPorUDN(medico, fechaI, fechaF);
 
-            //Monto Total Hospitalización 
-            ds = ud.HonorariosFacturadosMontoPorUDN(medico, fechaI, fechaF, HOSP);
-
-            //Verificamos que el medico haya facturado honorarios en hospitalización 
-            if (ds.Tables[0].Rows.Count != 0)
+            //Verificamos que el medico haya facturado honorarios 
+            if (ds.Tables[0].Rows.Count == 0) { sinFacturado = true; return; }
+            else
             {
-                if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
+                foreach (DataRow dr in ds.Tables[0].Rows)
                 {
-                    monto = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
-                    hospitalizacion = decimal.Parse(monto);
+                    if (dr.ItemArray.ElementAt(0) != DBNull.Value)
+                    {
+                        if (decimal.Parse(dr.ItemArray.ElementAt(0).ToString()) != 0)
+                        {
+                            fact = new Facturado();
+
+                            //Monto facturado
+                            fact.Monto = decimal.Parse(dr.ItemArray.ElementAt(0).ToString());
+
+                            //Nombre de la UDN
+                            if (dr.ItemArray.ElementAt(2) != DBNull.Value)
+                                fact.Udn = dr.ItemArray.ElementAt(2).ToString();
+
+                            factPorUdn.Add(fact);
+
+                            montoTotal += fact.Monto;
+
+                        }
+                    }
                 }
             }
-            montoTotal = hospitalizacion;
-
-            //Monto Total Emergencia
-            ud = new FacturadoDAO();
-            ds = ud.HonorariosFacturadosMontoPorUDN(medico, fechaI, fechaF, EMER);
-
-            //Verificamos que el medico haya facturado honorarios en emergencia 
-            if (ds.Tables[0].Rows.Count != 0)
-            {
-                if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
-                {
-                    monto = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
-                    emergencia = decimal.Parse(monto);
-                }
-            }
-            montoTotal += emergencia;
-
-            //Monto Total Cirugía Ambulatoria 
-            ud = new FacturadoDAO();
-            ds = ud.HonorariosFacturadosMontoPorUDN(medico, fechaI, fechaF, CIRU);
-
-            //Verificamos que el medico haya facturado honorarios en cirugía ambulatoria  
-            if (ds.Tables[0].Rows.Count != 0)
-            {
-                if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
-                {
-                    monto = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
-                    cirugia = decimal.Parse(monto);
-                }
-            }
-            montoTotal += cirugia;
-
-            //Monto Total Convenios 
-            ud = new FacturadoDAO();
-            ds = ud.HonorariosFacturadosMontoPorUDN(medico, fechaI, fechaF, CONV);
-
-            //Verificamos que el medico haya facturado honorarios en convenios 
-            if (ds.Tables[0].Rows.Count != 0)
-            {
-                if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
-                {
-                    monto = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
-                    convenios = decimal.Parse(monto);
-                }
-            }
-            montoTotal += convenios;
             if (montoTotal == 0) sinFacturado = true;
-
         }
 
     }

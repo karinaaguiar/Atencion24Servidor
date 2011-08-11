@@ -16,9 +16,9 @@ namespace Atencion24WebServices.Atencion24DAO
         { }
 
         //Consultar TOTAL Facturado por unidad de negocio 
-        public DataSet HonorariosFacturadosMontoPorUDN(String medico, String fechaI, String fechaF, String udn)
+        public DataSet HonorariosFacturadosMontoPorUDN(String medico, String fechaI, String fechaF)
         {
-            Cmd.CommandText = QueryAtencion24.HonorariosFacturadosMontoPorUDN(medico, fechaI, fechaF, udn);
+            Cmd.CommandText = QueryAtencion24.HonorariosFacturadosMontoPorUDN(medico, fechaI, fechaF);
             Da.SelectCommand = Cmd;
             Da.Fill(Ds);
             CerrarConexionBd();

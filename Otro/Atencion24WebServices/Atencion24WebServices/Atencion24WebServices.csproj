@@ -81,6 +81,7 @@
     <Compile Include="Atencion24Negocio\CodigoPago.cs" />
     <Compile Include="Atencion24Negocio\Deduccion.cs" />
     <Compile Include="Atencion24Negocio\EstadoDeCuenta.cs" />
+    <Compile Include="Atencion24Negocio\Facturado.cs" />
     <Compile Include="Atencion24Negocio\FacturadoUDN.cs" />
     <Compile Include="Atencion24Negocio\Fianza.cs" />
     <Compile Include="Atencion24Negocio\HistoricoPagos.cs" />

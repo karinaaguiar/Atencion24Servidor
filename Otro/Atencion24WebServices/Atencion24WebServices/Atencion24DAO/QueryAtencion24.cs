@@ -330,15 +330,21 @@ namespace Atencion24WebServices.Atencion24DAO
         //___________________________________________________
 
         //**HONORARIOS FACTURADOS**//
-         public string HonorariosFacturadosMontoPorUDN(string medico, string fechaI, string fechaF, string udn)
+         public string HonorariosFacturadosMontoPorUDN(string medico, string fechaI, string fechaF)
         {
-            Query = "SELECT SUM(A.MONTOAPAGAR) " +
-                    "FROM TBL_CUENTASPORPAGAR A INNER JOIN TBL_HCASO B " +
-                    "ON A.UNIDADDENEGOCIO = B.UNIDADNEGOCIO AND A.NROID = B.CASO " +
-                    "WHERE A.PROVEEDOR= '" + medico + "' " +
+            Query = "SELECT SUM(A.MONTOAPAGAR), A.UNIDADDENEGOCIO, D.NOMBRE "+
+                    "FROM TBL_CUENTASPORPAGAR A INNER JOIN TBL_HCASO B "+
+                    "ON A.UNIDADDENEGOCIO = B.UNIDADNEGOCIO AND A.NROID = B.CASO "+
+		            "INNER JOIN TBL_HCASODET C "+
+		            "ON C.CASO = A.NROID AND C.UNIDADDENEGOCIO = A.UNIDADDENEGOCIO AND C.SERVICIO = A.CLASIFICACIONHONORARIO AND "+
+		            "C.SUMINISTRO = A.TIPOHONORARIO AND C.AREA = A.AREAHONORARIO AND C.CODIGOTIPOP = A.PROVEEDOR AND C.EMPRESAAFILIADA = A.EMPRESAAFILIADA "+
+		            "INNER JOIN TBL_UNIDADDENEGOCIO D "+
+                    "ON A.UNIDADDENEGOCIO = D.CODIGO "+
+                    "WHERE A.PROVEEDOR= '"+medico+"' "+
                     "AND B.FECHAEMISION >= convert(datetime, '" + fechaI + "', 121) " +
                     "AND B.FECHAEMISION <= convert(datetime, '" + fechaF + "', 121) " +
-                    "AND A.UNIDADDENEGOCIO  = '" + udn + "'";
+                    "GROUP BY A.UNIDADDENEGOCIO, D.NOMBRE "+ 
+                    "ORDER BY D.NOMBRE ASC";
             return Query;
         }
 
