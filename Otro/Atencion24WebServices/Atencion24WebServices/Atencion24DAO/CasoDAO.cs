@@ -13,7 +13,18 @@ namespace Atencion24WebServices.Atencion24DAO
     {
         public CasoDAO(): base()
         {}
-
+        
+        //Fecha emision de la factura del caso
+        public DataSet DetalleDeCasoFechaEmision(string nroCaso, string udn)
+        
+        {
+            Cmd.CommandText = QueryAtencion24.DetalleDeCasoFechaEmision(nroCaso, udn);
+            Da.SelectCommand = Cmd;
+            Da.Fill(Ds);
+            CerrarConexionBd();
+            return Ds;
+        }
+        
         //Consultar total facturado en el caso 
         public DataSet DetalleDeCasoTotalFacturado(String medico, String nroCaso, String udn)
         {

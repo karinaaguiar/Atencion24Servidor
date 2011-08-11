@@ -64,5 +64,16 @@ namespace Atencion24WebServices.Atencion24DAO
             CerrarConexionBd();
             return Ds;
         }
+
+        //Query para consultar fecha en la que fueron cargados los datos en Atencion24
+        public DataSet ConsultarFechaAdmin()
+        {
+            Cmd.CommandText = QueryAtencion24.ConsultarFechaAdmin();
+            Da.SelectCommand = Cmd;
+            Da.Fill(Ds);
+            CerrarConexionBd();
+            return Ds;
+        }
+       
     }
 }

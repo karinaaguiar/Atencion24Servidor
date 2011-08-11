@@ -115,7 +115,18 @@ namespace Atencion24WebServices.Atencion24Negocio
             String codigoResp;
             String tipoResp;
 
+            //Fecha emisión del caso
+            ds = ud.DetalleDeCasoFechaEmision(nroCaso, unidadNegocio);
+
+            if (ds.Tables[0].Rows.Count != 0) 
+            {
+                if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
+                 fechaEmisionFactura = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
+                 System.Diagnostics.Debug.WriteLine(fechaEmisionFactura);
+            }
+
             //Monto Facturado en el caso
+            ud = new CasoDAO();
             ds = ud.DetalleDeCasoTotalFacturado(medico, nroCaso, unidadNegocio);
 
             if (ds.Tables[0].Rows.Count != 0) 

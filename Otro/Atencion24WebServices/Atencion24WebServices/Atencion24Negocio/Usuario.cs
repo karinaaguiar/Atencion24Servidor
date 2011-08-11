@@ -14,6 +14,7 @@ namespace Atencion24WebServices.Atencion24Negocio
         private string password;
         private string nombre = " ";
         private string cedula = " ";
+        private string fechaAdm = " ";
         private ArrayList codigosPago = null;
         private bool valido = true;
 
@@ -43,6 +44,12 @@ namespace Atencion24WebServices.Atencion24Negocio
         {
             get { return nombre; }
             set { nombre = value; }
+        }
+
+        public string FechaAdm
+        {
+            get { return fechaAdm; }
+            set { fechaAdm = value; }
         }
 
         public ArrayList CodigosPago
@@ -200,6 +207,24 @@ namespace Atencion24WebServices.Atencion24Negocio
                 codPago.Codigo = codigoPropio;
                 codPago.Nombre = this.nombre;
                 codigosPago.Add(codPago);
+            }
+        }
+
+        public void ConsultarFechaAdmin()
+        {
+            DataSet ds = new DataSet();
+            UsuarioDAO ud = new UsuarioDAO();
+
+            //Consultamos la fecha de la ultima actualización a la base de datos. 
+            ds = ud.ConsultarFechaAdmin();
+
+            //Verificamos si la consulta trajo filas
+            if (ds.Tables[0].Rows.Count != 0)
+            {
+                if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
+                {
+                    fechaAdm = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
+                }
             }
         }
 

@@ -127,6 +127,7 @@ namespace Atencion24WebServices
                     {
                         //Los datos introducidos son correctos. Inicio de sesión exitoso
                         usuarioInput.ConsultarCodigosPago(codigo);
+                        usuarioInput.ConsultarFechaAdmin();
 
                         Session["Loggedin"] = "yes";
                         Session["codigosPago"] = usuarioInput.CodigosPago;

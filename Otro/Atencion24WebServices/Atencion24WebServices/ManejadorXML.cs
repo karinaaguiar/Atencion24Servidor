@@ -89,6 +89,12 @@ namespace Atencion24WebServices
             elemento1.AppendChild(texto);
             elemento.AppendChild(elemento1);    
 
+            //Fecha de ultima actualizacion de bd Atencion24
+            elemento1 = documento.CreateElement("fechaAdmin");
+            texto = documento.CreateTextNode(usuario.FechaAdm);
+            elemento1.AppendChild(texto);
+            elemento.AppendChild(elemento1); 
+
             //CodigosPago
             if (usuario.CodigosPago != null)
             {
@@ -205,9 +211,15 @@ namespace Atencion24WebServices
             elemento1.AppendChild(texto);
             elemento.AppendChild(elemento1);
 
-            //MontoMas360Dias
-            elemento1 = documento.CreateElement("montoAMas360Dias");
-            texto = documento.CreateTextNode((estadoCta.MontoAMas360Dias).ToString("N2"));
+            //Monto720Dias
+            elemento1 = documento.CreateElement("montoA720Dias");
+            texto = documento.CreateTextNode((estadoCta.MontoA720Dias).ToString("N2"));
+            elemento1.AppendChild(texto);
+            elemento.AppendChild(elemento1);
+
+            //MontoMas720Dias
+            elemento1 = documento.CreateElement("montoAMas720Dias");
+            texto = documento.CreateTextNode((estadoCta.MontoAMas720Dias).ToString("N2"));
             elemento1.AppendChild(texto);
             elemento.AppendChild(elemento1);
 

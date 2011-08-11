@@ -16,7 +16,8 @@ namespace Atencion24WebServices.Atencion24Negocio
         private decimal montoA90Dias = 0;
         private decimal montoA180Dias = 0;
         private decimal montoA360Dias = 0;
-        private decimal montoAMas360Dias = 0;
+        private decimal montoA720Dias = 0; 
+        private decimal montoAMas720Dias = 0;
         private bool sindeuda = false;
 
         ///Constructor
@@ -62,10 +63,16 @@ namespace Atencion24WebServices.Atencion24Negocio
             set { montoA360Dias = value; }
         }
 
-        public decimal MontoAMas360Dias
+        public decimal MontoA720Dias
         {
-            get { return montoAMas360Dias; }
-            set { montoAMas360Dias = value; }
+            get { return montoA720Dias; }
+            set { montoA720Dias = value; }
+        }
+
+        public decimal MontoAMas720Dias
+        {
+            get { return montoAMas720Dias; }
+            set { montoAMas720Dias = value; }
         }
         public bool sinDeuda
         {
@@ -127,7 +134,8 @@ namespace Atencion24WebServices.Atencion24Negocio
                         montoA90Dias = auxiliarConsultarEstadoDeCuentaAS(90);
                         montoA180Dias = auxiliarConsultarEstadoDeCuentaAS(180);
                         montoA360Dias = auxiliarConsultarEstadoDeCuentaAS(360);
-                        montoAMas360Dias = auxiliarConsultarEstadoDeCuentaAS(361);
+                        montoA720Dias = auxiliarConsultarEstadoDeCuentaAS(720);
+                        montoAMas720Dias = auxiliarConsultarEstadoDeCuentaAS(721);
                     }
                     else
                     {

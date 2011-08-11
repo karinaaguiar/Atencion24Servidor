@@ -89,6 +89,13 @@ namespace Atencion24WebServices.Atencion24DAO
             return Query;
         }
 
+        //Query para consultar fecha en la que fueron cargados los datos en Atencion24
+        public string ConsultarFechaAdmin()
+        {
+            Query = "SELECT CONVERT(VARCHAR(10),FEC_ACTUALIZACION,103)FROM TBL_ADMIN";
+            return Query;
+        }
+
         //___________________________________________________
 
         //**ESTADO DE CUENTA**//
@@ -242,8 +249,10 @@ namespace Atencion24WebServices.Atencion24DAO
                 Query = Query + "FECHAEGRESO >= DATEADD(day, -180, GETDATE()) and FECHAEGRESO < DATEADD(day, -90, GETDATE())";
             if (antiguedad == 360)
                 Query = Query + "FECHAEGRESO >= DATEADD(day, -360, GETDATE()) and FECHAEGRESO < DATEADD(day, -180, GETDATE())";
-            if (antiguedad == 361)
-                Query = Query + "FECHAEGRESO < DATEADD(day, -360, GETDATE())";
+            if (antiguedad == 720)
+                Query = Query + "FECHAEGRESO >= DATEADD(day, -720, GETDATE()) and FECHAEGRESO < DATEADD(day, -360, GETDATE())";
+            if (antiguedad == 721)
+                Query = Query + "FECHAEGRESO < DATEADD(day, -720, GETDATE())";
 
             return Query;
         }
@@ -355,8 +364,17 @@ namespace Atencion24WebServices.Atencion24DAO
             return Query;
         }
 
-        //DETALLE DEL CASO
+         //DETALLE DEL CASO
 
+         //Fecha emision de la factura del caso
+         public string DetalleDeCasoFechaEmision(string nroCaso, string udn)
+         {
+             Query = "SELECT CONVERT(VARCHAR(10),FECHAEMISION,103) " +
+                     "FROM TBL_HCASO " +
+                     "WHERE CASO ='" + nroCaso + "' AND UNIDADNEGOCIO = '" + udn + "'";
+             return Query;
+         }
+        
         //Monto Facturado en el caso 
          public string DetalleDeCasoTotalFacturado(string medico, string nroCaso, string udn)
          {
