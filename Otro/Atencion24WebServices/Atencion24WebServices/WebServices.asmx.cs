@@ -74,7 +74,8 @@ namespace Atencion24WebServices
                     Session.Add("bloqueado", "");
                     Session.Add("bloqueadoAhora", "no");
                 }
-            }        
+            }  
+
             if (Session["Count"] != null)
             {
                 System.Diagnostics.Debug.WriteLine("Count hasta ahora " + Session["Count"]);
@@ -130,6 +131,7 @@ namespace Atencion24WebServices
                         usuarioInput.ConsultarFechaAdmin();
 
                         Session["Loggedin"] = "yes";
+                        Session.Add("UltimaConsulta", DateTime.Now); 
                         Session["codigosPago"] = usuarioInput.CodigosPago;
                         return manej.codificarXmlAEnviar(manej.creacionRespuestaInicioSesion(usuarioInput));
                     }
@@ -140,7 +142,7 @@ namespace Atencion24WebServices
                 System.Diagnostics.Debug.WriteLine("Error 4-2");
                 return manej.codificarXmlAEnviar(manej.envioMensajeError("4"));
             }
-            
+           
             /*VERSION VIEJA
             ManejadorXML manej = new ManejadorXML();
             DataSet ds = new DataSet();
@@ -213,7 +215,7 @@ namespace Atencion24WebServices
                     {
                         //since it's a new session but a ASP.Net cookie exist we know
                         //the session has expired so we need to redirect them
-                        return manej.codificarXmlAEnviar(manej.envioMensajeError("500"));
+                        return manej.codificarXmlAEnviar(manej.envioMensajeError("505"));
                     }
                     else
                     {
@@ -226,17 +228,34 @@ namespace Atencion24WebServices
                     {
                         if (Session["Loggedin"].Equals("yes"))
                         {
+                            
                             if (CodValido(medico_tb))
                             {
-                                //Creamos una instancia de EstadoDeCuenta con los datos de entrada (medico_tb)
-                                EstadoDeCuenta edoCta = new EstadoDeCuenta(medico_tb);
+                                DateTime x = DateTime.Now;
+                                DateTime y = (DateTime)Session["UltimaConsulta"];
+                                TimeSpan z = x.Subtract(y);
 
-                                //Consultamos el estado de cuenta por antiguedad de saldo
-                                edoCta.ConsultarEstadoDeCuentaAS();
-                                if (edoCta.sinDeuda == true)
-                                    return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                                System.Diagnostics.Debug.WriteLine(x.ToString("yyyyMMdd HH:mm:ss"));
+                                System.Diagnostics.Debug.WriteLine(y.ToString("yyyyMMdd HH:mm:ss"));
+                                System.Diagnostics.Debug.WriteLine("Diferencia " + z.TotalMinutes);
+
+                                if (z.TotalMinutes < 1)
+                                {
+                                    Session["UltimaConsulta"] = x;
+                                    //Creamos una instancia de EstadoDeCuenta con los datos de entrada (medico_tb)
+                                    EstadoDeCuenta edoCta = new EstadoDeCuenta(medico_tb);
+
+                                    //Consultamos el estado de cuenta por antiguedad de saldo
+                                    edoCta.ConsultarEstadoDeCuentaAS();
+                                    if (edoCta.sinDeuda == true)
+                                        return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                                    else
+                                        return manej.codificarXmlAEnviar(manej.creacionRespuestaEdoCtaAS(edoCta));
+                                }
                                 else
-                                    return manej.codificarXmlAEnviar(manej.creacionRespuestaEdoCtaAS(edoCta));
+                                {
+                                    return manej.codificarXmlAEnviar(manej.envioMensajeError("500"));
+                                }
                             }
                             else return manej.codificarXmlAEnviar(manej.envioMensajeError("14"));
                         }
@@ -279,7 +298,7 @@ namespace Atencion24WebServices
                     {
                         //since it's a new session but a ASP.Net cookie exist we know
                         //the session has expired so we need to redirect them
-                        return manej.codificarXmlAEnviar(manej.envioMensajeError("500"));
+                        return manej.codificarXmlAEnviar(manej.envioMensajeError("505"));
                     }
                     else
                     {
@@ -294,15 +313,31 @@ namespace Atencion24WebServices
                         {
                             if (CodValido(medico_tb))
                             {
-                                //Creamos una instancia de EstadoDeCuenta con los datos de entrada (medico_tb)
-                                Pago pago = new Pago(medico_tb);
+                                DateTime x = DateTime.Now;
+                                DateTime y = (DateTime)Session["UltimaConsulta"];
+                                TimeSpan z = x.Subtract(y);
 
-                                //Consultamos el estado de cuenta por antiguedad de saldo
-                                pago.consultarProximoPago();
-                                if (pago.sinPago == true)
-                                    return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                                System.Diagnostics.Debug.WriteLine(x.ToString("yyyyMMdd HH:mm:ss"));
+                                System.Diagnostics.Debug.WriteLine(y.ToString("yyyyMMdd HH:mm:ss"));
+                                System.Diagnostics.Debug.WriteLine("Diferencia " + z.TotalMinutes);
+
+                                if (z.TotalMinutes < 1)
+                                {
+                                    Session["UltimaConsulta"] = x;
+                                    //Creamos una instancia de EstadoDeCuenta con los datos de entrada (medico_tb)
+                                    Pago pago = new Pago(medico_tb);
+
+                                    //Consultamos el estado de cuenta por antiguedad de saldo
+                                    pago.consultarProximoPago();
+                                    if (pago.sinPago == true)
+                                        return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                                    else
+                                        return manej.codificarXmlAEnviar(manej.creacionRespuestaProximoPago(pago));
+                                }
                                 else
-                                    return manej.codificarXmlAEnviar(manej.creacionRespuestaProximoPago(pago));
+                                {
+                                    return manej.codificarXmlAEnviar(manej.envioMensajeError("500"));
+                                }
                             }
                             else return manej.codificarXmlAEnviar(manej.envioMensajeError("14"));
                         }
@@ -347,7 +382,7 @@ namespace Atencion24WebServices
                     {
                         //since it's a new session but a ASP.Net cookie exist we know
                         //the session has expired so we need to redirect them
-                        return manej.codificarXmlAEnviar(manej.envioMensajeError("500"));
+                        return manej.codificarXmlAEnviar(manej.envioMensajeError("505"));
                     }
                     else
                     {
@@ -362,22 +397,39 @@ namespace Atencion24WebServices
                         {
                             if (CodValido(medico_tb))
                             {
-                                //System.Diagnostics.Debug.WriteLine("FECHAS ANTES:" + fechaI_tb + " " + fechaF_tb);
-                                //System.Diagnostics.Debug.WriteLine("FECHAS DESPUES:" + fechaI + " " + fechaF);
+                                DateTime x = DateTime.Now;
+                                DateTime y = (DateTime)Session["UltimaConsulta"];
+                                TimeSpan z = x.Subtract(y);
 
-                                //Creamos una instancia de HistoricoPagos con los datos de entrada (medico_tb, fechaI, fechaF)
-                                HistoricoPagos pagos = new HistoricoPagos(medico_tb, fechaI, fechaF);
+                                System.Diagnostics.Debug.WriteLine(x.ToString("yyyyMMdd HH:mm:ss"));
+                                System.Diagnostics.Debug.WriteLine(y.ToString("yyyyMMdd HH:mm:ss"));
+                                System.Diagnostics.Debug.WriteLine("Diferencia " + z.TotalMinutes);
 
-                                //Consultamos el listado de pagos generados para el médico en el rango de fechas
-                                pagos.consultarHistoricoPagos();
-                                if (pagos.sinPagos == true)
-                                    return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                                if (z.TotalMinutes < 1)
+                                {
+                                    Session["UltimaConsulta"] = x;
+
+                                    //System.Diagnostics.Debug.WriteLine("FECHAS ANTES:" + fechaI_tb + " " + fechaF_tb);
+                                    //System.Diagnostics.Debug.WriteLine("FECHAS DESPUES:" + fechaI + " " + fechaF);
+
+                                    //Creamos una instancia de HistoricoPagos con los datos de entrada (medico_tb, fechaI, fechaF)
+                                    HistoricoPagos pagos = new HistoricoPagos(medico_tb, fechaI, fechaF);
+
+                                    //Consultamos el listado de pagos generados para el médico en el rango de fechas
+                                    pagos.consultarHistoricoPagos();
+                                    if (pagos.sinPagos == true)
+                                        return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                                    else
+                                    {
+                                        if (pagos.Excede == true)
+                                            return manej.codificarXmlAEnviar(manej.envioMensajeError("1"));
+                                        else
+                                            return manej.codificarXmlAEnviar(manej.creacionRespuestaHistoricoPagos(pagos.Pagos));
+                                    }
+                                }
                                 else
                                 {
-                                    if (pagos.Excede == true)
-                                        return manej.codificarXmlAEnviar(manej.envioMensajeError("1"));
-                                    else
-                                        return manej.codificarXmlAEnviar(manej.creacionRespuestaHistoricoPagos(pagos.Pagos));
+                                    return manej.codificarXmlAEnviar(manej.envioMensajeError("500"));
                                 }
                             }
                             else
@@ -425,7 +477,7 @@ namespace Atencion24WebServices
                     {
                         //since it's a new session but a ASP.Net cookie exist we know
                         //the session has expired so we need to redirect them
-                        return manej.codificarXmlAEnviar(manej.envioMensajeError("500"));
+                        return manej.codificarXmlAEnviar(manej.envioMensajeError("505"));
                     }
                     else
                     {
@@ -440,15 +492,32 @@ namespace Atencion24WebServices
                         {
                             if (CodValido(medico_tb))
                             {
-                                //Creamos una instancia de HistoricoPagos con los datos de entrada (medico_tb, fechaI, fechaF)
-                                FacturadoUDN facturado = new FacturadoUDN(medico_tb, fechaI, fechaF);
+                                DateTime x = DateTime.Now;
+                                DateTime y = (DateTime)Session["UltimaConsulta"];
+                                TimeSpan z = x.Subtract(y);
 
-                                //Consultamos el listado de pagos generados para el médico en el rango de fechas
-                                facturado.consultarHonorariosFacturados();
-                                if (facturado.SinFacturado == true)
-                                    return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                                System.Diagnostics.Debug.WriteLine(x.ToString("yyyyMMdd HH:mm:ss"));
+                                System.Diagnostics.Debug.WriteLine(y.ToString("yyyyMMdd HH:mm:ss"));
+                                System.Diagnostics.Debug.WriteLine("Diferencia " + z.TotalMinutes);
+
+                                if (z.TotalMinutes < 1)
+                                {
+                                    Session["UltimaConsulta"] = x;
+
+                                    //Creamos una instancia de HistoricoPagos con los datos de entrada (medico_tb, fechaI, fechaF)
+                                    FacturadoUDN facturado = new FacturadoUDN(medico_tb, fechaI, fechaF);
+
+                                    //Consultamos el listado de pagos generados para el médico en el rango de fechas
+                                    facturado.consultarHonorariosFacturados();
+                                    if (facturado.SinFacturado == true)
+                                        return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                                    else
+                                        return manej.codificarXmlAEnviar(manej.creacionRespuestaHonorariosFacturados(facturado.FactPorUdn, facturado.MontoTotal));
+                                }
                                 else
-                                    return manej.codificarXmlAEnviar(manej.creacionRespuestaHonorariosFacturados(facturado.FactPorUdn, facturado.MontoTotal));
+                                {
+                                    return manej.codificarXmlAEnviar(manej.envioMensajeError("500"));
+                                }
                             }
                             else return manej.codificarXmlAEnviar(manej.envioMensajeError("14"));
                         }
@@ -490,7 +559,7 @@ namespace Atencion24WebServices
                     {
                         //since it's a new session but a ASP.Net cookie exist we know
                         //the session has expired so we need to redirect them
-                        return manej.codificarXmlAEnviar(manej.envioMensajeError("500"));
+                        return manej.codificarXmlAEnviar(manej.envioMensajeError("505"));
                     }
                     else
                     {
@@ -505,20 +574,36 @@ namespace Atencion24WebServices
                         {
                             if (CodValido(medico_tb))
                             {
-                                //Creamos una instancia de HistoricoPagos con los datos de entrada (medico_tb, fechaI, fechaF)
-                                string[] apellidos = apellido_tb.Split('_'); 
-                                ListadoCasos casos = new ListadoCasos(medico_tb, apellidos);
+                                DateTime x = DateTime.Now;
+                                DateTime y = (DateTime)Session["UltimaConsulta"];
+                                TimeSpan z = x.Subtract(y);
 
-                                //Consultamos el listado de pagos generados para el médico en el rango de fechas
-                                casos.ConsultarListadoDeCasos();
-                                if (casos.SinCasos == true)
-                                    return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                                System.Diagnostics.Debug.WriteLine(x.ToString("yyyyMMdd HH:mm:ss"));
+                                System.Diagnostics.Debug.WriteLine(y.ToString("yyyyMMdd HH:mm:ss"));
+                                System.Diagnostics.Debug.WriteLine("Diferencia " + z.TotalMinutes);
+
+                                if (z.TotalMinutes < 1)
+                                {
+                                    Session["UltimaConsulta"] = x;
+                                    //Creamos una instancia de HistoricoPagos con los datos de entrada (medico_tb, fechaI, fechaF)
+                                    string[] apellidos = apellido_tb.Split('_');
+                                    ListadoCasos casos = new ListadoCasos(medico_tb, apellidos);
+
+                                    //Consultamos el listado de pagos generados para el médico en el rango de fechas
+                                    casos.ConsultarListadoDeCasos();
+                                    if (casos.SinCasos == true)
+                                        return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                                    else
+                                    {
+                                        if (casos.Excede == true)
+                                            return manej.codificarXmlAEnviar(manej.envioMensajeError("1"));
+                                        else
+                                            return manej.codificarXmlAEnviar(manej.creacionRespuestaListadoDeCaso(casos.Casos));
+                                    }
+                                }
                                 else
                                 {
-                                    if (casos.Excede == true)
-                                        return manej.codificarXmlAEnviar(manej.envioMensajeError("1"));
-                                    else
-                                        return manej.codificarXmlAEnviar(manej.creacionRespuestaListadoDeCaso(casos.Casos));
+                                    return manej.codificarXmlAEnviar(manej.envioMensajeError("500"));
                                 }
                             }
                             else return manej.codificarXmlAEnviar(manej.envioMensajeError("14"));
@@ -564,7 +649,7 @@ namespace Atencion24WebServices
                     {
                         //since it's a new session but a ASP.Net cookie exist we know
                         //the session has expired so we need to redirect them
-                        return manej.codificarXmlAEnviar(manej.envioMensajeError("500"));
+                        return manej.codificarXmlAEnviar(manej.envioMensajeError("505"));
                     }
                     else
                     {
@@ -579,13 +664,30 @@ namespace Atencion24WebServices
                         {
                             if (CodValido(medico_tb))
                             {
-                                //Creamos una instancia de HistoricoPagos con los datos de entrada (medico_tb, fechaI, fechaF)
-                                Caso caso = new Caso(medico_tb, caso_tb, udn_tb);
+                                DateTime x = DateTime.Now;
+                                DateTime y = (DateTime)Session["UltimaConsulta"];
+                                TimeSpan z = x.Subtract(y);
 
-                                //Consultamos el listado de pagos generados para el médico en el rango de fechas
-                                caso.ConsultarDetalleDeCaso();
+                                System.Diagnostics.Debug.WriteLine(x.ToString("yyyyMMdd HH:mm:ss"));
+                                System.Diagnostics.Debug.WriteLine(y.ToString("yyyyMMdd HH:mm:ss"));
+                                System.Diagnostics.Debug.WriteLine("Diferencia " + z.TotalMinutes);
 
-                                return manej.codificarXmlAEnviar(manej.creacionRespuestaDetalleDeCaso(caso));
+                                if (z.TotalMinutes < 1)
+                                {
+                                    Session["UltimaConsulta"] = x;
+
+                                    //Creamos una instancia de HistoricoPagos con los datos de entrada (medico_tb, fechaI, fechaF)
+                                    Caso caso = new Caso(medico_tb, caso_tb, udn_tb);
+
+                                    //Consultamos el listado de pagos generados para el médico en el rango de fechas
+                                    caso.ConsultarDetalleDeCaso();
+
+                                    return manej.codificarXmlAEnviar(manej.creacionRespuestaDetalleDeCaso(caso));
+                                }
+                                else
+                                {
+                                    return manej.codificarXmlAEnviar(manej.envioMensajeError("500")); 
+                                }
                             }
                             else return manej.codificarXmlAEnviar(manej.envioMensajeError("14")); 
                         }
@@ -626,7 +728,7 @@ namespace Atencion24WebServices
                     {
                         //since it's a new session but a ASP.Net cookie exist we know
                         //the session has expired so we need to redirect them
-                        return manej.codificarXmlAEnviar(manej.envioMensajeError("500"));
+                        return manej.codificarXmlAEnviar(manej.envioMensajeError("505"));
                     }
                     else
                     {
@@ -641,16 +743,33 @@ namespace Atencion24WebServices
                         {
                             if (CodValido(medico_tb))
                             {
-                                //Creamos una instancia de HistoricoPagos con los datos de entrada (medico_tb, fechaI, fechaF)
-                                ListadoFianzas fianzas = new ListadoFianzas(medico_tb);
+                                DateTime x = DateTime.Now;
+                                DateTime y = (DateTime)Session["UltimaConsulta"];
+                                TimeSpan z = x.Subtract(y);
 
-                                //Consultamos el listado de pagos generados para el médico en el rango de fechas
-                                fianzas.ConsultarListadoFianzas();
+                                System.Diagnostics.Debug.WriteLine(x.ToString("yyyyMMdd HH:mm:ss"));
+                                System.Diagnostics.Debug.WriteLine(y.ToString("yyyyMMdd HH:mm:ss"));
+                                System.Diagnostics.Debug.WriteLine("Diferencia " + z.TotalMinutes);
 
-                                if (fianzas.SinFianzas == true)
-                                    return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                                if (z.TotalMinutes < 1)
+                                {
+                                    Session["UltimaConsulta"] = x;
+
+                                    //Creamos una instancia de HistoricoPagos con los datos de entrada (medico_tb, fechaI, fechaF)
+                                    ListadoFianzas fianzas = new ListadoFianzas(medico_tb);
+
+                                    //Consultamos el listado de pagos generados para el médico en el rango de fechas
+                                    fianzas.ConsultarListadoFianzas();
+
+                                    if (fianzas.SinFianzas == true)
+                                        return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                                    else
+                                        return manej.codificarXmlAEnviar(manej.creacionRespuestaListadoFianzas(fianzas.Fianzas));
+                                }
                                 else
-                                    return manej.codificarXmlAEnviar(manej.creacionRespuestaListadoFianzas(fianzas.Fianzas));
+                                {
+                                    return manej.codificarXmlAEnviar(manej.envioMensajeError("500"));
+                                }
                             }
                             else return manej.codificarXmlAEnviar(manej.envioMensajeError("14"));
                         }
@@ -688,7 +807,7 @@ namespace Atencion24WebServices
                     {
                         //since it's a new session but a ASP.Net cookie exist we know
                         //the session has expired so we need to redirect them
-                        return manej.codificarXmlAEnviar(manej.envioMensajeError("500"));
+                        return manej.codificarXmlAEnviar(manej.envioMensajeError("505"));
                     }
                     else
                     {
