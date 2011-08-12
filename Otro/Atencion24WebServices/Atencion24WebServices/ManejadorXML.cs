@@ -359,40 +359,54 @@ namespace Atencion24WebServices
         /// </summary>
         /// <param name="facturado">Contiene toda la información de lo facturado</param>
         /// <returns>XML con la información de lo facturado por el médico en el rango de fechas</returns>
-        public String creacionRespuestaHonorariosFacturados(FacturadoUDN facturado) 
+        public String creacionRespuestaHonorariosFacturados(ArrayList factUDN, decimal totalFact) 
         {
             XmlDocument documento;
             XmlElement elemento;
             XmlElement elemento1;
+            XmlElement elemento2;
             XmlText texto;
+
+            ArrayList facturadoUDN = new ArrayList();
+            facturadoUDN = factUDN;
+            decimal total = 0;
+            total = totalFact;
 
             documento = newDocument();
             elemento = documento.CreateElement("facturado");
-
+           
             //MontoTotalFacturado
             elemento1 = documento.CreateElement("total");
-            texto = documento.CreateTextNode((facturado.MontoTotal).ToString("N2"));
+            texto = documento.CreateTextNode((total).ToString("N2"));
             elemento1.AppendChild(texto);
             elemento.AppendChild(elemento1);
 
             //Facturado por UDN
-            FacturadoUDN factu = new FacturadoUDN();
-            factu = facturado;
-            ArrayList facturadoUDN = new ArrayList();
-            facturadoUDN = factu.FactPorUdn;
-
             if (facturadoUDN != null)
             {
                 foreach (Facturado fact in facturadoUDN)
                 {
-                    elemento1 = documento.CreateElement(fact.Udn);
+                    elemento1 = documento.CreateElement("udn");
+
+                    //Nombre UDN
+                    elemento2 = documento.CreateElement("nombre");
+                    texto = documento.CreateTextNode(fact.Udn);
+                    elemento2.AppendChild(texto);
+                    elemento1.AppendChild(elemento2);
+
+                    //Monto Fact por UDN 
+                    elemento2 = documento.CreateElement("monto");
                     texto = documento.CreateTextNode(fact.Monto.ToString("N2"));
-                    elemento1.AppendChild(texto);
+                    elemento2.AppendChild(texto);
+                    elemento1.AppendChild(elemento2);
+
                     elemento.AppendChild(elemento1);
+                    
                 }
             }
            
             documento.AppendChild(elemento);
+            System.Diagnostics.Debug.WriteLine(XMLtoString(documento));
             return XMLtoString(documento);
         }
 

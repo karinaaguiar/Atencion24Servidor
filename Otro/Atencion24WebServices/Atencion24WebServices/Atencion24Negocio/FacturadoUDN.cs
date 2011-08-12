@@ -62,6 +62,7 @@ namespace Atencion24WebServices.Atencion24Negocio
             if (ds.Tables[0].Rows.Count == 0) { sinFacturado = true; return; }
             else
             {
+                factPorUdn = new ArrayList();
                 foreach (DataRow dr in ds.Tables[0].Rows)
                 {
                     if (dr.ItemArray.ElementAt(0) != DBNull.Value)
@@ -72,6 +73,7 @@ namespace Atencion24WebServices.Atencion24Negocio
 
                             //Monto facturado
                             fact.Monto = decimal.Parse(dr.ItemArray.ElementAt(0).ToString());
+                            System.Diagnostics.Debug.WriteLine(fact.Monto); 
 
                             //Nombre de la UDN
                             if (dr.ItemArray.ElementAt(2) != DBNull.Value)

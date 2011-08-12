@@ -448,7 +448,7 @@ namespace Atencion24WebServices
                                 if (facturado.SinFacturado == true)
                                     return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
                                 else
-                                    return manej.codificarXmlAEnviar(manej.creacionRespuestaHonorariosFacturados(facturado));
+                                    return manej.codificarXmlAEnviar(manej.creacionRespuestaHonorariosFacturados(facturado.FactPorUdn, facturado.MontoTotal));
                             }
                             else return manej.codificarXmlAEnviar(manej.envioMensajeError("14"));
                         }
