@@ -96,6 +96,26 @@ namespace Atencion24WebServices.Atencion24DAO
             return Query;
         }
 
+        //Query para consultar si el usuario está bloqueado o no
+        public string estaBloqueado(string usuario)
+        {
+            Query = "SELECT BLOQUEADO FROM TBL_PERSONAL WHERE USUARIO = '" + usuario + "'"; 
+            return Query;
+        }
+
+        //Query para colocar bloqueado al usuario 
+        public string setBloqueadoTrue(string usuario)
+        {
+            Query = "UPDATE TBL_PERSONAL SET BLOQUEADO = 1 WHERE USUARIO = '" + usuario + "'"; 
+            return Query;
+        }
+   
+        //Query para desbloquear al usuario 
+        public string setBloqueadoFalse(string usuario)
+        {
+            Query = "UPDATE TBL_PERSONAL SET BLOQUEADO = 0 WHERE USUARIO = '" + usuario + "'"; 
+            return Query;
+        }
         //___________________________________________________
 
         //**ESTADO DE CUENTA**//

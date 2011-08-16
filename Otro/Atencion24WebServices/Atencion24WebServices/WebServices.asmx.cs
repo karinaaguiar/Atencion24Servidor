@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Services;
 using System.Data;
+using System.Threading;
 using Atencion24WebServices.Atencion24Negocio;
 
 namespace Atencion24WebServices
@@ -23,6 +24,9 @@ namespace Atencion24WebServices
     public class OperacionesWebServicesAtencion24 : System.Web.Services.WebService
     {
 
+        //Función que permite verificar que el parámetro 'medico' que se envía a través del URL para
+        //consumir el servicio web corresponde a algún código de pago del médico al que corresponde 
+        //la sesión
         public bool CodValido(String medico)
         {
             bool valido = false;
@@ -70,13 +74,12 @@ namespace Atencion24WebServices
                 else
                 {
                     Session.Add("Loggedin", "");
-                    Session.Add("Count", 0);
-                    Session.Add("bloqueado", "");
-                    Session.Add("bloqueadoAhora", "no");
+                    //Session.Add("bloqueado", "");
+                    //Session.Add("bloqueadoAhora", "no");
                 }
             }  
 
-            if (Session["Count"] != null)
+            /*if (Session["Count"] != null)
             {
                 System.Diagnostics.Debug.WriteLine("Count hasta ahora " + Session["Count"]);
                 if ((int)Session["Count"] == 3)
@@ -97,32 +100,57 @@ namespace Atencion24WebServices
                         }
                     }
                 }
-            }
+            }*/
 
-            if ((Session["bloqueado"] != null) && (!Session["bloqueado"].Equals("yes")))
+            //Creamos una instancia de usuario con los datos que fueron introducidos por pantalla (Pantalla de Inicio de Sesión)
+            Usuario usuarioInput = new Usuario(usuario_tb, clave_tb);
+
+            //Verificamos si el usuario ingresado existe en la base de datos
+            usuarioInput.ExisteUsuario();
+            if (usuarioInput.Valido == false)
             {
-
-                System.Diagnostics.Debug.WriteLine("Entre y bloqueado es " + Session["bloqueado"]);
-                //Creamos una instancia de usuario con los datos que fueron introducidos por pantalla (Pantalla de Inicio de Sesión)
-                Usuario usuarioInput = new Usuario(usuario_tb, clave_tb);
-
-                //Verificamos si el usuario ingresado existe en la base de datos
-                usuarioInput.ExisteUsuario();
-                if (usuarioInput.Valido == false)
+                System.Diagnostics.Debug.WriteLine("Error 1");
+                return manej.codificarXmlAEnviar(manej.envioMensajeError("1"));
+            }
+            else
+            {
+                //Verificamos si el usuario está bloqueado
+                if (usuarioInput.estaBloqueado(usuario_tb))
                 {
-                    Session["Count"] = (int)Session["Count"] + 1;
-                    System.Diagnostics.Debug.WriteLine("Error 1");
-                    return manej.codificarXmlAEnviar(manej.envioMensajeError("1"));
+                    System.Diagnostics.Debug.WriteLine("Error 4");
+                    return manej.codificarXmlAEnviar(manej.envioMensajeError("4"));
                 }
                 else
                 {
+                    //Como el usuario es válido creamos su count de intentos fallidos (en caso de que no exista)
+                    if (Session[usuario_tb] == null)
+                        Session.Add(usuario_tb, 0);
+                    System.Diagnostics.Debug.WriteLine("Count de " + usuario_tb + " " + (int)Session[usuario_tb]);
+
                     //Verificamos que se introdujo bien la contraseña
                     String codigo = usuarioInput.ConsultarUsuario();
                     if (usuarioInput.Valido == false)
                     {
-                        Session["Count"] = (int)Session["Count"] + 1;
-                        System.Diagnostics.Debug.WriteLine("Error 0");
-                        return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                        Session[usuario_tb] = (int)Session[usuario_tb] + 1;
+                        if ((int)Session[usuario_tb] == 3)
+                        {
+                            System.Diagnostics.Debug.WriteLine("Error 3");
+                            //Invocar método que coloque bloqueado = 1 
+                            usuarioInput.setBloqueadoTrue(usuario_tb);
+                            //Creamos un hilo que espera a que  
+                            //que transcurra el tiempo para poner en 0 nuevamente el campo
+                            //bloqueado
+                            Thread th1 = new Thread(new ThreadStart(usuarioInput.esperaDesbloquear));
+                            th1.Start();
+                            //Reiniciamos el count
+                            Session.Remove(usuario_tb);
+                            return manej.codificarXmlAEnviar(manej.envioMensajeError("3"));
+                        }
+                        else
+                        {
+                            System.Diagnostics.Debug.WriteLine("Error 0");
+                            return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                        }
                     }
                     else
                     {
@@ -131,17 +159,13 @@ namespace Atencion24WebServices
                         usuarioInput.ConsultarFechaAdmin();
 
                         Session["Loggedin"] = "yes";
-                        Session.Add("UltimaConsulta", DateTime.Now); 
+                        Session.Add("UltimaConsulta", DateTime.Now);
                         Session["codigosPago"] = usuarioInput.CodigosPago;
                         return manej.codificarXmlAEnviar(manej.creacionRespuestaInicioSesion(usuarioInput));
                     }
                 }
             }
-            else
-            {
-                System.Diagnostics.Debug.WriteLine("Error 4-2");
-                return manej.codificarXmlAEnviar(manej.envioMensajeError("4"));
-            }
+          
            
             /*VERSION VIEJA
             ManejadorXML manej = new ManejadorXML();

@@ -74,6 +74,33 @@ namespace Atencion24WebServices.Atencion24DAO
             CerrarConexionBd();
             return Ds;
         }
-       
+
+        //Query para consultar si el usuario está bloqueado o no
+        public DataSet estaBloqueado(string usuario)
+        {
+            Cmd.CommandText = QueryAtencion24.estaBloqueado(usuario);
+            Da.SelectCommand = Cmd;
+            Da.Fill(Ds);
+            CerrarConexionBd();
+            return Ds;
+        }
+
+        //Query para colocar bloqueado al usuario 
+        public void setBloqueadoTrue(string usuario)
+        {
+            Cmd.CommandText = QueryAtencion24.setBloqueadoTrue(usuario);
+            Da.SelectCommand = Cmd;
+            Da.Fill(Ds);
+            CerrarConexionBd();
+        }
+
+        //Query para desbloquear al usuario 
+        public void setBloqueadoFalse(string usuario)
+        {
+            Cmd.CommandText = QueryAtencion24.setBloqueadoFalse(usuario);
+            Da.SelectCommand = Cmd;
+            Da.Fill(Ds);
+            CerrarConexionBd();
+        }
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Data;
+using System.Threading;
 using Atencion24WebServices.Atencion24DAO;
 
 namespace Atencion24WebServices.Atencion24Negocio
@@ -227,6 +228,61 @@ namespace Atencion24WebServices.Atencion24Negocio
                 }
             }
         }
+
+
+        public bool estaBloqueado(string usuario)
+        {
+            System.Diagnostics.Debug.WriteLine("Voy a verificar si esta bloqueado " + usuario);
+            
+            DataSet ds = new DataSet();
+            UsuarioDAO ud = new UsuarioDAO();
+            bool bloqueado = false;
+
+            //Consultamos si campo bloqueado del usuario
+            ds = ud.estaBloqueado(usuario);
+
+            //Verificamos si la consulta trajo filas
+            if (ds.Tables[0].Rows.Count != 0)
+            {
+                if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
+                {
+                    System.Diagnostics.Debug.WriteLine("No es NULL");
+                    System.Diagnostics.Debug.WriteLine("Este es " + ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString());
+                    //Si el usuario está bloqueado
+                    if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString().Equals("True"))
+                        bloqueado = true;
+                }
+            }
+            return bloqueado;
+        }
+
+        public void setBloqueadoTrue(string usuario)
+        {
+
+            System.Diagnostics.Debug.WriteLine("Voy a bloquear al usuario " + usuario);
+            UsuarioDAO ud = new UsuarioDAO();
+            //Colocamos true el campo bloqueado del usuario
+            ud.setBloqueadoTrue(usuario);
+        
+        }
+
+        public void setBloqueadoFalse()
+        {
+
+            System.Diagnostics.Debug.WriteLine("Voy a bloquear al usuario " + this.login);
+            UsuarioDAO ud = new UsuarioDAO();
+            //Colocamos true el campo bloqueado del usuario
+            ud.setBloqueadoFalse(this.login);
+
+        }
+       
+       public void esperaDesbloquear()
+       {
+           System.Diagnostics.Debug.WriteLine("Me voy a dormir");
+           Thread.Sleep(1000*60*2);
+           System.Diagnostics.Debug.WriteLine("Me desperte");
+           this.setBloqueadoFalse();  
+       }
 
         /*VERISON VIEJA
         //Función que llama a otra función en la capa de datos para decir si un usuario existe o no.
