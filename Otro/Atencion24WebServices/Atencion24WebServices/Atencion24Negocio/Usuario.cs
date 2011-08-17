@@ -29,6 +29,12 @@ namespace Atencion24WebServices.Atencion24Negocio
             password = pass;
         }
 
+        //Constructor
+        public Usuario(string log)
+        {
+            login = log;
+        }
+
         public string Login
         {
             get { return login; }

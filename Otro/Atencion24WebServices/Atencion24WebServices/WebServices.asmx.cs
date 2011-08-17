@@ -43,6 +43,50 @@ namespace Atencion24WebServices
         }
         
         /// <summary>
+        /// Este servicio web permite bloquear a un usuario. 
+        /// </summary>
+        /// <param name="usuario_tb"> nombre usuario</param>
+        /// <returns>XML con respuesta de bloqueo exitoso</returns>
+        [WebMethod(Description = "Inicio de sesión en la aplicación Atencion 24", EnableSession = true)]
+        public String bloquear(string usuario_tb)
+        {
+            ManejadorXML manej = new ManejadorXML();
+
+            usuario_tb = usuario_tb.Trim();
+
+            System.Diagnostics.Debug.WriteLine("ESTE es el SessionID " + Session.SessionID);
+
+            //check the IsNewSession value, this will tell us if the session has been reset
+            if (Session.IsNewSession)
+            {
+                //now we know it's a new session, so we check to see if a cookie is present
+                string cookie = HttpContext.Current.Request.Headers["Cookie"];
+                //now we determine if there is a cookie does it contains what we're looking for
+                if ((null != cookie) && (cookie.IndexOf("ASP.NET_SessionId") >= 0))
+                {
+                    //since it's a new session but a ASP.Net cookie exist we know
+                    //the session has expired so we need to redirect them
+                    System.Diagnostics.Debug.WriteLine("Error 503");
+                    return manej.codificarXmlAEnviar(manej.envioMensajeError("503"));
+                }
+            }
+
+            Usuario usuarioInput = new Usuario(usuario_tb);
+            
+            System.Diagnostics.Debug.WriteLine("Error 3");
+            //Invocar método que coloque bloqueado = 1 
+            usuarioInput.setBloqueadoTrue(usuario_tb);
+            //Creamos un hilo que espera a que  
+            //que transcurra el tiempo para poner en 0 nuevamente el campo
+            //bloqueado
+            Thread th1 = new Thread(new ThreadStart(usuarioInput.esperaDesbloquear));
+            th1.Start();
+            return manej.codificarXmlAEnviar(manej.envioMensajeError("3"));
+
+
+        }
+
+        /// <summary>
         /// Este servicio web permite iniciar sesión. 
         /// </summary>
         /// <param name="usuario_tb"> nombre usuario</param>
@@ -74,33 +118,8 @@ namespace Atencion24WebServices
                 else
                 {
                     Session.Add("Loggedin", "");
-                    //Session.Add("bloqueado", "");
-                    //Session.Add("bloqueadoAhora", "no");
                 }
             }  
-
-            /*if (Session["Count"] != null)
-            {
-                System.Diagnostics.Debug.WriteLine("Count hasta ahora " + Session["Count"]);
-                if ((int)Session["Count"] == 3)
-                {
-                    Session["bloqueado"] = "yes";
-                    if (Session["bloqueadoAhora"] != null)
-                    {
-                        if (Session["bloqueadoAhora"].Equals("no"))
-                        {
-                            Session["bloqueadoAhora"] = "si";
-                            System.Diagnostics.Debug.WriteLine("Error 3");
-                            return manej.codificarXmlAEnviar(manej.envioMensajeError("3"));
-                        }
-                        if (Session["bloqueadoAhora"].Equals("si"))
-                        {
-                            System.Diagnostics.Debug.WriteLine("Error 4-1");
-                            return manej.codificarXmlAEnviar(manej.envioMensajeError("4"));
-                        }
-                    }
-                }
-            }*/
 
             //Creamos una instancia de usuario con los datos que fueron introducidos por pantalla (Pantalla de Inicio de Sesión)
             Usuario usuarioInput = new Usuario(usuario_tb, clave_tb);
@@ -123,17 +142,17 @@ namespace Atencion24WebServices
                 else
                 {
                     //Como el usuario es válido creamos su count de intentos fallidos (en caso de que no exista)
-                    if (Session[usuario_tb] == null)
-                        Session.Add(usuario_tb, 0);
-                    System.Diagnostics.Debug.WriteLine("Count de " + usuario_tb + " " + (int)Session[usuario_tb]);
+                    //if (Session[usuario_tb] == null)
+                      //  Session.Add(usuario_tb, 0);
+                    //System.Diagnostics.Debug.WriteLine("Count de " + usuario_tb + " " + (int)Session[usuario_tb]);
 
                     //Verificamos que se introdujo bien la contraseña
                     String codigo = usuarioInput.ConsultarUsuario();
                     if (usuarioInput.Valido == false)
                     {
-                        Session[usuario_tb] = (int)Session[usuario_tb] + 1;
-                        if ((int)Session[usuario_tb] == 3)
-                        {
+                        //Session[usuario_tb] = (int)Session[usuario_tb] + 1;
+                        //if ((int)Session[usuario_tb] == 3)
+                        /*{
                             System.Diagnostics.Debug.WriteLine("Error 3");
                             //Invocar método que coloque bloqueado = 1 
                             usuarioInput.setBloqueadoTrue(usuario_tb);
@@ -147,10 +166,10 @@ namespace Atencion24WebServices
                             return manej.codificarXmlAEnviar(manej.envioMensajeError("3"));
                         }
                         else
-                        {
+                        {*/
                             System.Diagnostics.Debug.WriteLine("Error 0");
                             return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
-                        }
+                        //}
                     }
                     else
                     {
