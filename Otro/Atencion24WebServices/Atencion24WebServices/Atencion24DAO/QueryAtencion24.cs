@@ -119,7 +119,7 @@ namespace Atencion24WebServices.Atencion24DAO
         //___________________________________________________
 
         //**ESTADO DE CUENTA**//
-        /* VERSION NO! CONSULTA TABLA TEMP_ESTADO_CUENTA
+        /* VERSION QUE NO! CONSULTA TABLA TEMP_ESTADO_CUENTA
         //MONTOS TOTALES//
         //Consultar TOTAL Facturado
         public string EdoCtaMontoFacturadoTotal(string medico)
@@ -251,7 +251,7 @@ namespace Atencion24WebServices.Atencion24DAO
         {
             Query = "SELECT SUM(TOTALDEUDA) " +
                     "FROM TBL_TEMP_ESTADO_CUENTA " +
-                    "WHERE MEDICO = '" + medico + "' AND PAGADO = 0 " +
+                    "WHERE MEDICO = '" + medico + "' " +
                     "GROUP BY MEDICO";
             return Query;
         }
@@ -281,7 +281,7 @@ namespace Atencion24WebServices.Atencion24DAO
         public string EdoCtaMontoAntiguedad(string medico, int antiguedad)
         {
             Query = "SELECT SUM(TOTALDEUDA) "+
-                    "FROM TBL_TEMP_ESTADO_CUENTA WHERE MEDICO = '" + medico + "' AND PAGADO = 0  " +
+                    "FROM TBL_TEMP_ESTADO_CUENTA WHERE MEDICO = '" + medico + "' " +
                     "AND ";
             Query = antiguedadSaldo(Query, antiguedad);
             Query =  Query + " GROUP BY MEDICO ";
@@ -377,9 +377,12 @@ namespace Atencion24WebServices.Atencion24DAO
         {
             Query = "SELECT A.CASO, A.UNIDADNEGOCIO, B.NOMBRE, CONVERT(VARCHAR(10),A.FECHAEMISION,103) " +
                     "FROM TBL_HCASO A INNER JOIN TBL_PACIENTE B ON A.PACIENTE = B.CEDULA " +
-                    "WHERE EXISTS " +
-                    "(SELECT * FROM TBL_CUENTASPORPAGAR C " +
-                    "WHERE C.PROVEEDOR = '" + medico + "' AND A.UNIDADNEGOCIO = C.UNIDADDENEGOCIO AND A.CASO = C.NROID) AND ";
+                    "INNER JOIN TBL_HCASODET C " +
+                    "ON C.CASO = A.CASO AND C.UNIDADDENEGOCIO = A.UNIDADNEGOCIO " +
+                    "INNER JOIN TBL_CUENTASPORPAGAR D " +
+                    "ON C.CASO = D.NROID AND C.UNIDADDENEGOCIO = D.UNIDADDENEGOCIO AND C.SERVICIO = D.CLASIFICACIONHONORARIO AND " +
+                    "C.SUMINISTRO = D.TIPOHONORARIO AND C.AREA = D.AREAHONORARIO AND C.CODIGOTIPOP = D.PROVEEDOR AND C.EMPRESAAFILIADA = D.EMPRESAAFILIADA " +
+                    "WHERE D.PROVEEDOR = '" + medico + "' AND ";
             
             for(int i = 0; i < apellido.Length-1; i++)
 	        {

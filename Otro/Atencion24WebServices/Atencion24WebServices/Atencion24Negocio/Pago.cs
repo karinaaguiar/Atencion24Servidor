@@ -129,7 +129,6 @@ namespace Atencion24WebServices.Atencion24Negocio
                     //Fecha de pago
                     DateTime hoy = DateTime.Today; 
                     DateTime ayer = hoy.AddDays(-1);
-                    System.Diagnostics.Debug.WriteLine(ayer.ToString());
                     FechaPago = ayer.ToString();
                 }
             }

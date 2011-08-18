@@ -238,7 +238,6 @@ namespace Atencion24WebServices.Atencion24Negocio
 
         public bool estaBloqueado(string usuario)
         {
-            System.Diagnostics.Debug.WriteLine("Voy a verificar si esta bloqueado " + usuario);
             
             DataSet ds = new DataSet();
             UsuarioDAO ud = new UsuarioDAO();
@@ -252,8 +251,6 @@ namespace Atencion24WebServices.Atencion24Negocio
             {
                 if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
                 {
-                    System.Diagnostics.Debug.WriteLine("No es NULL");
-                    System.Diagnostics.Debug.WriteLine("Este es " + ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString());
                     //Si el usuario está bloqueado
                     if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString().Equals("True"))
                         bloqueado = true;
@@ -264,22 +261,16 @@ namespace Atencion24WebServices.Atencion24Negocio
 
         public void setBloqueadoTrue(string usuario)
         {
-
-            System.Diagnostics.Debug.WriteLine("Voy a bloquear al usuario " + usuario);
             UsuarioDAO ud = new UsuarioDAO();
             //Colocamos true el campo bloqueado del usuario
             ud.setBloqueadoTrue(usuario);
-        
         }
 
         public void setBloqueadoFalse()
         {
-
-            System.Diagnostics.Debug.WriteLine("Voy a bloquear al usuario " + this.login);
             UsuarioDAO ud = new UsuarioDAO();
             //Colocamos true el campo bloqueado del usuario
             ud.setBloqueadoFalse(this.login);
-
         }
        
        public void esperaDesbloquear()

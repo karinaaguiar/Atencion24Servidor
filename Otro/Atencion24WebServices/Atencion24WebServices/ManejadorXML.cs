@@ -406,7 +406,6 @@ namespace Atencion24WebServices
             }
            
             documento.AppendChild(elemento);
-            System.Diagnostics.Debug.WriteLine(XMLtoString(documento));
             return XMLtoString(documento);
         }
 

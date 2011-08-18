@@ -73,7 +73,6 @@ namespace Atencion24WebServices.Atencion24Negocio
 
                             //Monto facturado
                             fact.Monto = decimal.Parse(dr.ItemArray.ElementAt(0).ToString());
-                            System.Diagnostics.Debug.WriteLine(fact.Monto); 
 
                             //Nombre de la UDN
                             if (dr.ItemArray.ElementAt(2) != DBNull.Value)

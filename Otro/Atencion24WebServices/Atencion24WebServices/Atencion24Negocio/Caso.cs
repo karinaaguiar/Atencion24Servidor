@@ -122,7 +122,6 @@ namespace Atencion24WebServices.Atencion24Negocio
             {
                 if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
                  fechaEmisionFactura = ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString();
-                 System.Diagnostics.Debug.WriteLine(fechaEmisionFactura);
             }
 
             //Monto Facturado en el caso
