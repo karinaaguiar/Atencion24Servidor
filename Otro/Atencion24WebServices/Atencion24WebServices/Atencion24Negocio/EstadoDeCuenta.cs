@@ -126,7 +126,7 @@ namespace Atencion24WebServices.Atencion24Negocio
             {
                 if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) != DBNull.Value)
                 {
-                    if (!ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString().Equals("0"))
+                    if (!ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString().Equals("0,00"))
                     {
                         montoTotal = decimal.Parse(ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString());
                         montoA30Dias = auxiliarConsultarEstadoDeCuentaAS(30);
