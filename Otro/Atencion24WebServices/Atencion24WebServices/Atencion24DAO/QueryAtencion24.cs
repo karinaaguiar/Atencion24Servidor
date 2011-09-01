@@ -96,6 +96,13 @@ namespace Atencion24WebServices.Atencion24DAO
             return Query;
         }
 
+        //Query para consultar si la base de datos está disponible
+        public string InicioSesionDisponibleBD()
+        {
+            Query = "SELECT DISPONIBLE FROM TBL_ADMIN";
+            return Query;
+        }
+
         //Query para consultar si el usuario está bloqueado o no
         public string estaBloqueado(string usuario)
         {

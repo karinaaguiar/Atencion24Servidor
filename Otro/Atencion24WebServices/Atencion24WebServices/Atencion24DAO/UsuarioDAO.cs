@@ -85,6 +85,16 @@ namespace Atencion24WebServices.Atencion24DAO
             return Ds;
         }
 
+        //Query para verificar si la base de datos está disponible
+        public DataSet InicioSesionDisponibleBD()
+        {
+            Cmd.CommandText = QueryAtencion24.InicioSesionDisponibleBD();
+            Da.SelectCommand = Cmd;
+            Da.Fill(Ds);
+            CerrarConexionBd();
+            return Ds;
+        }
+
         //Query para colocar bloqueado al usuario 
         public void setBloqueadoTrue(string usuario)
         {

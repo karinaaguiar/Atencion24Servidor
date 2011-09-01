@@ -124,6 +124,11 @@ namespace Atencion24WebServices
             //Creamos una instancia de usuario con los datos que fueron introducidos por pantalla (Pantalla de Inicio de Sesión)
             Usuario usuarioInput = new Usuario(usuario_tb, clave_tb);
 
+            //Verificamos si la base de datos está disponible
+            usuarioInput.DisponibleBD();
+            if (usuarioInput.Disponible == false)
+                return manej.codificarXmlAEnviar(manej.envioMensajeError("600"));
+
             //Verificamos si el usuario ingresado existe en la base de datos
             usuarioInput.ExisteUsuario();
             if (usuarioInput.Valido == false)

@@ -18,6 +18,7 @@ namespace Atencion24WebServices.Atencion24Negocio
         private string fechaAdm = " ";
         private ArrayList codigosPago = null;
         private bool valido = true;
+        private bool disponible = true;
 
         //Constructor
         public Usuario() { }
@@ -69,6 +70,34 @@ namespace Atencion24WebServices.Atencion24Negocio
         {
             get { return valido; }
             set { valido = value; }
+        }
+
+        public bool Disponible
+        {
+            get { return disponible; }
+            set { disponible = value; }
+        }
+
+        //Funcion que verifica si la base de datos está disponible
+        public void DisponibleBD()
+        {
+            DataSet ds = new DataSet();
+            UsuarioDAO ud = new UsuarioDAO();
+
+            ds = ud.InicioSesionDisponibleBD();
+            if (ds.Tables[0].Rows.Count == 0)
+                disponible = false;
+            else
+            {
+                if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) == DBNull.Value)
+                    disponible = false;
+                else
+                {
+                    if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString().Equals("False"))
+                        disponible = false;
+                }
+            }
+
         }
 
         //Función que llama a otra función en la capa de datos para decir si un usuario existe o no.
