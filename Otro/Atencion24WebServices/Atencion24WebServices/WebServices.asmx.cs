@@ -287,7 +287,7 @@ namespace Atencion24WebServices
                                 System.Diagnostics.Debug.WriteLine(y.ToString("yyyyMMdd HH:mm:ss"));
                                 System.Diagnostics.Debug.WriteLine("Diferencia " + z.TotalMinutes);
 
-                                if (z.TotalMinutes < 1)
+                                if (z.TotalMinutes < 10)
                                 {
                                     Session["UltimaConsulta"] = x;
                                     //Creamos una instancia de EstadoDeCuenta con los datos de entrada (medico_tb)
@@ -369,7 +369,7 @@ namespace Atencion24WebServices
                                 System.Diagnostics.Debug.WriteLine(y.ToString("yyyyMMdd HH:mm:ss"));
                                 System.Diagnostics.Debug.WriteLine("Diferencia " + z.TotalMinutes);
 
-                                if (z.TotalMinutes < 1)
+                                if (z.TotalMinutes < 10)
                                 {
                                     Session["UltimaConsulta"] = x;
                                     //Creamos una instancia de EstadoDeCuenta con los datos de entrada (medico_tb)
@@ -453,7 +453,7 @@ namespace Atencion24WebServices
                                 System.Diagnostics.Debug.WriteLine(y.ToString("yyyyMMdd HH:mm:ss"));
                                 System.Diagnostics.Debug.WriteLine("Diferencia " + z.TotalMinutes);
 
-                                if (z.TotalMinutes < 1)
+                                if (z.TotalMinutes < 10)
                                 {
                                     Session["UltimaConsulta"] = x;
 
@@ -548,7 +548,7 @@ namespace Atencion24WebServices
                                 System.Diagnostics.Debug.WriteLine(y.ToString("yyyyMMdd HH:mm:ss"));
                                 System.Diagnostics.Debug.WriteLine("Diferencia " + z.TotalMinutes);
 
-                                if (z.TotalMinutes < 1)
+                                if (z.TotalMinutes < 10)
                                 {
                                     Session["UltimaConsulta"] = x;
 
@@ -630,7 +630,7 @@ namespace Atencion24WebServices
                                 System.Diagnostics.Debug.WriteLine(y.ToString("yyyyMMdd HH:mm:ss"));
                                 System.Diagnostics.Debug.WriteLine("Diferencia " + z.TotalMinutes);
 
-                                if (z.TotalMinutes < 1)
+                                if (z.TotalMinutes < 10)
                                 {
                                     Session["UltimaConsulta"] = x;
                                     //Creamos una instancia de HistoricoPagos con los datos de entrada (medico_tb, fechaI, fechaF)
@@ -720,7 +720,7 @@ namespace Atencion24WebServices
                                 System.Diagnostics.Debug.WriteLine(y.ToString("yyyyMMdd HH:mm:ss"));
                                 System.Diagnostics.Debug.WriteLine("Diferencia " + z.TotalMinutes);
 
-                                if (z.TotalMinutes < 1)
+                                if (z.TotalMinutes < 10)
                                 {
                                     Session["UltimaConsulta"] = x;
 
@@ -799,7 +799,7 @@ namespace Atencion24WebServices
                                 System.Diagnostics.Debug.WriteLine(y.ToString("yyyyMMdd HH:mm:ss"));
                                 System.Diagnostics.Debug.WriteLine("Diferencia " + z.TotalMinutes);
 
-                                if (z.TotalMinutes < 1)
+                                if (z.TotalMinutes < 10)
                                 {
                                     Session["UltimaConsulta"] = x;
 

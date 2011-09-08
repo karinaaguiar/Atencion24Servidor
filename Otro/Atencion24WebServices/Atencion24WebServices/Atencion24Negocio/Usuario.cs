@@ -305,7 +305,7 @@ namespace Atencion24WebServices.Atencion24Negocio
        public void esperaDesbloquear()
        {
            System.Diagnostics.Debug.WriteLine("Me voy a dormir");
-           Thread.Sleep(1000*60*2);
+           Thread.Sleep(1000*60*5);
            System.Diagnostics.Debug.WriteLine("Me desperte");
            this.setBloqueadoFalse();  
        }
