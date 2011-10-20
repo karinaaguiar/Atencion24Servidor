@@ -290,15 +290,23 @@ namespace Atencion24WebServices
                                 if (z.TotalMinutes < 10)
                                 {
                                     Session["UltimaConsulta"] = x;
+                                   
                                     //Creamos una instancia de EstadoDeCuenta con los datos de entrada (medico_tb)
                                     EstadoDeCuenta edoCta = new EstadoDeCuenta(medico_tb);
 
-                                    //Consultamos el estado de cuenta por antiguedad de saldo
-                                    edoCta.ConsultarEstadoDeCuentaAS();
-                                    if (edoCta.sinDeuda == true)
-                                        return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                                    //Verificamos si la base de datos está disponible
+                                    bool disponible = edoCta.DisponibleBD();
+                                    if (disponible == false)
+                                        return manej.codificarXmlAEnviar(manej.envioMensajeError("600"));
                                     else
-                                        return manej.codificarXmlAEnviar(manej.creacionRespuestaEdoCtaAS(edoCta));
+                                    {
+                                        //Consultamos el estado de cuenta por antiguedad de saldo
+                                        edoCta.ConsultarEstadoDeCuentaAS();
+                                        if (edoCta.sinDeuda == true)
+                                            return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                                        else
+                                            return manej.codificarXmlAEnviar(manej.creacionRespuestaEdoCtaAS(edoCta));
+                                    }
                                 }
                                 else
                                 {
@@ -375,12 +383,19 @@ namespace Atencion24WebServices
                                     //Creamos una instancia de EstadoDeCuenta con los datos de entrada (medico_tb)
                                     Pago pago = new Pago(medico_tb);
 
-                                    //Consultamos el estado de cuenta por antiguedad de saldo
-                                    pago.consultarProximoPago();
-                                    if (pago.sinPago == true)
-                                        return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                                    //Verificamos si la base de datos está disponible
+                                    bool disponible = pago.DisponibleBD();
+                                    if (disponible == false)
+                                        return manej.codificarXmlAEnviar(manej.envioMensajeError("600"));
                                     else
-                                        return manej.codificarXmlAEnviar(manej.creacionRespuestaProximoPago(pago));
+                                    {
+                                        //Consultamos el estado de cuenta por antiguedad de saldo
+                                        pago.consultarProximoPago();
+                                        if (pago.sinPago == true)
+                                            return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                                        else
+                                            return manej.codificarXmlAEnviar(manej.creacionRespuestaProximoPago(pago));
+                                    }
                                 }
                                 else
                                 {
@@ -463,16 +478,23 @@ namespace Atencion24WebServices
                                     //Creamos una instancia de HistoricoPagos con los datos de entrada (medico_tb, fechaI, fechaF)
                                     HistoricoPagos pagos = new HistoricoPagos(medico_tb, fechaI, fechaF);
 
-                                    //Consultamos el listado de pagos generados para el médico en el rango de fechas
-                                    pagos.consultarHistoricoPagos();
-                                    if (pagos.sinPagos == true)
-                                        return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                                    //Verificamos si la base de datos está disponible
+                                    bool disponible = pagos.DisponibleBD();
+                                    if (disponible == false)
+                                        return manej.codificarXmlAEnviar(manej.envioMensajeError("600"));
                                     else
                                     {
-                                        if (pagos.Excede == true)
-                                            return manej.codificarXmlAEnviar(manej.envioMensajeError("1"));
+                                        //Consultamos el listado de pagos generados para el médico en el rango de fechas
+                                        pagos.consultarHistoricoPagos();
+                                        if (pagos.sinPagos == true)
+                                            return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
                                         else
-                                            return manej.codificarXmlAEnviar(manej.creacionRespuestaHistoricoPagos(pagos.Pagos));
+                                        {
+                                            if (pagos.Excede == true)
+                                                return manej.codificarXmlAEnviar(manej.envioMensajeError("1"));
+                                            else
+                                                return manej.codificarXmlAEnviar(manej.creacionRespuestaHistoricoPagos(pagos.Pagos));
+                                        }
                                     }
                                 }
                                 else
@@ -555,12 +577,19 @@ namespace Atencion24WebServices
                                     //Creamos una instancia de HistoricoPagos con los datos de entrada (medico_tb, fechaI, fechaF)
                                     FacturadoUDN facturado = new FacturadoUDN(medico_tb, fechaI, fechaF);
 
-                                    //Consultamos el listado de pagos generados para el médico en el rango de fechas
-                                    facturado.consultarHonorariosFacturados();
-                                    if (facturado.SinFacturado == true)
-                                        return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                                    //Verificamos si la base de datos está disponible
+                                    bool disponible = facturado.DisponibleBD();
+                                    if (disponible == false)
+                                        return manej.codificarXmlAEnviar(manej.envioMensajeError("600"));
                                     else
-                                        return manej.codificarXmlAEnviar(manej.creacionRespuestaHonorariosFacturados(facturado.FactPorUdn, facturado.MontoTotal));
+                                    {
+                                        //Consultamos el listado de pagos generados para el médico en el rango de fechas
+                                        facturado.consultarHonorariosFacturados();
+                                        if (facturado.SinFacturado == true)
+                                            return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                                        else
+                                            return manej.codificarXmlAEnviar(manej.creacionRespuestaHonorariosFacturados(facturado.FactPorUdn, facturado.MontoTotal));
+                                    }
                                 }
                                 else
                                 {
@@ -633,20 +662,28 @@ namespace Atencion24WebServices
                                 if (z.TotalMinutes < 10)
                                 {
                                     Session["UltimaConsulta"] = x;
+                                    
                                     //Creamos una instancia de HistoricoPagos con los datos de entrada (medico_tb, fechaI, fechaF)
                                     string[] apellidos = apellido_tb.Split('_');
                                     ListadoCasos casos = new ListadoCasos(medico_tb, apellidos);
-
-                                    //Consultamos el listado de pagos generados para el médico en el rango de fechas
-                                    casos.ConsultarListadoDeCasos();
-                                    if (casos.SinCasos == true)
-                                        return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                                    
+                                    //Verificamos si la base de datos está disponible
+                                    bool disponible = casos.DisponibleBD();
+                                    if (disponible == false)
+                                        return manej.codificarXmlAEnviar(manej.envioMensajeError("600"));
                                     else
                                     {
-                                        if (casos.Excede == true)
-                                            return manej.codificarXmlAEnviar(manej.envioMensajeError("1"));
+                                        //Consultamos el listado de pagos generados para el médico en el rango de fechas
+                                        casos.ConsultarListadoDeCasos();
+                                        if (casos.SinCasos == true)
+                                            return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
                                         else
-                                            return manej.codificarXmlAEnviar(manej.creacionRespuestaListadoDeCaso(casos.Casos));
+                                        {
+                                            if (casos.Excede == true)
+                                                return manej.codificarXmlAEnviar(manej.envioMensajeError("1"));
+                                            else
+                                                return manej.codificarXmlAEnviar(manej.creacionRespuestaListadoDeCaso(casos.Casos));
+                                        }
                                     }
                                 }
                                 else
@@ -727,10 +764,17 @@ namespace Atencion24WebServices
                                     //Creamos una instancia de HistoricoPagos con los datos de entrada (medico_tb, fechaI, fechaF)
                                     Caso caso = new Caso(medico_tb, caso_tb, udn_tb);
 
-                                    //Consultamos el listado de pagos generados para el médico en el rango de fechas
-                                    caso.ConsultarDetalleDeCaso();
+                                    //Verificamos si la base de datos está disponible
+                                    bool disponible = caso.DisponibleBD();
+                                    if (disponible == false)
+                                        return manej.codificarXmlAEnviar(manej.envioMensajeError("600"));
+                                    else
+                                    {
+                                        //Consultamos el listado de pagos generados para el médico en el rango de fechas
+                                        caso.ConsultarDetalleDeCaso();
 
-                                    return manej.codificarXmlAEnviar(manej.creacionRespuestaDetalleDeCaso(caso));
+                                        return manej.codificarXmlAEnviar(manej.creacionRespuestaDetalleDeCaso(caso));
+                                    }
                                 }
                                 else
                                 {
@@ -806,13 +850,21 @@ namespace Atencion24WebServices
                                     //Creamos una instancia de HistoricoPagos con los datos de entrada (medico_tb, fechaI, fechaF)
                                     ListadoFianzas fianzas = new ListadoFianzas(medico_tb);
 
-                                    //Consultamos el listado de pagos generados para el médico en el rango de fechas
-                                    fianzas.ConsultarListadoFianzas();
-
-                                    if (fianzas.SinFianzas == true)
-                                        return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                                    //Verificamos si la base de datos está disponible
+                                    bool disponible = fianzas.DisponibleBD();
+                                    if (disponible == false)
+                                        return manej.codificarXmlAEnviar(manej.envioMensajeError("600"));
                                     else
-                                        return manej.codificarXmlAEnviar(manej.creacionRespuestaListadoFianzas(fianzas.Fianzas));
+                                    {
+                                        //Consultamos el listado de pagos generados para el médico en el rango de fechas
+                                        fianzas.ConsultarListadoFianzas();
+
+                                        if (fianzas.SinFianzas == true)
+                                            return manej.codificarXmlAEnviar(manej.envioMensajeError("0"));
+                                        else
+                                            return manej.codificarXmlAEnviar(manej.creacionRespuestaListadoFianzas(fianzas.Fianzas));
+                                    }
+
                                 }
                                 else
                                 {

@@ -90,5 +90,27 @@ namespace Atencion24WebServices.Atencion24Negocio
             }
         }
 
+        //Funcion que verifica si la base de datos está disponible
+        public bool DisponibleBD()
+        {
+            DataSet ds = new DataSet();
+            UsuarioDAO ud = new UsuarioDAO();
+            bool disponible = true;
+
+            ds = ud.InicioSesionDisponibleBD();
+            if (ds.Tables[0].Rows.Count == 0)
+                disponible = false;
+            else
+            {
+                if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0) == DBNull.Value)
+                    disponible = false;
+                else
+                {
+                    if (ds.Tables[0].Rows[0].ItemArray.ElementAt(0).ToString().Equals("False"))
+                        disponible = false;
+                }
+            }
+            return disponible;
+        }
     }
 }
