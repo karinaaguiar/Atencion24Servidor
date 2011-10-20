@@ -382,7 +382,7 @@ namespace Atencion24WebServices.Atencion24DAO
         //LISTADO DE CASOS POR APELLIDO
          public string DetalleCasoListadoDeCasos(string medico, string [] apellido)
         {
-            Query = "SELECT A.CASO, A.UNIDADNEGOCIO, B.NOMBRE, CONVERT(VARCHAR(10),A.FECHAEMISION,103) " +
+            Query = "SELECT DISTINCT A.CASO, A.UNIDADNEGOCIO, B.NOMBRE, CONVERT(VARCHAR(10),A.FECHAEMISION,103), A.FECHAEMISION " +
                     "FROM TBL_HCASO A INNER JOIN TBL_PACIENTE B ON A.PACIENTE = B.CEDULA " +
                     "INNER JOIN TBL_HCASODET C " +
                     "ON C.CASO = A.CASO AND C.UNIDADDENEGOCIO = A.UNIDADNEGOCIO " +
