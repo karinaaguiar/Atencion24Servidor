@@ -428,8 +428,20 @@ namespace Atencion24WebServices
         {
             ManejadorXML manej = new ManejadorXML();
             medico_tb = medico_tb.Trim();
-            String fechaI = String.Format("{0:MM/dd/yyyy}", Convert.ToDateTime(fechaI_tb));
-            String fechaF = String.Format("{0:MM/dd/yyyy}", Convert.ToDateTime(fechaF_tb));
+            String fechaI = " ";
+            String fechaF = " ";
+            try
+            {
+                fechaI = String.Format("{0:yyyy/MM/dd}", Convert.ToDateTime(fechaI_tb));
+                fechaF = String.Format("{0:yyyy/MM/dd}", Convert.ToDateTime(fechaF_tb));
+            }   
+            catch (System.FormatException)
+            {
+                //Si la fecha ingresada por el usuario está en un formato inválido
+                return manej.codificarXmlAEnviar(manej.envioMensajeError("15"));
+            }  
+            
+            System.Diagnostics.Debug.WriteLine("fechaI: " + fechaI + "fechaF: " + fechaF);
 
             System.Diagnostics.Debug.WriteLine("En Historico de pagos ESTE es el SessionID " + Session.SessionID);
 
@@ -530,8 +542,19 @@ namespace Atencion24WebServices
         {
             ManejadorXML manej = new ManejadorXML();
             medico_tb = medico_tb.Trim();
-            String fechaI = String.Format("{0:MM/dd/yyyy}", Convert.ToDateTime(fechaI_tb));
-            String fechaF = String.Format("{0:MM/dd/yyyy}", Convert.ToDateTime(fechaF_tb));
+            String fechaI = " ";
+            String fechaF = " ";
+            try
+            {
+                fechaI = String.Format("{0:yyyy/MM/dd}", Convert.ToDateTime(fechaI_tb));
+                fechaF = String.Format("{0:yyyy/MM/dd}", Convert.ToDateTime(fechaF_tb));
+            }
+            catch (System.FormatException)
+            {
+                //Si la fecha ingresada por el usuario está en un formato inválido
+                return manej.codificarXmlAEnviar(manej.envioMensajeError("15"));
+            }    
+            System.Diagnostics.Debug.WriteLine("fechaI: " + fechaI + "fechaF: " + fechaF);
 
             System.Diagnostics.Debug.WriteLine("En Facturado ESTE es el SessionID " + Session.SessionID);
 
